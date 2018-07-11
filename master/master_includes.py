@@ -306,7 +306,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	    ))
 	lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " docker-ubuntu18-on16 " + szRepoOwner,
-	     workernames=["docker-ubuntu18-on16"],
+	     workernames=["docker-ubuntu18-on16", "docker-ubuntu18-on16w2", "docker-ubuntu18w3"],
 	      factory=factoryUbuntu18on16Docker,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
@@ -316,7 +316,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	    ))
 	lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " docker-ubuntu18 " + szRepoOwner,
-	     workernames=["docker-ubuntu18"],
+	     workernames=["docker-ubuntu18", "docker-ubuntu18w3"],
 	      factory=factoryUbuntu18Docker,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
