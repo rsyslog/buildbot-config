@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# 	* Copyright (C) 2013 Adiscon GmbH.
+# 	* Copyright (C) 2018 Adiscon GmbH.
 #	* This file is part of RSyslog
 #	* 
 #	* rsyslog factory settings
@@ -11,10 +11,6 @@ from buildbot.process.factory import BuildFactory
 from buildbot.steps.source.git import Git
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
-
-# Include master function includes 
-#import master_includes
-#from master_includes import *
 
 # --- rsyslog factory settings
 factoryRsyslogCentos6 = BuildFactory()
@@ -159,10 +155,7 @@ factoryRsyslogUbuntu16 = BuildFactory()
 factoryRsyslogUbuntu16.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["git", "log", "-4"], name="git branch information"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"], name="kill left-over instances"))
-factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup"))
-factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
-factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "clean"], name="cleanup for next tests"))
-
+factoryRsyslogUbuntu16.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmnull", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--enable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal=no","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'gcc-7', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc-7)"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "-j2", "check", "TESTS=", "V=0"], haltOnFailure=True, name="make (gcc-7)"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "clean"], name="cleanup for next tests"))
@@ -353,25 +346,356 @@ factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(f
 
 ####### Create Builders
 #Add rsyslog builders for main repo
-appendBuilders(	'rsyslog', 'rsyslog',
-	factoryRsyslogDebian,		# Debian 
-	factoryRsyslogDebian9,		# Debian9
-	factoryRsyslogRaspbian,		# Raspbian 
-	factoryRsyslogFreebsd,		# Freebsd 
-	factoryRsyslogSuse,		# Suse 
-	factoryRsyslogCentos6,		# Centos6
-	factoryRsyslogCentos7, 		# Centos7
-	factoryRsyslogFedora23,		# Fedora23
-	factoryRsyslogFedora64,		# Fedora64
-	factoryRsyslogUbuntu, 		# Ubuntu
-	factoryRsyslogUbuntu16,		# Ubuntu16
-	factoryRsyslogSolaris10x64,	# Solaris10x64
-	factoryRsyslogSolaris10sparc,	# Solaris10sparc
-	factoryRsyslogSolaris11x64,	# Solaris11x64
-	factoryRsyslogSolaris11sparc,	# Solaris11sparc
-	factoryRsyslogUbuntuCron,	# UbuntuCron
-	factoryRsyslogDockerUbuntu,	# DockerUbuntu
-	factoryRsyslogDockerUbuntu18,	# DockerUbuntu18
-	factoryRsyslogDockerUbuntu18on16,	# DockerUbuntu18on16
-	factoryRsyslogDockerCentos7,	# DockerCentos7
-	)
+#appendBuilders(	'rsyslog', 'rsyslog',
+#	factoryRsyslogDebian,		# Debian 
+#	factoryRsyslogDebian9,		# Debian9
+#	factoryRsyslogRaspbian,		# Raspbian 
+#	factoryRsyslogFreebsd,		# Freebsd 
+#	factoryRsyslogSuse,		# Suse 
+#	factoryRsyslogCentos6,		# Centos6
+#	factoryRsyslogCentos7, 		# Centos7
+#	factoryRsyslogFedora23,		# Fedora23
+#	factoryRsyslogFedora64,		# Fedora64
+#	factoryRsyslogUbuntu, 		# Ubuntu
+#	factoryRsyslogUbuntu16,		# Ubuntu16
+#	factoryRsyslogSolaris10x64,	# Solaris10x64
+#	factoryRsyslogSolaris10sparc,	# Solaris10sparc
+#	factoryRsyslogSolaris11x64,	# Solaris11x64
+#	factoryRsyslogSolaris11sparc,	# Solaris11sparc
+#	factoryRsyslogUbuntuCron,	# UbuntuCron
+#	factoryRsyslogDockerUbuntu,	# DockerUbuntu
+#	factoryRsyslogDockerUbuntu18,	# DockerUbuntu18
+#	factoryRsyslogDockerUbuntu18on16,	# DockerUbuntu18on16
+#	factoryRsyslogDockerCentos7,	# DockerCentos7
+#	)
+
+factoryRsyslogStaticAnalyzer = BuildFactory()
+factoryRsyslogStaticAnalyzer.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["sleep", "2"], name="wait for github"))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup"))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
+
+####### Create Builders
+
+lc['builders'].append(
+	BuilderConfig(name="rsyslog clang static analyzer",
+		workernames=["slave-ubuntu16"],
+		factory=factoryRsyslogStaticAnalyzer,
+		tags=["rsyslog rsyslog"], 
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog",
+		} ))
+
+lc['builders'].append(
+   BuilderConfig(name="rsyslog ubuntu rsyslog",
+     workernames=["slave-ubuntu"],
+      factory=factoryRsyslogUbuntu, 
+      tags=["rsyslog rsyslog"], 
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog ubuntu16 rsyslog",
+     workernames=["slave-ubuntu16"],
+      factory=factoryRsyslogUbuntu16,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog debian rsyslog",
+      workernames=["slave-debian"],
+      factory=factoryRsyslogDebian,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog debian9 rsyslog",
+      workernames=["slave-debian9"],
+      factory=factoryRsyslogDebian9,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog raspbian rsyslog",
+      workernames=["slave-raspbian"],
+      factory=factoryRsyslogRaspbian,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog centos6 rsyslog",
+    workernames=["slave-centos6"],
+    factory=factoryRsyslogCentos6,
+    tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog centos7 rsyslog",
+      workernames=["slave-centos7"],
+      factory=factoryRsyslogCentos7,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog fedora23x32 rsyslog",
+      workernames=["slave-fedora23x32"],
+      factory=factoryRsyslogFedora23,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog fedora26x64 rsyslog",
+      workernames=["slave-fedora26x64"],
+      factory=factoryRsyslogFedora64,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog freebsd rsyslog",
+      workernames=["slave-freebsd"],
+      factory=factoryRsyslogFreebsd,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog suse rsyslog",
+      workernames=["slave-suse"],
+      factory=factoryRsyslogSuse,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog solaris10sparc rsyslog",
+      workernames=["slave-solaris10sparc"],
+      factory=factoryRsyslogSolaris10sparc,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog solaris10x64 rsyslog",
+      workernames=["slave-solaris10x64"],
+      factory=factoryRsyslogSolaris10x64,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog solaris11sparc rsyslog",
+      workernames=["slave-solaris11sparc"],
+      factory=factoryRsyslogSolaris11sparc,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog solaris11x64 rsyslog",
+      workernames=["slave-solaris11x64"],
+      factory=factoryRsyslogSolaris11x64,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
+     workernames=["docker-ubuntu16"],
+      factory=factoryRsyslogDockerUbuntu,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-ubuntu16-on18 rsyslog",
+     workernames=["docker-ubuntu16-on18"],
+      factory=factoryRsyslogDockerUbuntu,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-ubuntu18-on16 rsyslog",
+     workernames=["docker-ubuntu18-on16", "docker-ubuntu18-on16w2", "docker-ubuntu18w3"],
+      factory=factoryRsyslogDockerUbuntu18on16,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-ubuntu18 rsyslog",
+     workernames=["docker-ubuntu18", "docker-ubuntu18w3"],
+      factory=factoryRsyslogDockerUbuntu18,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-centos7 rsyslog",
+     workernames=["docker-centos7"],
+      factory=factoryRsyslogDockerCentos7,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+
+# --- Cronjob only
+lc['builders'].append(
+   BuilderConfig(name="cron " + "rsyslog ubuntu rsyslog",
+     workernames=["slave-ubuntu"],
+      factory=factoryRsyslogUbuntuCron,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+# --- 
+
+lc['schedulers'].append(ForceScheduler(
+	name="pull_rsyslog_rsyslog",
+	label="1. Pull Requests-rsyslog-rsyslog",
+	builderNames=[  "rsyslog ubuntu rsyslog"
+			,"rsyslog clang static analyzer"
+			,"rsyslog ubuntu16 rsyslog"
+			,"rsyslog debian rsyslog"
+			,"rsyslog debian9 rsyslog"
+			,"rsyslog raspbian rsyslog"
+			,"rsyslog centos6 rsyslog"
+			,"rsyslog centos7 rsyslog"
+			,"rsyslog fedora23x32 rsyslog"
+			,"rsyslog fedora26x64 rsyslog"
+			,"rsyslog freebsd rsyslog"
+			,"rsyslog suse rsyslog"
+			,"rsyslog solaris10x64 rsyslog"
+			,"rsyslog solaris11sparc rsyslog"
+			,"rsyslog solaris10sparc rsyslog"
+			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-ubuntu16 rsyslog"
+			,"rsyslog docker-ubuntu16-on18 rsyslog"
+			,"rsyslog docker-ubuntu18 rsyslog"
+			,"rsyslog docker-ubuntu18-on16 rsyslog"
+			,"rsyslog docker-centos7 rsyslog"
+		],
+	codebases=[
+		util.CodebaseParameter(
+			"", 
+			branch=util.StringParameter(
+				name="branch", 
+				label="Pull Request Number:<br>", 
+				required=True, 
+				default="refs/pull/<NUMBER>/head", 
+				size=80),
+			),
+	],
+))
+
+lc['schedulers'].append(ForceScheduler(
+	name="forceall_rsyslog_rsyslog",
+	label="2. Force All-rsyslog-rsyslog",
+	builderNames=[	"rsyslog ubuntu rsyslog"
+			,"rsyslog clang static analyzer"
+			,"rsyslog ubuntu16 rsyslog"
+			,"rsyslog debian rsyslog"
+			,"rsyslog debian9 rsyslog"
+			,"rsyslog raspbian rsyslog"
+			,"rsyslog centos6 rsyslog"
+			,"rsyslog centos7 rsyslog"
+			,"rsyslog fedora23x32 rsyslog"
+			,"rsyslog fedora26x64 rsyslog"
+			,"rsyslog freebsd rsyslog"
+			,"rsyslog suse rsyslog"
+			,"rsyslog solaris10x64 rsyslog"
+			,"rsyslog solaris11sparc rsyslog"
+			,"rsyslog solaris10sparc rsyslog"
+			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-ubuntu16 rsyslog"
+			,"rsyslog docker-ubuntu16-on18 rsyslog"
+			,"rsyslog docker-ubuntu18 rsyslog"
+			,"rsyslog docker-centos7 rsyslog"
+			],
+))
+
+lc['schedulers'].append(SingleBranchScheduler(
+	name="github_rsyslog_rsyslog",
+	change_filter=filter.ChangeFilter(	category="pull", 
+						project="rsyslog/rsyslog"),
+	builderNames=[  "rsyslog ubuntu rsyslog"
+			,"rsyslog clang static analyzer"
+			,"rsyslog ubuntu16 rsyslog"
+			,"rsyslog debian rsyslog"
+			,"rsyslog debian9 rsyslog"
+			,"rsyslog raspbian rsyslog"
+			,"rsyslog centos6 rsyslog"
+			,"rsyslog centos7 rsyslog"
+			,"rsyslog fedora23x32 rsyslog"
+			,"rsyslog fedora26x64 rsyslog"
+			,"rsyslog freebsd rsyslog"
+			,"rsyslog suse rsyslog"
+			,"rsyslog solaris10x64 rsyslog"
+			,"rsyslog solaris11sparc rsyslog"
+			,"rsyslog solaris10sparc rsyslog"
+			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-ubuntu16 rsyslog"
+			,"rsyslog docker-ubuntu16-on18 rsyslog"
+			,"rsyslog docker-ubuntu18 rsyslog"
+			,"rsyslog docker-ubuntu18-on16 rsyslog"
+			,"rsyslog docker-centos7 rsyslog"
+		],
+))
+
+lc['schedulers'].append(ForceScheduler(
+	name="forceallcron_rsyslog_rsyslog",
+	label="3. Force All Cron-rsyslog-rsyslog",
+	builderNames=[ "cron rsyslog ubuntu rsyslog" ],
+))
