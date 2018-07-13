@@ -53,21 +53,6 @@ def appendSchedulers(szRepoOwner, szRepoProject, szGitBranch):
 			    treeStableTimer=None,
 			    builderNames=[szRepoProject + " docker-ubuntu16 " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-docker-ubuntu18",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " docker-ubuntu18 " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-docker-ubuntu18-on16",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " docker-ubuntu18-on16 " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-docker-centos7",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " docker-centos7 " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-debian",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    treeStableTimer=None,
@@ -295,36 +280,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	      },
 	    ))
 	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " docker-ubuntu16-on18 " + szRepoOwner,
-	     workernames=["docker-ubuntu16-on18"],
-	      factory=factoryUbuntuDocker,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " docker-ubuntu18-on16 " + szRepoOwner,
-	     workernames=["docker-ubuntu18-on16", "docker-ubuntu18-on16w2", "docker-ubuntu18w3"],
-	      factory=factoryUbuntu18on16Docker,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " docker-ubuntu18 " + szRepoOwner,
-	     workernames=["docker-ubuntu18", "docker-ubuntu18w3"],
-	      factory=factoryUbuntu18Docker,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " docker-centos7 " + szRepoOwner,
 	     workernames=["docker-centos7"],
 	      factory=factoryCentos7Docker,
@@ -367,9 +322,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu16-on18 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18-on16 " + szRepoOwner
 				,szRepoProject + " docker-centos7 " + szRepoOwner
 			],
 		codebases=[
@@ -404,8 +356,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu16-on18 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
 				,szRepoProject + " docker-centos7 " + szRepoOwner
 				],
 	))
@@ -430,9 +380,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu16-on18 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18-on16 " + szRepoOwner
 				,szRepoProject + " docker-centos7 " + szRepoOwner
 			],
 	))
