@@ -60,6 +60,12 @@ factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "-j"], haltOnFailure
 factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.5", 'LIBRARY_PATH': '/usr/local/lib', 'LD_LIBRARY_PATH': '/usr/local/lib'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 factoryRsyslogDebian9.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"]))
 
+factoryRsyslogRaspbian_gcc = BuildFactory()
+factoryRsyslogRaspbian_gcc.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=raspbianenv_gcc, haltOnFailure=True))
+factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], logfiles={"config.log": "config.log"}, env=raspbianenv_gcc, lazylogfiles=True, haltOnFailure=True, name="configure [gcc]"))
+factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [gcc]"))
+
 factoryRsyslogRaspbian = BuildFactory()
 # NOTES:
 # * valgrind does not work on raspbian -- there are lots of errors in dlload()
@@ -68,13 +74,14 @@ factoryRsyslogRaspbian = BuildFactory()
 # * do NOT run more than 2 parallel make jobs -- we have seen the compiler
 #   fail with "internal error", which most probably means it ran out of
 #   memory (this was with -j4 and seldomly, so -j2 should be a safe bet).
+# GCC compile commented out as we try it in a separate builder, to be run in parallel!
 factoryRsyslogRaspbian.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogRaspbian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"], name="cleanup hanging instances (if any)"))
+# do not do at the moment! factoryRsyslogRaspbian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"], name="cleanup hanging instances (if any)"))
 factoryRsyslogRaspbian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup for next tests"))
 factoryRsyslogRaspbian.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=raspbianenv_gcc, haltOnFailure=True))
-factoryRsyslogRaspbian.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], logfiles={"config.log": "config.log"}, env=raspbianenv_gcc, lazylogfiles=True, haltOnFailure=True, name="configure [gcc]"))
-factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [gcc]"))
-factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "clean"], haltOnFailure=True, name="cleanup for next build"))
+#factoryRsyslogRaspbian.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], logfiles={"config.log": "config.log"}, env=raspbianenv_gcc, lazylogfiles=True, haltOnFailure=True, name="configure [gcc]"))
+#factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [gcc]"))
+#factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "clean"], haltOnFailure=True, name="cleanup for next build"))
 
 factoryRsyslogRaspbian.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench", "--enable-compile-warnings=error"], logfiles={"config.log": "config.log"}, env={'CC':'clang', 'CFLAGS': '-g -O1', 'LC_ALL' : 'C', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib'}, lazylogfiles=True, haltOnFailure=True, name="configure [clang]"))
 factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [clang]"))
@@ -156,7 +163,7 @@ factoryRsyslogUbuntu16.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=T
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["git", "log", "-4"], name="git branch information"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"], name="kill left-over instances"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmnull", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--enable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal=no","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'gcc-7', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc-7)"))
+factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmnull", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--enable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal=no","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--enable-mmkubernetes", "--enable-debug", "--without-valgrind-testbench"], env={'CC': 'gcc-7', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc-7)"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "-j2", "check", "TESTS=", "V=0"], haltOnFailure=True, name="make (gcc-7)"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "clean"], name="cleanup for next tests"))
 # now compile plus dynamic testbench tests - do this last as it runs longest
@@ -291,23 +298,23 @@ factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/
 factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=300, name="final cleanup" ))
 # ---
 
-factoryRsyslogDockerUbuntu = BuildFactory()
-factoryRsyslogDockerUbuntu.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
-# should not be needed with container factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"]))
-# should not be needed with container factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
-factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerUbuntu16 = BuildFactory()
+factoryRsyslogDockerUbuntu16.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+# should not be needed with container factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"]))
+# should not be needed with container factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
+factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 # note: we later might want to use clang, but for now we get some
 # unexplainable errors if we use clang with this slave... TODO: check, I guess that's wrong!
-factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch","--enable-elasticsearch-tests",  "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="build (make)"))
+factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch","--enable-elasticsearch-tests",  "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="build (make)"))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
 # there is so much to do...
-	# TODO NOT WORKIGN YET !!! factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
-factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
-factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
-#rger 2018-06-29 factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, haltOnFailure=True, name="check"))
-#factoryRsyslogDockerUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather make check logs"))
+	# TODO NOT WORKIGN YET !!! factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
+factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
+#rger 2018-06-29 factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, haltOnFailure=True, name="check"))
+#factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather make check logs"))
 # ---
 
 
@@ -333,6 +340,17 @@ factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
 # ---
+
+# EXPERIMENTAL armbian - DETAILS WILL CHANGE LATER!
+factoryRsyslogDockerArmbian = BuildFactory()
+factoryRsyslogDockerArmbian.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=14400, haltOnFailure=False, name="distcheck"))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
+# ---
+
+
 
 
 factoryRsyslogDockerCentos7 = BuildFactory()
@@ -398,6 +416,16 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog debian9 rsyslog",
       workernames=["slave-debian9"],
       factory=factoryRsyslogDebian9,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog raspbian gcc compile",
+      workernames=["slave-raspbian"],
+      factory=factoryRsyslogRaspbian_gcc,
       tags=["rsyslog rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -516,9 +544,19 @@ lc['builders'].append(
     ))
 
 lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-armbian",
+     workernames=["docker-armbian"],
+      factory=factoryRsyslogDockerArmbian,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
      workernames=["docker-ubuntu16"],
-      factory=factoryRsyslogDockerUbuntu,
+      factory=factoryRsyslogDockerUbuntu16,
       tags=["rsyslog rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -537,7 +575,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
-     workernames=["docker-ubuntu18-distcheck-w1","docker-ubuntu18-distcheck-w1", "docker-ubuntu18-distcheck-w1"],
+     workernames=["docker-ubuntu18-distcheck-w1","docker-ubuntu18-distcheck-w2", "docker-ubuntu18-distcheck-w3"],
       factory=factoryRsyslogDockerUbuntu18_distcheck,
       tags=["rsyslog rsyslog"],
       properties={
@@ -577,6 +615,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
+			,"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian rsyslog"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
@@ -588,6 +627,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-armbian"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
@@ -614,6 +654,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
+			,"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian rsyslog"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
@@ -625,6 +666,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-armbian"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-centos7 rsyslog"
@@ -640,6 +682,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
+			,"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian rsyslog"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
@@ -651,6 +694,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-armbian"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
