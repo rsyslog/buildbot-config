@@ -585,7 +585,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
-     workernames=["docker-centos7"],
+      workernames=["docker-centos7", "docker-centos7-w2", "docker-centos7-w3"],
       factory=factoryRsyslogDockerCentos7,
       tags=["rsyslog rsyslog"],
       properties={
