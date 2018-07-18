@@ -335,19 +335,34 @@ factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/
 # checks if all files are present in tarball.
 factoryRsyslogDockerUbuntu18_distcheck = BuildFactory()
 factoryRsyslogDockerUbuntu18_distcheck.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+# testing only!
+factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "git log -10; git branch; git pull; git log -3 ; git fetch origin; git diff refs/pull/2850/merge..master ; git merge master"], env={'CC': 'gcc', "CFLAGS":"-g"}, name="git info"))
+# END testing only
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
 # ---
 
+# EXPERIMENTAL arm - DETAILS WILL CHANGE LATER!
+# Note: valgrind is quite slow here and has lots of false positives - so we disable
+factoryRsyslogDockerArmUbuntu18 = BuildFactory()
+factoryRsyslogDockerArmUbuntu18.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-mmdblookup --without-valgrind-testbench --disable-valgrind --enable-elasticsearch-tests=minimal"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "-j4"], haltOnFailure=True, name="make [clang]"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib', 'RS_PWORK': '/mnt/rswork/'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5400, name="make check"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather test logs"))
+# ---
+
+
 # EXPERIMENTAL armbian - DETAILS WILL CHANGE LATER!
 factoryRsyslogDockerArmbian = BuildFactory()
 factoryRsyslogDockerArmbian.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'clang', "CFLAGS":"-g -fsanitize=address"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "CFLAGS":"-g -fsanitize=address"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=14400, haltOnFailure=False, name="distcheck"))
-#factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "CFLAGS":"-g -fsanitize=address"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=72000, haltOnFailure=False, name="check"))
+factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
 # ---
 
 
@@ -359,6 +374,16 @@ factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["autoreconf", "-fvi"],
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "make distcheck V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
+
+
+
+# ---
+factoryRsyslogDockerFedora28 = BuildFactory()
+factoryRsyslogDockerFedora28.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-debug --enable-compile-warnings=yes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["make", "-j2"], lazylogfiles=True, maxTime=1000, haltOnFailure=True, name="make (gcc)"))
+factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "make check V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=True, name="check"))
 # ---
 
 
@@ -483,6 +508,16 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
+    BuilderConfig(name="rsyslog docker-fedora28",
+      workernames=["docker-fedora28-w1", "docker-fedora28-w2", "docker-fedora28-w3"],
+      factory=factoryRsyslogDockerFedora28,
+      tags=["rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
     BuilderConfig(name="rsyslog freebsd rsyslog",
       workernames=["slave-freebsd"],
       factory=factoryRsyslogFreebsd,
@@ -542,10 +577,19 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-
 lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-armbian",
-     workernames=["docker-armbian"],
+    BuilderConfig(name="rsyslog docker-arm-ubuntu18",
+      workernames=["docker-armbian", "docker-armbian-w2", "docker-armbian-w3"],
+      factory=factoryRsyslogDockerArmUbuntu18,
+      tags=["rsyslog rsyslog"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog docker-armbian",
+      workernames=["docker-armbian"],
       factory=factoryRsyslogDockerArmbian,
       tags=["rsyslog rsyslog"],
       properties={
@@ -621,13 +665,14 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog fedora23x32 rsyslog"
 			,"rsyslog fedora26x64 rsyslog"
+			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
 			,"rsyslog solaris10x64 rsyslog"
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			,"rsyslog docker-armbian"
+			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
@@ -660,6 +705,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog fedora23x32 rsyslog"
 			,"rsyslog fedora26x64 rsyslog"
+			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
 			,"rsyslog solaris10x64 rsyslog"
@@ -667,6 +713,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-armbian"
+			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-centos7 rsyslog"
@@ -688,13 +735,14 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog fedora23x32 rsyslog"
 			,"rsyslog fedora26x64 rsyslog"
+			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
 			,"rsyslog solaris10x64 rsyslog"
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			,"rsyslog docker-armbian"
+			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
