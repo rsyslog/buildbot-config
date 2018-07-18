@@ -8,7 +8,7 @@
 #	*
 
 from buildbot.process.factory import BuildFactory
-from buildbot.steps.source.git import Git
+from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
@@ -17,7 +17,7 @@ from buildbot.steps.shell import Configure
 #
 factoryRsyslogDocUbuntu16 = BuildFactory()
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["sleep", "2"], name="wait github sync"))
-factoryRsyslogDocUbuntu16.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDocUbuntu16.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["git", "log", "-4"], name="git branch information"))
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["docker", "pull", "rsyslog/rsyslog_doc_gen"], name="pull docker docgen image"))
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["bash", "-c", "docker run -u`id -u`:`id -g` -eSPHINX_EXTRA_OPTS=-q -v`pwd`:/rsyslog-doc rsyslog/rsyslog_doc_gen"], logfiles={"preview_url": "preview_url"}, lazylogfiles=True, name="generate doc"))

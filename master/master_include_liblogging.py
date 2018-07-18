@@ -8,20 +8,20 @@
 #	*
 
 from buildbot.process.factory import BuildFactory
-from buildbot.steps.source.git import Git
+from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
 # --- liblogging factory settings
 factoryLiblogging= BuildFactory()
-factoryLiblogging.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLiblogging.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLiblogging.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLiblogging.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], logfiles={"config.log": "config.log"}))
 factoryLiblogging.addStep(ShellCommand(command=["make"]))
 factoryLiblogging.addStep(ShellCommand(command=["make", "check", "V=0"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibloggingDebian= BuildFactory()
-factoryLibloggingDebian.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibloggingDebian.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibloggingDebian.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibloggingDebian.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], logfiles={"config.log": "config.log"}))
 factoryLibloggingDebian.addStep(ShellCommand(command=["make"]))
@@ -29,7 +29,7 @@ factoryLibloggingDebian.addStep(ShellCommand(command=["make", "check", "V=0"], l
 
 # SOLARIS
 factoryLibloggingSolaris = BuildFactory()
-factoryLibloggingSolaris.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibloggingSolaris.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibloggingSolaris.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], env=solarisenv_gcc))
 factoryLibloggingSolaris.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], env=solarisenv_gcc, logfiles={"config.log": "config.log"}))
 factoryLibloggingSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solarisenv_gcc))
@@ -43,7 +43,7 @@ factoryLibloggingSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=sola
 
 # BSD
 factoryLibloggingFreeBsd = BuildFactory()
-factoryLibloggingFreeBsd.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibloggingFreeBsd.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibloggingFreeBsd.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibloggingFreeBsd.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], logfiles={"config.log": "config.log"}))
 factoryLibloggingFreeBsd.addStep(ShellCommand(command=["make", "V=0"]))

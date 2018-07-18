@@ -8,13 +8,13 @@
 #	*
 
 from buildbot.process.factory import BuildFactory
-from buildbot.steps.source.git import Git
+from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
 # --- libestr factory settings
 factoryLibestr= BuildFactory()
-factoryLibestr.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibestr.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibestr.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibestr.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], logfiles={"config.log": "config.log"}))
 factoryLibestr.addStep(ShellCommand(command=["make"]))
@@ -23,7 +23,7 @@ factoryLibestr.addStep(ShellCommand(command=["make", "check", "V=0"], logfiles={
 
 # --- libestr factory settings
 factoryLibestrSolaris= BuildFactory()
-factoryLibestrSolaris.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibestrSolaris.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibestrSolaris.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], env=solarisenv_gcc))
 factoryLibestrSolaris.addStep(ShellCommand(command=["./configure", "--prefix=/usr", 'CC=/opt/solarisstudio12.4/bin/cc'], env=solarisenv_gcc, logfiles={"config.log": "config.log"}))
 factoryLibestrSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solarisenv_gcc))

@@ -8,14 +8,14 @@
 #	*
 
 from buildbot.process.factory import BuildFactory
-from buildbot.steps.source.git import Git
+from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
 # --- liblognorm factory settings
 factoryLibLogNorm = BuildFactory()
-factoryLibLogNorm.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
-#factoryLibLogNorm.addStep(Git(repourl='git://github.com/rsyslog/liblognorm.git', mode='full'))
+factoryLibLogNorm.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+#factoryLibLogNorm.addStep(GitHub(repourl='git://github.com/rsyslog/liblognorm.git', mode='full'))
 factoryLibLogNorm.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibLogNorm.addStep(ShellCommand(command=["./configure", "--prefix=/usr", "--enable-regexp", "--enable-valgrind"], logfiles={"config.log": "config.log"}))
 factoryLibLogNorm.addStep(ShellCommand(command=["make", "-j"]))
@@ -23,8 +23,8 @@ factoryLibLogNorm.addStep(ShellCommand(command=["make", "check", "V=0"], logfile
 factoryLibLogNorm.addStep(ShellCommand(command=["make", "distcheck", "V=0"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibLogNormSolaris = BuildFactory()
-factoryLibLogNormSolaris.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
-#factoryLibLogNormSolaris.addStep(Git(repourl='git://github.com/rsyslog/liblognorm.git', mode='full'))
+factoryLibLogNormSolaris.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+#factoryLibLogNormSolaris.addStep(GitHub(repourl='git://github.com/rsyslog/liblognorm.git', mode='full'))
 factoryLibLogNormSolaris.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], env=solarisenv_gcc))
 factoryLibLogNormSolaris.addStep(ShellCommand(command=["./configure", "--enable-regexp", "--enable-compile-warnings=no", 'CC=/opt/solarisstudio12.4/bin/cc'], env=solarisenv_gcc, logfiles={"config.log": "config.log"}))
 factoryLibLogNormSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solarisenv_gcc))
@@ -38,7 +38,7 @@ factoryLibLogNormSolaris.addStep(ShellCommand(command=["./configure", "--prefix=
 factoryLibLogNormSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solarisenv_gcc))
 
 factoryLibLogNormFedora23 = BuildFactory()
-factoryLibLogNormFedora23.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibLogNormFedora23.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibLogNormFedora23.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibLogNormFedora23.addStep(ShellCommand(command=["./configure", "--prefix=/usr", "--enable-regexp", "--enable-valgrind"], env={'PKG_CONFIG_PATH':'/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}))
 factoryLibLogNormFedora23.addStep(ShellCommand(command=["make", "-j"]))
@@ -46,7 +46,7 @@ factoryLibLogNormFedora23.addStep(ShellCommand(command=["make", "check", "V=0"])
 factoryLibLogNormFedora23.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'PKG_CONFIG_PATH':'/usr/local/lib/pkgconfig'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibLogNormFedora64 = BuildFactory()
-factoryLibLogNormFedora64.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibLogNormFedora64.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibLogNormFedora64.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibLogNormFedora64.addStep(ShellCommand(command=["./configure", "--enable-regexp", "--enable-valgrind"], env={'PKG_CONFIG_PATH':'/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}))
 factoryLibLogNormFedora64.addStep(ShellCommand(command=["make", "-j2"]))
@@ -54,7 +54,7 @@ factoryLibLogNormFedora64.addStep(ShellCommand(command=["make", "check", "V=0"])
 factoryLibLogNormFedora64.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'PKG_CONFIG_PATH':'/usr/local/lib/pkgconfig'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibLogNormFreeBsd = BuildFactory()
-factoryLibLogNormFreeBsd.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibLogNormFreeBsd.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibLogNormFreeBsd.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibLogNormFreeBsd.addStep(ShellCommand(command=["./configure", "--prefix=/usr", "--enable-regexp"], env={}, logfiles={"config.log": "config.log"}))
 factoryLibLogNormFreeBsd.addStep(ShellCommand(command=["make"]))
@@ -62,7 +62,7 @@ factoryLibLogNormFreeBsd.addStep(ShellCommand(command=["make", "check", "V=0"]))
 factoryLibLogNormFreeBsd.addStep(ShellCommand(command=["make", "distcheck", "V=0"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibLogNormRaspian = BuildFactory()
-factoryLibLogNormRaspian.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibLogNormRaspian.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibLogNormRaspian.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibLogNormRaspian.addStep(ShellCommand(command=["./configure", "--prefix=/usr", "--disable-valgrind", "--enable-regexp"], logfiles={"config.log": "config.log"}))
 factoryLibLogNormRaspian.addStep(ShellCommand(command=["make", "-j2"]))

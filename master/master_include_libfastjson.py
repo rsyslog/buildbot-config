@@ -8,27 +8,27 @@
 #	*
 
 from buildbot.process.factory import BuildFactory
-from buildbot.steps.source.git import Git
+from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
 # --- libfastjson factory settings
 factoryLibFastJson = BuildFactory()
-factoryLibFastJson.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibFastJson.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibFastJson.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibFastJson.addStep(ShellCommand(command=["./configure", "--enable-performance-testbench"], logfiles={"config.log": "config.log"}))
 factoryLibFastJson.addStep(ShellCommand(command=["make"]))
 factoryLibFastJson.addStep(ShellCommand(command=["make", "check", "V=0"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibFastJsonFedora23 = BuildFactory()
-factoryLibFastJsonFedora23.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibFastJsonFedora23.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibFastJsonFedora23.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibFastJsonFedora23.addStep(ShellCommand(command=["./configure"], logfiles={"config.log": "config.log"}))
 factoryLibFastJsonFedora23.addStep(ShellCommand(command=["make"]))
 factoryLibFastJsonFedora23.addStep(ShellCommand(command=["make", "check", "V=0"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
 factoryLibFastJsonFedora64 = BuildFactory()
-factoryLibFastJsonFedora64.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibFastJsonFedora64.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibFastJsonFedora64.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibFastJsonFedora64.addStep(ShellCommand(command=["./configure"], logfiles={"config.log": "config.log"}))
 factoryLibFastJsonFedora64.addStep(ShellCommand(command=["make"]))
@@ -37,7 +37,7 @@ factoryLibFastJsonFedora64.addStep(ShellCommand(command=["bash", "-c", "if [ -f 
 
 # SOLARIS
 factoryLibFastJsonSolaris = BuildFactory()
-factoryLibFastJsonSolaris.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibFastJsonSolaris.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibFastJsonSolaris.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio))
 factoryLibFastJsonSolaris.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
 factoryLibFastJsonSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solarisenv_sunstudio))
@@ -52,7 +52,7 @@ factoryLibFastJsonSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=sol
 
 # FREEBSD
 factoryLibFastJsonFreeBsd = BuildFactory()
-factoryLibFastJsonFreeBsd.addStep(Git(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibFastJsonFreeBsd.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibFastJsonFreeBsd.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryLibFastJsonFreeBsd.addStep(ShellCommand(command=["./configure", "--prefix=/usr"], logfiles={"config.log": "config.log"}))
 factoryLibFastJsonFreeBsd.addStep(ShellCommand(command=["make"]))
