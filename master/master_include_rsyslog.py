@@ -346,7 +346,7 @@ factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c
 factoryRsyslogDockerArmUbuntu18 = BuildFactory()
 factoryRsyslogDockerArmUbuntu18.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-mmdblookup --without-valgrind-testbench --disable-valgrind --enable-elasticsearch-tests=minimal"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-mmdblookup --without-valgrind-testbench --disable-valgrind --disable-elasticsearch-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "-j4"], haltOnFailure=True, name="make [clang]"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib', 'RS_PWORK': '/mnt/rswork/'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5400, name="make check"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather test logs"))
@@ -358,8 +358,8 @@ factoryRsyslogDockerArmbian = BuildFactory()
 factoryRsyslogDockerArmbian.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
-factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "CFLAGS":"-g -fsanitize=address"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=72000, haltOnFailure=False, name="check"))
-factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
+#factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "CFLAGS":"-g -fsanitize=address"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=72000, haltOnFailure=False, name="check"))
+#factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
 # ---
 
 
