@@ -379,6 +379,14 @@ factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(f
 
 
 
+factoryRsyslogDockerSuse = BuildFactory()
+factoryRsyslogDockerSuse.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerSuse.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
+
+
+
 # ---
 factoryRsyslogDockerFedora28 = BuildFactory()
 factoryRsyslogDockerFedora28.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -639,6 +647,16 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-suse-tumbleweed",
+      workernames=["docker-suse-tumbleweed-w1", "docker-suse-tumbleweed-w2", "docker-suse-tumbleweed-w3"],
+      factory=factoryRsyslogDockerSuse,
+      tags=["rsyslog", "docker"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
 
 # --- Cronjob only
 lc['builders'].append(
@@ -679,6 +697,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-centos7 rsyslog"
+			,"rsyslog docker-suse-tumbleweed"
 		],
 	codebases=[
 		util.CodebaseParameter(
@@ -719,6 +738,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-centos7 rsyslog"
+			,"rsyslog docker-suse-tumbleweed"
 			],
 ))
 
@@ -749,6 +769,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-centos7 rsyslog"
+			,"rsyslog docker-suse-tumbleweed"
 		],
 ))
 
