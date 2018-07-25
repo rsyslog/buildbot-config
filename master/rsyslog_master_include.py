@@ -404,7 +404,7 @@ factoryRsyslogStaticAnalyzer = BuildFactory()
 factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["sleep", "2"], name="wait for github"))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup"))
-factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:16.04', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
 
 ####### Create Builders
 
@@ -590,7 +590,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-arm-ubuntu18",
-      workernames=["docker-armbian", "docker-armbian-w2", "docker-armbian-w3"],
+      workernames=["docker-armbian", "docker-armbian-w2", "docker-armbian-w3", "docker-armbian-w4"],
       factory=factoryRsyslogDockerArmUbuntu18,
       tags=["rsyslog rsyslog"],
       properties={
@@ -610,7 +610,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
-     workernames=["docker-ubuntu16"],
+     workernames=["docker-ubuntu16", "docker-ubuntu16-w2"],
       factory=factoryRsyslogDockerUbuntu16,
       tags=["rsyslog rsyslog"],
       properties={
@@ -630,7 +630,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
-     workernames=["docker-ubuntu18-distcheck-w1","docker-ubuntu18-distcheck-w2", "docker-ubuntu18-distcheck-w3"],
+     workernames=["docker-ubuntu18-distcheck-w1","docker-ubuntu18-distcheck-w2", "docker-ubuntu18-distcheck-w3", "docker-ubuntu18-distcheck-w4"],
       factory=factoryRsyslogDockerUbuntu18_distcheck,
       tags=["rsyslog rsyslog"],
       properties={
@@ -650,6 +650,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-suse-tumbleweed",
+      #workernames=[ "docker-suse-tumbleweed-w3_2"],
       workernames=["docker-suse-tumbleweed-w1", "docker-suse-tumbleweed-w2", "docker-suse-tumbleweed-w3", "docker-suse-tumbleweed-w3_2"],
       factory=factoryRsyslogDockerSuse,
       tags=["rsyslog", "docker"],
