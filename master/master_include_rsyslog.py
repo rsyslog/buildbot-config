@@ -100,6 +100,8 @@ factoryRsyslogFedora23.addStep(ShellCommand(command=["./configure", "--prefix=/u
 factoryRsyslogFedora23.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=True))
 factoryRsyslogFedora23.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 
+# This config will be retired (deleted) soon, it has already been
+# replaced by F28 docker container build. rgerhards 2018-07-23
 factoryRsyslogFedora64 = BuildFactory()
 factoryRsyslogFedora64.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogFedora64.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_kubernetes_test_server.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"]))
@@ -506,16 +508,16 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog fedora26x64 rsyslog",
-      workernames=["slave-fedora26x64"],
-      factory=factoryRsyslogFedora64,
-      tags=["rsyslog rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+#    BuilderConfig(name="rsyslog fedora26x64 rsyslog",
+#      workernames=["slave-fedora26x64"],
+#      factory=factoryRsyslogFedora64,
+#      tags=["rsyslog rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-fedora28",
       workernames=["docker-fedora28-w1", "docker-fedora28-w2", "docker-fedora28-w3"],
@@ -648,7 +650,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-suse-tumbleweed",
-      workernames=["docker-suse-tumbleweed-w1", "docker-suse-tumbleweed-w2", "docker-suse-tumbleweed-w3"],
+      workernames=["docker-suse-tumbleweed-w1", "docker-suse-tumbleweed-w2", "docker-suse-tumbleweed-w3", "docker-suse-tumbleweed-w3_2"],
       factory=factoryRsyslogDockerSuse,
       tags=["rsyslog", "docker"],
       properties={
@@ -683,7 +685,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog fedora23x32 rsyslog"
-			,"rsyslog fedora26x64 rsyslog"
+			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
@@ -724,7 +726,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog fedora23x32 rsyslog"
-			,"rsyslog fedora26x64 rsyslog"
+			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
@@ -755,7 +757,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog fedora23x32 rsyslog"
-			,"rsyslog fedora26x64 rsyslog"
+			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
