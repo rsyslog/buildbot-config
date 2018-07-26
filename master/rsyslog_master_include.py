@@ -76,6 +76,8 @@ factoryRsyslogRaspbian = BuildFactory()
 # * do NOT run more than 2 parallel make jobs -- we have seen the compiler
 #   fail with "internal error", which most probably means it ran out of
 #   memory (this was with -j4 and seldomly, so -j2 should be a safe bet).
+# * we do no longer run the testbench here as this is done on the new
+#   arm docker device (and we can't scale here, so this really blocks CI)
 # GCC compile commented out as we try it in a separate builder, to be run in parallel!
 factoryRsyslogRaspbian.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 # do not do at the moment! factoryRsyslogRaspbian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; fi"], name="cleanup hanging instances (if any)"))
@@ -89,8 +91,8 @@ factoryRsyslogRaspbian.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=
 factoryRsyslogRaspbian.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench", "--enable-compile-warnings=error"], logfiles={"config.log": "config.log"}, env={'CC':'clang', 'CFLAGS': '-g -O1', 'LC_ALL' : 'C', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib'}, lazylogfiles=True, haltOnFailure=True, name="configure [clang]"))
 factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [clang]"))
 # first let's get the build right, then look into the testbench
-factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
-factoryRsyslogRaspbian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather test logs"))
+#factoryRsyslogRaspbian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+#factoryRsyslogRaspbian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather test logs"))
 
 factoryRsyslogFedora23 = BuildFactory()
 factoryRsyslogFedora23.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -520,7 +522,7 @@ lc['builders'].append(
 #    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-fedora28",
-      workernames=["docker-fedora28-w1", "docker-fedora28-w2", "docker-fedora28-w3"],
+      workernames=["docker-fedora28-w1", "docker-fedora28-w2", "docker-fedora28-w3", "docker-fedora28-w4"],
       factory=factoryRsyslogDockerFedora28,
       tags=["rsyslog"],
       properties={
@@ -590,7 +592,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-arm-ubuntu18",
-      workernames=["docker-armbian", "docker-armbian-w2", "docker-armbian-w3", "docker-armbian-w4"],
+      workernames=["docker-armbian-w1", "docker-armbian-w2", "docker-armbian-w3", "docker-armbian-w4"],
       factory=factoryRsyslogDockerArmUbuntu18,
       tags=["rsyslog rsyslog"],
       properties={
@@ -599,18 +601,8 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
-    BuilderConfig(name="rsyslog docker-armbian",
-      workernames=["docker-armbian"],
-      factory=factoryRsyslogDockerArmbian,
-      tags=["rsyslog rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
-     workernames=["docker-ubuntu16", "docker-ubuntu16-w2"],
+     workernames=["docker-ubuntu16", "docker-ubuntu16-w2", "docker-ubuntu16-w3", "docker-ubuntu16-w4"],
       factory=factoryRsyslogDockerUbuntu16,
       tags=["rsyslog rsyslog"],
       properties={
@@ -620,7 +612,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
-     workernames=["docker-ubuntu18-san-w1", "docker-ubuntu18-san-w2", "docker-ubuntu18-san-w3"],
+     workernames=["docker-ubuntu18-san-w1", "docker-ubuntu18-san-w2", "docker-ubuntu18-san-w3", "docker-ubuntu18-san-w4"],
       factory=factoryRsyslogDockerUbuntu_18_SAN,
       tags=["rsyslog rsyslog"],
       properties={
@@ -640,7 +632,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
-      workernames=["docker-centos7", "docker-centos7-w2", "docker-centos7-w3"],
+      workernames=["docker-centos7", "docker-centos7-w2", "docker-centos7-w3", "docker-centos7-w4"],
       factory=factoryRsyslogDockerCentos7,
       tags=["rsyslog rsyslog"],
       properties={
@@ -735,7 +727,6 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			,"rsyslog docker-armbian"
 			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
