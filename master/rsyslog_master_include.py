@@ -134,22 +134,18 @@ factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "-j2"], haltOnFailur
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 
-factoryRsyslogUbuntu = BuildFactory()
-factoryRsyslogUbuntu.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"], name="cleanup old instances"))
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
-# note: we later might want to use clang, but for now we get some
-# unexplainable errors if we use clang with this slave...
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True))
-#factoryRsyslogUbuntu.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind"], logfiles={"config.log": "config.log"}))
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True))
+#factoryRsyslogUbuntu = BuildFactory()
+#factoryRsyslogUbuntu.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"], name="cleanup old instances"))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
 # there is so much to do...
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "pwd; ls -l -tr tests/*.sh.log; ls -l tests/CI"]))
-factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"]))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "pwd; ls -l -tr tests/*.sh.log; ls -l tests/CI"]))
+#factoryRsyslogUbuntu.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"]))
 
 factoryRsyslogUbuntuCron = BuildFactory()
 factoryRsyslogUbuntuCron.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -420,16 +416,16 @@ lc['builders'].append(
 			"github_repo_name": "rsyslog",
 		} ))
 
-lc['builders'].append(
-   BuilderConfig(name="rsyslog ubuntu rsyslog",
-     workernames=["slave-ubuntu"],
-      factory=factoryRsyslogUbuntu, 
-      tags=["rsyslog rsyslog"], 
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+   #BuilderConfig(name="rsyslog ubuntu rsyslog",
+     #workernames=["slave-ubuntu"],
+      #factory=factoryRsyslogUbuntu, 
+      #tags=["rsyslog rsyslog"], 
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 lc['builders'].append(
    BuilderConfig(name="rsyslog ubuntu16 rsyslog",
      workernames=["slave-ubuntu16"],
@@ -654,8 +650,8 @@ lc['builders'].append(
 
 # --- Cronjob only
 lc['builders'].append(
-   BuilderConfig(name="cron " + "rsyslog ubuntu rsyslog",
-     workernames=["slave-ubuntu"],
+   BuilderConfig(name="cron " + "rsyslog ubuntu16 rsyslog",
+     workernames=["slave-ubuntu16"],
       factory=factoryRsyslogUbuntuCron,
       tags=["rsyslog rsyslog"],
       properties={
@@ -668,8 +664,7 @@ lc['builders'].append(
 lc['schedulers'].append(ForceScheduler(
 	name="pull_rsyslog_rsyslog",
 	label="1. Pull Requests-rsyslog-rsyslog",
-	builderNames=[  "rsyslog ubuntu rsyslog"
-			,"rsyslog clang static analyzer"
+	builderNames=[  "rsyslog clang static analyzer"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
@@ -709,8 +704,7 @@ lc['schedulers'].append(ForceScheduler(
 lc['schedulers'].append(ForceScheduler(
 	name="forceall_rsyslog_rsyslog",
 	label="2. Force All-rsyslog-rsyslog",
-	builderNames=[	"rsyslog ubuntu rsyslog"
-			,"rsyslog clang static analyzer"
+	builderNames=[	"rsyslog clang static analyzer"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
@@ -739,8 +733,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 	name="github_rsyslog_rsyslog",
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/rsyslog"),
-	builderNames=[  "rsyslog ubuntu rsyslog"
-			,"rsyslog clang static analyzer"
+	builderNames=[  "rsyslog clang static analyzer"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
@@ -769,5 +762,5 @@ lc['schedulers'].append(SingleBranchScheduler(
 lc['schedulers'].append(ForceScheduler(
 	name="forceallcron_rsyslog_rsyslog",
 	label="3. Force All Cron-rsyslog-rsyslog",
-	builderNames=[ "cron rsyslog ubuntu rsyslog" ],
+	builderNames=[ "cron rsyslog ubuntu16 rsyslog" ],
 ))

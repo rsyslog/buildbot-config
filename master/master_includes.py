@@ -32,16 +32,16 @@ lc = None
 
 #Append Schedulers Helper Function
 def appendSchedulers(szRepoOwner, szRepoProject, szGitBranch):
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-ubuntu",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " ubuntu " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-cron-" + szRepoOwner + "-" + szRepoProject + "-ubuntu",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=["cron " + szRepoProject + " ubuntu " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-ubuntu",
+			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+			    #treeStableTimer=None,
+			    #builderNames=[szRepoProject + " ubuntu " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+			    #name="sched-cron-" + szRepoOwner + "-" + szRepoProject + "-ubuntu",
+			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+			    #treeStableTimer=None,
+			    #builderNames=["cron " + szRepoProject + " ubuntu " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-ubuntu16",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -119,15 +119,15 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 			factoryUbuntu18on16Docker,
 			factoryCentos7Docker):
 	#lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " ubuntu " + szRepoOwner,
-	     workernames=["slave-ubuntu"],
-	      factory=factoryUbuntu, 
-	      tags=[szRepoProject + " " + szRepoOwner], 
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+	   #BuilderConfig(name=szRepoProject + " ubuntu " + szRepoOwner,
+	     #workernames=["slave-ubuntu"],
+	      #factory=factoryUbuntu, 
+	      #tags=[szRepoProject + " " + szRepoOwner], 
+	      #properties={
+		#"github_repo_owner": szRepoOwner,
+		#"github_repo_name": szRepoProject,
+	      #},
+	    #))
 	lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " ubuntu16 " + szRepoOwner,
 	     workernames=["slave-ubuntu16"],
@@ -292,7 +292,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 
 # --- Cronjob only
 	lc['builders'].append(
-	   BuilderConfig(name="cron " + szRepoProject + " ubuntu " + szRepoOwner,
+	   BuilderConfig(name="cron " + szRepoProject + " ubuntu16 " + szRepoOwner,
 	     workernames=["slave-ubuntu16"],
 	      factory=factoryUbuntuCron,
 	      tags=[szRepoProject + " " + szRepoOwner],
@@ -306,8 +306,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	lc['schedulers'].append(ForceScheduler(
 		name="pull_" + szRepoOwner + "_" + szRepoProject,
 		label="1. Pull Requests-" + szRepoOwner + "-" + szRepoProject,
-		builderNames=[  szRepoProject + " ubuntu " + szRepoOwner
-				,szRepoProject + " ubuntu16 " + szRepoOwner
+		builderNames=[  szRepoProject + " ubuntu16 " + szRepoOwner
 				,szRepoProject + " debian " + szRepoOwner
 				,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
@@ -340,8 +339,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	lc['schedulers'].append(ForceScheduler(
 		name="forceall_" + szRepoOwner + "_" + szRepoProject,
 		label="2. Force All-" + szRepoOwner + "-" + szRepoProject,
-		builderNames=[	szRepoProject + " ubuntu " + szRepoOwner
-				,szRepoProject + " ubuntu16 " + szRepoOwner
+		builderNames=[	szRepoProject + " ubuntu16 " + szRepoOwner
 				,szRepoProject + " debian " + szRepoOwner
 				,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
@@ -364,8 +362,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 		name="github_" + szRepoOwner + "_" + szRepoProject,
 		change_filter=filter.ChangeFilter(	category="pull", 
 							project=szRepoOwner + "/" + szRepoProject),
-		builderNames=[  szRepoProject + " ubuntu " + szRepoOwner
-				,szRepoProject + " ubuntu16 " + szRepoOwner
+		builderNames=[  szRepoProject + " ubuntu16 " + szRepoOwner
 				,szRepoProject + " debian " + szRepoOwner
 				,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
@@ -387,7 +384,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	lc['schedulers'].append(ForceScheduler(
 		name="forceallcron_" + szRepoOwner + "_" + szRepoProject,
 		label="3. Force All Cron-" + szRepoOwner + "-" + szRepoProject,
-		builderNames=[ "cron " + szRepoProject + " ubuntu " + szRepoOwner ],
+		builderNames=[ "cron " + szRepoProject + " ubuntu16 " + szRepoOwner ],
 	))
 
 # ----------------------------------------------
