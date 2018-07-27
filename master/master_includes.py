@@ -118,7 +118,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 			factoryUbuntu18Docker,
 			factoryUbuntu18on16Docker,
 			factoryCentos7Docker):
-	lc['builders'].append(
+	#lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " ubuntu " + szRepoOwner,
 	     workernames=["slave-ubuntu"],
 	      factory=factoryUbuntu, 
@@ -293,7 +293,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 # --- Cronjob only
 	lc['builders'].append(
 	   BuilderConfig(name="cron " + szRepoProject + " ubuntu " + szRepoOwner,
-	     workernames=["slave-ubuntu"],
+	     workernames=["slave-ubuntu16"],
 	      factory=factoryUbuntuCron,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
