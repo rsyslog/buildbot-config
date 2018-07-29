@@ -73,7 +73,6 @@ def appendSchedulers(szRepoOwner, szRepoProject, szGitBranch):
 			    treeStableTimer=None,
 			    builderNames=[	szRepoProject + " centos6 " + szRepoOwner, 
 						szRepoProject + " centos7 " + szRepoOwner,
-						szRepoProject + " fedora23x32 " + szRepoOwner,
 						szRepoProject + " fedora26x64 " + szRepoOwner ]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-suse",
@@ -182,16 +181,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	    BuilderConfig(name=szRepoProject + " centos7 " + szRepoOwner,
 	      workernames=["slave-centos7"],
 	      factory=factoryCentos7,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " fedora23x32 " + szRepoOwner,
-	      workernames=["slave-fedora23x32"],
-	      factory=factoryFedora23,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
 		"github_repo_owner": szRepoOwner,
@@ -312,7 +301,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " fedora23x32 " + szRepoOwner
 				,szRepoProject + " fedora26x64 " + szRepoOwner
 				,szRepoProject + " freebsd " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
@@ -345,7 +333,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " fedora23x32 " + szRepoOwner
 				,szRepoProject + " fedora26x64 " + szRepoOwner
 				,szRepoProject + " freebsd " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
@@ -368,7 +355,6 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " fedora23x32 " + szRepoOwner
 				,szRepoProject + " fedora26x64 " + szRepoOwner
 				,szRepoProject + " freebsd " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner

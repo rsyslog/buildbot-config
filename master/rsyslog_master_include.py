@@ -518,16 +518,6 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog fedora23x32 rsyslog",
-      workernames=["slave-fedora23x32"],
-      factory=factoryRsyslogFedora23,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
 #lc['builders'].append(
 #    BuilderConfig(name="rsyslog fedora26x64 rsyslog",
 #      workernames=["slave-fedora26x64"],
@@ -695,7 +685,6 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog centos7-5"
-			,"rsyslog fedora23x32 rsyslog"
 			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
@@ -736,7 +725,6 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog centos7-5"
-			,"rsyslog fedora23x32 rsyslog"
 			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
@@ -766,7 +754,6 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7 rsyslog"
 			,"rsyslog centos7-5"
-			,"rsyslog fedora23x32 rsyslog"
 			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
