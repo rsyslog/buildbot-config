@@ -510,7 +510,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog centos7-5",
-      workernames=["vm-centos7-5-w1"],
+      workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
       factory=factoryRsyslogCentos7VM,
       tags=["rsyslog", "vm"],
       properties={
