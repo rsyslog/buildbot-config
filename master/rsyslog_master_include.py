@@ -410,7 +410,7 @@ lc['builders'].append(
 	BuilderConfig(name="rsyslog clang static analyzer",
 		workernames=["slave-ubuntu16"],
 		factory=factoryRsyslogStaticAnalyzer,
-		tags=["rsyslog rsyslog"], 
+		tags=["rsyslog"], 
 		properties={
 			"github_repo_owner": "rsyslog",
 			"github_repo_name": "rsyslog",
@@ -420,7 +420,7 @@ lc['builders'].append(
    #BuilderConfig(name="rsyslog ubuntu rsyslog",
      #workernames=["slave-ubuntu"],
       #factory=factoryRsyslogUbuntu, 
-      #tags=["rsyslog rsyslog"], 
+      #tags=["rsyslog"], 
       #properties={
 	#"github_repo_owner": "rsyslog",
 	#"github_repo_name": "rsyslog",
@@ -430,7 +430,7 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog ubuntu16 rsyslog",
      workernames=["slave-ubuntu16"],
       factory=factoryRsyslogUbuntu16,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -440,7 +440,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog debian rsyslog",
       workernames=["slave-debian"],
       factory=factoryRsyslogDebian,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -450,7 +450,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog debian9 rsyslog",
       workernames=["slave-debian9", "slave-debian9-w2"],
       factory=factoryRsyslogDebian9,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -460,7 +460,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog raspbian gcc compile",
       workernames=["slave-raspbian"],
       factory=factoryRsyslogRaspbian_gcc,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -470,7 +470,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog raspbian rsyslog",
       workernames=["slave-raspbian"],
       factory=factoryRsyslogRaspbian,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -480,7 +480,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog centos6 rsyslog",
     workernames=["slave-centos6"],
     factory=factoryRsyslogCentos6,
-    tags=["rsyslog rsyslog"],
+    tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -488,9 +488,9 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog centos7 rsyslog",
-      workernames=["slave-centos7"],
+      workernames=["slave-centos7", "vm-centos7-5-w1"],
       factory=factoryRsyslogCentos7,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog", "vm"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -500,7 +500,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog fedora23x32 rsyslog",
       workernames=["slave-fedora23x32"],
       factory=factoryRsyslogFedora23,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -510,7 +510,7 @@ lc['builders'].append(
 #    BuilderConfig(name="rsyslog fedora26x64 rsyslog",
 #      workernames=["slave-fedora26x64"],
 #      factory=factoryRsyslogFedora64,
-#      tags=["rsyslog rsyslog"],
+#      tags=["rsyslog"],
 #      properties={
 #	"github_repo_owner": "rsyslog",
 #	"github_repo_name": "rsyslog",
@@ -530,7 +530,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog freebsd rsyslog",
       workernames=["slave-freebsd"],
       factory=factoryRsyslogFreebsd,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -540,7 +540,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog suse rsyslog",
       workernames=["slave-suse"],
       factory=factoryRsyslogSuse,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -550,7 +550,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog solaris10sparc rsyslog",
       workernames=["slave-solaris10sparc"],
       factory=factoryRsyslogSolaris10sparc,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -560,7 +560,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog solaris10x64 rsyslog",
       workernames=["slave-solaris10x64"],
       factory=factoryRsyslogSolaris10x64,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -570,7 +570,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog solaris11sparc rsyslog",
       workernames=["slave-solaris11sparc"],
       factory=factoryRsyslogSolaris11sparc,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -580,7 +580,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog solaris11x64 rsyslog",
       workernames=["slave-solaris11x64"],
       factory=factoryRsyslogSolaris11x64,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -590,7 +590,7 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog docker-arm-ubuntu18",
       workernames=["docker-armbian-w1", "docker-armbian-w2", "docker-armbian-w3", "docker-armbian-w4"],
       factory=factoryRsyslogDockerArmUbuntu18,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -600,7 +600,7 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
      workernames=["docker-ubuntu16", "docker-ubuntu16-w2", "docker-ubuntu16-w3", "docker-ubuntu16-w4"],
       factory=factoryRsyslogDockerUbuntu16,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -610,7 +610,7 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
      workernames=["docker-ubuntu18-san-w1", "docker-ubuntu18-san-w2", "docker-ubuntu18-san-w3", "docker-ubuntu18-san-w4"],
       factory=factoryRsyslogDockerUbuntu_18_SAN,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -620,7 +620,7 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
      workernames=["docker-ubuntu18-distcheck-w1","docker-ubuntu18-distcheck-w2", "docker-ubuntu18-distcheck-w3", "docker-ubuntu18-distcheck-w4"],
       factory=factoryRsyslogDockerUbuntu18_distcheck,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -630,7 +630,7 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
       workernames=["docker-centos7", "docker-centos7-w2", "docker-centos7-w3", "docker-centos7-w4"],
       factory=factoryRsyslogDockerCentos7,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog", "docker"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
@@ -653,7 +653,7 @@ lc['builders'].append(
    BuilderConfig(name="cron " + "rsyslog ubuntu16 rsyslog",
      workernames=["slave-ubuntu16"],
       factory=factoryRsyslogUbuntuCron,
-      tags=["rsyslog rsyslog"],
+      tags=["rsyslog"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
