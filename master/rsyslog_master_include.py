@@ -314,7 +314,7 @@ factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "cat $(
 factoryRsyslogDockerUbuntu_18_SAN = BuildFactory()
 factoryRsyslogDockerUbuntu_18_SAN.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
-factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-valgrind --without-valgrind-testbench --disable-libfaketime --enable-kafka-tests=no"], env={'CC': 'clang', "CFLAGS":"-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=address,undefined,nullability,unsigned-integer-overflow -fno-sanitize-recover=undefined,nullability,unsigned-integer-overflow -g -O3 -fno-omit-frame-pointer -fno-color-diagnostics", "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-UBSAN-ASAN-O3-harden)"))
+factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-valgrind --without-valgrind-testbench --disable-libfaketime --enable-kafka-tests=no"], env={'CC': 'clang', "CFLAGS":"-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=address,undefined,nullability,unsigned-integer-overflow -fno-sanitize-recover=undefined,nullability,unsigned-integer-overflow -g -O3 -fno-omit-frame-pointer -fno-color-diagnostics", "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-UBSAN-ASAN-O3-harden)"))
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["make", "-j3", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
@@ -395,13 +395,26 @@ factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "make c
 
 ####### Create Builders
 
+factoryRsyslogCodeStyleCheck = BuildFactory()
+factoryRsyslogCodeStyleCheck.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogCodeStyleCheck.addStep(ShellCommand(command=["devtools/check-codestyle.sh"], haltOnFailure=True, name="codestyle check"))
+
+lc['builders'].append(
+	BuilderConfig(name="rsyslog codestyle check",
+		workernames=["docker-stylecheck"],
+		factory=factoryRsyslogCodeStyleCheck,
+		tags=["rsyslog"], 
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog",
+		} ))
+
+
 factoryRsyslogStaticAnalyzer = BuildFactory()
 factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["sleep", "2"], name="wait for github"))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup"))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:16.04', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
-
-####### Create Builders
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog clang static analyzer",
@@ -652,6 +665,7 @@ lc['schedulers'].append(ForceScheduler(
 	name="pull_rsyslog_rsyslog",
 	label="1. Pull Requests-rsyslog-rsyslog",
 	builderNames=[  "rsyslog clang static analyzer"
+			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
@@ -691,6 +705,7 @@ lc['schedulers'].append(ForceScheduler(
 	name="forceall_rsyslog_rsyslog",
 	label="2. Force All-rsyslog-rsyslog",
 	builderNames=[	"rsyslog clang static analyzer"
+			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
@@ -719,6 +734,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/rsyslog"),
 	builderNames=[  "rsyslog clang static analyzer"
+			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
