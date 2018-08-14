@@ -295,7 +295,7 @@ factoryRsyslogDockerUbuntu16.addStep(GitHub(repourl=repoGitUrl, mode='full', ret
 factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 # note: we later might want to use clang, but for now we get some
 # unexplainable errors if we use clang with this slave... TODO: check, I guess that's wrong!
-factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch","--enable-elasticsearch-tests",  "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch","--enable-elasticsearch-tests",  "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--enable-kafka-tests=no"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="build (make)"))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
@@ -314,7 +314,7 @@ factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "cat $(
 factoryRsyslogDockerUbuntu_18_SAN = BuildFactory()
 factoryRsyslogDockerUbuntu_18_SAN.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
-factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-valgrind --without-valgrind-testbench --disable-libfaketime"], env={'CC': 'clang', "CFLAGS":"-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=address,undefined,nullability,unsigned-integer-overflow -fno-sanitize-recover=undefined,nullability,unsigned-integer-overflow -g -O3 -fno-omit-frame-pointer -fno-color-diagnostics", "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-UBSAN-ASAN-O3-harden)"))
+factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-valgrind --without-valgrind-testbench --disable-libfaketime --enable-kafka-tests=no"], env={'CC': 'clang', "CFLAGS":"-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=address,undefined,nullability,unsigned-integer-overflow -fno-sanitize-recover=undefined,nullability,unsigned-integer-overflow -g -O3 -fno-omit-frame-pointer -fno-color-diagnostics", "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-UBSAN-ASAN-O3-harden)"))
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["make", "-j3", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
@@ -326,7 +326,7 @@ factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/
 factoryRsyslogDockerUbuntu18_distcheck = BuildFactory()
 factoryRsyslogDockerUbuntu18_distcheck.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "distcheck", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
 # ---
@@ -334,12 +334,11 @@ factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c
 
 # This is for the nightly builds. It's almost equivalent to the "regular" one, but
 # with kafka tests enabled.
-factoryRsyslogDockerUbuntu18_nightly = BuildFactory()
-factoryRsyslogDockerUbuntu18_nightly.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogDockerUbuntu18_nightly.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerUbuntu18_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerUbuntu18_nightly.addStep(ShellCommand(command=["make", "distcheck", "VERBOSE=1"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
-factoryRsyslogDockerUbuntu18_nightly.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], name="show distcheck test log"))
+factoryRsyslogDockerFedora28_nightly = BuildFactory()
+factoryRsyslogDockerFedora28_nightly.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["make", "check", "VERBOSE=1"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
 # ---
 
 
@@ -348,7 +347,7 @@ factoryRsyslogDockerUbuntu18_nightly.addStep(ShellCommand(command=["bash", "-c",
 factoryRsyslogDockerArmUbuntu18 = BuildFactory()
 factoryRsyslogDockerArmUbuntu18.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-mmdblookup --without-valgrind-testbench --disable-valgrind --disable-elasticsearch-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-mmdblookup --without-valgrind-testbench --disable-valgrind --enable-kafka-tests=no --disable-elasticsearch-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "-j4"], haltOnFailure=True, name="make [clang]"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib', 'RS_PWORK': '/mnt/rswork/'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5400, name="make check"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather test logs"))
@@ -370,7 +369,7 @@ factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "set -v;
 factoryRsyslogDockerCentos7 = BuildFactory()
 factoryRsyslogDockerCentos7.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "make distcheck V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
 
@@ -379,7 +378,7 @@ factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(f
 factoryRsyslogDockerSuse = BuildFactory()
 factoryRsyslogDockerSuse.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerSuse.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
 
 
@@ -388,7 +387,7 @@ factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make check
 factoryRsyslogDockerFedora28 = BuildFactory()
 factoryRsyslogDockerFedora28.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["make", "-j2"], lazylogfiles=True, maxTime=1000, haltOnFailure=True, name="make (gcc)"))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "make check V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=True, name="check"))
 # ---
@@ -638,9 +637,9 @@ lc['builders'].append(
 
 # --- Cronjob only
 lc['builders'].append(
-   BuilderConfig(name="nightly rsyslog docker-ubuntu18",
-     workernames=["docker-ubuntu18-nightly"],
-      factory=factoryRsyslogDockerUbuntu18_nightly,
+   BuilderConfig(name="nightly rsyslog docker-fedora28",
+     workernames=["docker-fedora28-nightly"],
+      factory=factoryRsyslogDockerFedora28_nightly,
       tags=["rsyslog", "nightly", "docker"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -747,11 +746,11 @@ lc['schedulers'].append(SingleBranchScheduler(
 lc['schedulers'].append(ForceScheduler(
 	name="forceallcron_rsyslog_rsyslog",
 	label="3. Force All Cron-rsyslog-rsyslog",
-	builderNames=["nightly rsyslog docker-ubuntu18"],
+	builderNames=["nightly rsyslog docker-fedora28"],
 ))
 
 # Start Nightly Scheduler once at night!
 lc['schedulers'].append(schedulers.Nightly(name='nightly',
 	branch='master',
-	builderNames=["nightly rsyslog docker-ubuntu18"],
+	builderNames=["nightly rsyslog docker-fedora28"],
 	hour=1, minute=0))
