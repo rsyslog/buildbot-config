@@ -365,6 +365,13 @@ factoryRsyslogDockerArmbian.addStep(ShellCommand(command=["bash", "-c", "set -v;
 
 
 
+factoryRsyslogDockerCentos6 = BuildFactory()
+factoryRsyslogDockerCentos6.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerCentos6.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerCentos6.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerCentos6.addStep(ShellCommand(command=["bash", "-c", "make check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
+
+
 
 factoryRsyslogDockerCentos7 = BuildFactory()
 factoryRsyslogDockerCentos7.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -627,6 +634,16 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-centos6",
+      workernames=["docker-centos6-w1", "docker-centos6-w2", "docker-centos6-w3", "docker-centos6-w4"],
+      factory=factoryRsyslogDockerCentos6,
+      tags=["rsyslog", "docker"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
       workernames=["docker-centos7", "docker-centos7-w2", "docker-centos7-w3", "docker-centos7-w4"],
       factory=factoryRsyslogDockerCentos7,
@@ -685,6 +702,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
+			,"rsyslog docker-centos6"
 			,"rsyslog docker-centos7 rsyslog"
 			,"rsyslog docker-suse-tumbleweed"
 		],
@@ -724,6 +742,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
+			,"rsyslog docker-centos6"
 			,"rsyslog docker-centos7 rsyslog"
 			,"rsyslog docker-suse-tumbleweed"
 			],
@@ -754,6 +773,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
+			,"rsyslog docker-centos6"
 			,"rsyslog docker-centos7 rsyslog"
 			,"rsyslog docker-suse-tumbleweed"
 		],
