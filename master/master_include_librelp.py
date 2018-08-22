@@ -15,17 +15,20 @@ from buildbot.steps.shell import Configure
 # --- librelp factory settings
 factoryLibrelp= BuildFactory()
 factoryLibrelp.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibrelp.addStep(ShellCommand(command=["bash", "-c", "ps aux|grep receive; killall lt-receive; ps aux|grep receive; exit 0"], name="process cleanup"))
 factoryLibrelp.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], name="autoreconf", description="autoreconf running", descriptionDone="autoreconf done"))
-factoryLibrelp.addStep(ShellCommand(command=["./configure", "--prefix=/usr", "--enable-tls-openssl"], name="configure", description="configure running", descriptionDone="configure done", logfiles={"config.log": "config.log"}))
-factoryLibrelp.addStep(ShellCommand(command=["make"]))
-factoryLibrelp.addStep(ShellCommand(command=["make", "check", "V=0"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+#factoryLibrelp.addStep(ShellCommand(command=["./configure", "--prefix=/usr", "--enable-tls-openssl"], name="configure", description="configure running", descriptionDone="configure done", logfiles={"config.log": "config.log"}))
+factoryLibrelp.addStep(ShellCommand(command=["./configure", "--enable-tls"], name="configure", description="configure running", descriptionDone="configure done", logfiles={"config.log": "config.log"}))
+#factoryLibrelp.addStep(ShellCommand(command=["make"]))
+factoryLibrelp.addStep(ShellCommand(command=["make", "distcheck", "VERBOSE=1"], logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 # ---
 
 # --- Solaris
 factoryLibrelpSolaris= BuildFactory()
 factoryLibrelpSolaris.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibrelpSolaris.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio))
-factoryLibrelpSolaris.addStep(ShellCommand(command=["./configure", "V=0", "--enable-tls-openssl"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
+factoryLibrelpSolaris.addStep(ShellCommand(command=["./configure", "V=0"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
+#factoryLibrelpSolaris.addStep(ShellCommand(command=["./configure", "V=0", "--enable-tls-openssl"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
 factoryLibrelpSolaris.addStep(ShellCommand(command=["make"], env=solarisenv_sunstudio))
 factoryLibrelpSolaris.addStep(ShellCommand(command=["make", "check", "V=0"], env=solarisenv_sunstudio, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 # ---
