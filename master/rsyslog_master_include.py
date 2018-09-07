@@ -132,7 +132,7 @@ factoryRsyslogFreebsd.addStep(ShellCommand(command=["autoreconf", "--force", "--
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["./configure", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-pmnull", "--enable-valgrind", "--without-valgrind-testbench"], env={'PKG_CONFIG_PATH': '/usr/libdata/pkgconfig:/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True))
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True))
 # add for testing:  mmexternal-SegFault-vg.sh mmexternal-SegFault.sh
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4000))
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 
 #factoryRsyslogUbuntu = BuildFactory()
@@ -426,7 +426,6 @@ lc['builders'].append(
 factoryRsyslogStaticAnalyzer = BuildFactory()
 factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["sleep", "2"], name="wait for github"))
-factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup"))
 factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:16.04', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
 
 lc['builders'].append(
