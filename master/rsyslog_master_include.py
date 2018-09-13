@@ -25,12 +25,12 @@ factoryRsyslogCentos6.addStep(ShellCommand(command=["make", "check", "V=0"], env
 
 factoryRsyslogCentos7VM = BuildFactory()
 factoryRsyslogCentos7VM.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogCentos7VM.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_kubernetes_test_server.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"], name="clenup hanging instances"))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-ksi-ls12", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-compile-warnings=error"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig'}, logfiles={"config.log": "config.log"}))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["make", "-j4"], haltOnFailure=True))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["tools/rsyslogd", "-v"]))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000))
+factoryRsyslogCentos7VM.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather check logs"))
 
 
 factoryRsyslogDebian = BuildFactory()
@@ -125,14 +125,16 @@ factoryRsyslogSuse.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI
 
 factoryRsyslogFreebsd = BuildFactory()
 factoryRsyslogFreebsd.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["ps", "aux"]))
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "killall -v rsyslogd || exit 0"], name="cleanup via killall"))
+# regular cleanup does not yet work on FreeBSD, as it uses different commands
+#factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"], name="cleanup"))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], name="autoreconf"))
 # Note: current version of valgrind is full of false positives, so
 # we cannot use valgrind here. :-/
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["./configure", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-pmnull", "--enable-valgrind", "--without-valgrind-testbench"], env={'PKG_CONFIG_PATH': '/usr/libdata/pkgconfig:/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True))
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["./configure", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-pmnull", "--enable-valgrind", "--without-valgrind-testbench"], env={'PKG_CONFIG_PATH': '/usr/libdata/pkgconfig:/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure"))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="build"))
 # add for testing:  mmexternal-SegFault-vg.sh mmexternal-SegFault.sh
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4000))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=2500, name="check"))
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 
 #factoryRsyslogUbuntu = BuildFactory()
@@ -172,6 +174,7 @@ factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f test
 factoryRsyslogSolaris10x64 = BuildFactory()
 # first step only in case git has aborted!
 #	factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["rm", "-rf", "/export/home/buildbot-unstable10s/rsyslog/rsyslog_solaris10sparc_rsyslog/build/.git/index.lock"], env=solarisenv_gcc))
+factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["bash", "-c", "tests/CI/buildbot_cleanup.sh"], name="cleanup"))
 factoryRsyslogSolaris10x64.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 # cleanup
 factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
@@ -213,6 +216,7 @@ factoryRsyslogSolaris11x64 = BuildFactory()
 factoryRsyslogSolaris11x64.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 # cleanup
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
+factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["bash", "-c", "tests/CI/buildbot_cleanup.sh"], name="cleanup"))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["rm", "-rf", "localenv"], env=solarisenv_sunstudio, name="cleanup dependencies"))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["git", "log", "-4"], env=solarisenv_sunstudio, name="git branch information"))
 # begin work
@@ -695,7 +699,6 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog raspbian rsyslog"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7-5"
-			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
@@ -759,12 +762,12 @@ lc['schedulers'].append(SingleBranchScheduler(
 						project="rsyslog/rsyslog"),
 	builderNames=[  "rsyslog clang static analyzer"
 			,"rsyslog codestyle check"
-			,"rsyslog ubuntu16 rsyslog"
+			# ,"rsyslog ubuntu16 rsyslog" # schedule for removal
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
 			,"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian rsyslog"
-			,"rsyslog centos6 rsyslog"
+			# ,"rsyslog centos6 rsyslog" # schedule for removal
 			,"rsyslog centos7-5"
 			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora28"
