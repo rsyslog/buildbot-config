@@ -325,6 +325,19 @@ factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "i
 # ---
 
 
+# This is our environment for various LLVM checkers (ASAN, UBSAN, ...)
+# We use high optimization level here to ensure we do not run into problems with that
+# For the same reason, we activate common security hardening mechanisms
+factoryRsyslogDockerDebian_8 = BuildFactory()
+factoryRsyslogDockerDebian_8.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerDebian_8.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
+factoryRsyslogDockerDebian_8.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-elasticsearch-tests --without-valgrind-testbench"], logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (system default CC)"))
+factoryRsyslogDockerDebian_8.addStep(ShellCommand(command=["make", "-j3", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
+factoryRsyslogDockerDebian_8.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
+factoryRsyslogDockerDebian_8.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
+# ---
+
+
 # This is our "make distcheck" environment. Use conservative gcc - most important is that it
 # checks if all files are present in tarball.
 factoryRsyslogDockerUbuntu18_distcheck = BuildFactory()
@@ -390,6 +403,7 @@ factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["autoreconf", "-fvi"],
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "make distcheck V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
+factoryRsyslogDockerCentos7.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name \"*.log\"); exit 0"], haltOnFailure=False, name="show individual test logs"))
 
 
 
@@ -405,7 +419,9 @@ factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make check
 factoryRsyslogDockerFedora28 = BuildFactory()
 factoryRsyslogDockerFedora28.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+# we temporarily disable ES tests, as one valgrind test seems to fail consistently with
+# lib-related issues. rgerhards, 2018-09-19
+factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --disable-elasticsearch-tests --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["make", "-j2"], lazylogfiles=True, maxTime=1000, haltOnFailure=True, name="make (gcc)"))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "make check V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=True, name="check"))
 # ---
@@ -627,10 +643,20 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
      workernames=["docker-ubuntu18-san-w1", "docker-ubuntu18-san-w2", "docker-ubuntu18-san-w3", "docker-ubuntu18-san-w4"],
       factory=factoryRsyslogDockerUbuntu_18_SAN,
-      tags=["rsyslog"],
+      tags=["rsyslog", "docker"],
       properties={
 	"github_repo_owner": "rsyslog",
 	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+   BuilderConfig(name="rsyslog docker-debian8",
+     workernames=["docker-debian8-w1", "docker-debian8-w2", "docker-debian8-w3", "docker-debian8-w4"],
+      factory=factoryRsyslogDockerDebian_8,
+      tags=["rsyslog", "docker"],
+      properties={
+        "github_repo_owner": "rsyslog",
+        "github_repo_name": "rsyslog",
       },
     ))
 lc['builders'].append(
@@ -711,6 +737,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
+			,"rsyslog docker-debian8"
 			,"rsyslog docker-centos6"
 			,"rsyslog docker-centos7 rsyslog"
 			,"rsyslog docker-suse-tumbleweed"
@@ -748,10 +775,12 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
+			,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-centos6"
+			,"rsyslog docker-debian8"
 			,"rsyslog docker-centos7 rsyslog"
 			,"rsyslog docker-suse-tumbleweed"
 			],
@@ -783,6 +812,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-centos6" # disable until stable!
+			,"rsyslog docker-debian8"
 			,"rsyslog docker-centos7 rsyslog"
 			,"rsyslog docker-suse-tumbleweed"
 		],
