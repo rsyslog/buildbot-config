@@ -208,7 +208,7 @@ factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "-j", "V=1"], 
 #	factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "check", "V=1"], env=solarisenv_gcc, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, timeout=3600))
 # clean up
 factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
-factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=300, name="final cleanup" ))
+factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
 # ---
 
@@ -233,7 +233,7 @@ factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "-j", "V=0"], 
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "check", "V=0"], env=solarisenv_sunstudio, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3000, timeout=300))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh", "tests/*.sh.log"], env=solarisenv_sunstudio, maxTime=3000, timeout=60, name="gathering make check logs", descriptionDone="gathered make check logs"))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
-factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=300, name="final cleanup" ))
+factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 # ---
 
 # Solaris unstable10s, which is so slow that the testbench
@@ -262,7 +262,7 @@ factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/
 # Note: we do not try build with gcc, as this takes another 20 minutes; the x86 case should
 # be good enough to cover this.
 # clean up
-factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=300, name="final cleanup" ))
+factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 # ---
 
 # Solaris unstable11s, which is so slow that the testbench
@@ -291,7 +291,7 @@ factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/
 # Note: we do not try build with gcc, as this takes another 20 minutes; the x86 case should
 # be good enough to cover this.
 # clean up
-factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=300, name="final cleanup" ))
+factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 # ---
 
 factoryRsyslogDockerUbuntu16 = BuildFactory()
