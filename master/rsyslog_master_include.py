@@ -892,6 +892,7 @@ lc['schedulers'].append(schedulers.Nightly(name='nightly',
 # build master commits so that CodeCov has references for all commits
 lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sched',
 	change_filter=util.ChangeFilter(project='rsyslog/rsyslog', branch='master'),
+	treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
 	builderNames=["rsyslog docker-ubuntu18-codecov"
 			,"background rsyslog centos7-5"],
 	# TODO: replace with this value: builderNames=["master rsyslog"],
