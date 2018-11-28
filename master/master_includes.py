@@ -19,10 +19,12 @@ from buildbot.plugins import schedulers, util
 repoGitUrl = Interpolate("git://github.com/%(prop:github_repo_owner)s/%(prop:github_repo_name)s.git")
 
 # Create ENV variables
-solarisenv_gcc = {'http_proxy': 'http://192.168.1.6:3128', 'CC': '/opt/csw/bin/gcc', 'CFLAGS': '-I/opt/csw/include', 'LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LD_LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LD_OPTIONS': '-R/opt/csw/lib', 'PKG_CONFIG_PATH': 'local_env/install/lib/pkgconfig:/opt/csw/lib/pkgconfig', 'PKG_CONFIG': '/opt/csw/bin/pkg-config', 'CONFIG_SHELL': '/opt/csw/bin/bash', 'RS_HEADCMD': 'ghead', 'RS_CMPCMD': 'gcmp', 'RS_SORTCMD': 'gsort', 'GREP': 'ggrep', 'USE_AUTO_DEBUG': 'off', 'PATH': '/opt/csw/gnu:/opt/csw/bin:/usr/bin:/usr/sbin:/usr/ccs/bin' }
+globalenv={'UNDER_CI':'YES'} # TODO: how to use???
+
+solarisenv_gcc = {'http_proxy': 'http://192.168.1.6:3128', 'CC': '/opt/csw/bin/gcc', 'CFLAGS': '-I/opt/csw/include', 'LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LD_LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LD_OPTIONS': '-R/opt/csw/lib', 'PKG_CONFIG_PATH': 'local_env/install/lib/pkgconfig:/opt/csw/lib/pkgconfig', 'PKG_CONFIG': '/opt/csw/bin/pkg-config', 'CONFIG_SHELL': '/opt/csw/bin/bash', 'RS_HEADCMD': 'ghead', 'RS_CMPCMD': 'gcmp', 'RS_SORTCMD': 'gsort', 'GREP': 'ggrep', 'USE_AUTO_DEBUG': 'off', 'PATH': '/opt/csw/gnu:/opt/csw/bin:/usr/bin:/usr/sbin:/usr/ccs/bin', 'UNDER_CI':'YES'}
 # Note: Solaris, at least SunStudio, needs the -mt option, else things go
 # terribly wrong (e.g. in RELP) -- remember meeting in the nordics
-solarisenv_sunstudio = {'http_proxy': 'http://192.168.1.6:3128', 'CC' : '/opt/solarisstudio12.4/bin/cc', 'CFLAGS': '-mt -I/opt/csw/include', 'LD_LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'PKG_CONFIG_PATH': 'local_env/install/lib/pkgconfig:/opt/csw/lib/pkgconfig', 'PKG_CONFIG': '/opt/csw/bin/pkg-config', 'CONFIG_SHELL': '/opt/csw/bin/bash', 'RS_HEADCMD': 'ghead', 'RS_CMPCMD': 'gcmp', 'RS_SORTCMD': 'gsort', 'GREP': 'ggrep', 'USE_AUTO_DEBUG': 'off', 'PATH': '/opt/csw/gnu:/opt/csw/bin:/usr/bin:/usr/sbin:/usr/ccs/bin', 'CURL_CFLAGS': '-I/opt/csw/include', 'CURL_LIBS': '-lcurl' }
+solarisenv_sunstudio = {'http_proxy': 'http://192.168.1.6:3128', 'CC' : '/opt/solarisstudio12.4/bin/cc', 'CFLAGS': '-mt -I/opt/csw/include', 'LD_LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'PKG_CONFIG_PATH': 'local_env/install/lib/pkgconfig:/opt/csw/lib/pkgconfig', 'PKG_CONFIG': '/opt/csw/bin/pkg-config', 'CONFIG_SHELL': '/opt/csw/bin/bash', 'RS_HEADCMD': 'ghead', 'RS_CMPCMD': 'gcmp', 'RS_SORTCMD': 'gsort', 'GREP': 'ggrep', 'USE_AUTO_DEBUG': 'off', 'PATH': '/opt/csw/gnu:/opt/csw/bin:/usr/bin:/usr/sbin:/usr/ccs/bin', 'CURL_CFLAGS': '-I/opt/csw/include', 'CURL_LIBS': '-lcurl', 'UNDER_CI':'YES'}
 raspbianenv_gcc = { 'LC_ALL': 'C', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib' }
 # ---
 
@@ -269,6 +271,16 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 	      },
 	    ))
 	lc['builders'].append(
+	   BuilderConfig(name=szRepoProject + " docker-ubuntu18 " + szRepoOwner,
+	     workernames=["docker-ubuntu18"],
+	      factory=factoryUbuntu18Docker,
+	      tags=[szRepoProject + " " + szRepoOwner],
+	      properties={
+		"github_repo_owner": szRepoOwner,
+		"github_repo_name": szRepoProject,
+	      },
+	    ))
+	lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " docker-centos7 " + szRepoOwner,
 	     workernames=["docker-centos7"],
 	      factory=factoryCentos7Docker,
@@ -309,6 +321,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
+				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
 				,szRepoProject + " docker-centos7 " + szRepoOwner
 			],
 		codebases=[
@@ -341,6 +354,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
+				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
 				,szRepoProject + " docker-centos7 " + szRepoOwner
 				],
 	))
@@ -363,6 +377,7 @@ def appendBuilders(	szRepoOwner, szRepoProject,
 				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
+				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
 				,szRepoProject + " docker-centos7 " + szRepoOwner
 			],
 	))
