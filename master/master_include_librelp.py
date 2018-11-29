@@ -102,6 +102,16 @@ factoryLibrelp_asan_ubsan.addStep(librelp_gather_check_logs)
 
 
 # --- Solaris
+factoryLibrelpFreebsd= BuildFactory()
+factoryLibrelpFreebsd.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibrelpFreebsd.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio))
+factoryLibrelpFreebsd.addStep(ShellCommand(command=["./configure", "V=0"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
+factoryLibrelpFreebsd.addStep(ShellCommand(command=["make"], env=solarisenv_sunstudio))
+factoryLibrelpFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env=solarisenv_sunstudio, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=600))
+# ---
+
+
+# --- Solaris
 factoryLibrelpSolaris= BuildFactory()
 factoryLibrelpSolaris.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibrelpSolaris.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio))
@@ -154,6 +164,16 @@ appendBuilders( 'rsyslog', 'librelp',
 		)
 
 lc['builders'].append(
+   BuilderConfig(name="librelp koobs freebsd",
+     workernames=[  "koobs-freebsd-current" ],
+      factory=factoryLibrelpFreebsd,
+      tags=["librelp", "vm"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "librelp",
+      },
+    ))
+lc['builders'].append(
    BuilderConfig(name="librelp build gcc-8",
      workernames=[  "docker-ubuntu18-buildtests-w1"
 		  , "docker-ubuntu18-buildtests-w2"],
@@ -180,11 +200,13 @@ lc['schedulers'].append(SingleBranchScheduler(
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/librelp"),
 	builderNames=[	"librelp codecov"
+		      , "librelp koobs freebsd"
 		      , "librelp build gcc-8"]
 ))
 lc['schedulers'].append(ForceScheduler(
 	name="forceall-librelp",
 	builderNames=[	"librelp codecov"
+		      , "librelp koobs freebsd"
 		      , "librelp build gcc-8"]
 ))
 
