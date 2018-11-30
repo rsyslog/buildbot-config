@@ -13,7 +13,7 @@ from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
 # standard build steps
-librelp_make_check=ShellCommand(command=["make", "check", "VERBOSE=1"], env={'UNDER_CI':'YES'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, timeout=300, name="distcheck (gtls only)")
+librelp_make_check=ShellCommand(command=["make", "-j4", "check", "VERBOSE=1"], env={'UNDER_CI':'YES'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, timeout=300, name="distcheck (gtls only)")
 librelp_gather_check_logs=ShellCommand(command=["bash", "-c", "ls -l tests; find . -name '*.log'; cat $(find $(find . -name tests) -name \"*.log\" ! -name \"librelp*\"); exit 0"], haltOnFailure=False, name="gather individual test logs")
 
 # --- librelp default factory settings
