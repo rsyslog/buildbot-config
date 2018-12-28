@@ -56,7 +56,7 @@ factoryRsyslogDebian.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
 # there is so much to do...
-factoryRsyslogDebian.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.5", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+factoryRsyslogDebian.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.5", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 
 factoryRsyslogDebian9 = BuildFactory()
@@ -364,8 +364,8 @@ factoryRsyslogDockerUbuntu18_codecov = BuildFactory()
 factoryRsyslogDockerUbuntu18_codecov.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["git", "log", "-3"], name="git branch information"))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug --disable-omprog"], env={'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc, coverage)"))
-factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=10000, haltOnFailure=False, name="check"))
+factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc, coverage)"))
+factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=10000, haltOnFailure=False, name="check"))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather check logs"))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + secret_CODECOV_TOKEN + " -n\"rsyslog buildbot PR\"; rm codecov.sh || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
 # ---
@@ -451,6 +451,25 @@ factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "./conf
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["make", "-j2"], lazylogfiles=True, maxTime=1000, haltOnFailure=True, name="make (gcc)"))
 factoryRsyslogDockerFedora28.addStep(ShellCommand(command=["bash", "-c", "make check V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=True, name="check"))
 # ---
+
+
+####### compile tests (some legacy compile tests are specified above as well!)
+
+factoryRsyslog_compile_clang8 = BuildFactory()
+factoryRsyslog_compile_clang8.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslog_compile_clang8.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslog_compile_clang8.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'clang-8', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang 8)"))
+factoryRsyslog_compile_clang8.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make (clang 8[experiemental])"))
+
+lc['builders'].append(
+	BuilderConfig(name="rsyslog compile clang8",
+		workernames=["docker-ubuntu-compilecheck"],
+		factory=factoryRsyslog_compile_clang8,
+		tags=["rsyslog"], 
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog",
+		} ))
 
 
 ####### Create Builders
@@ -779,6 +798,7 @@ lc['schedulers'].append(ForceScheduler(
 	name="pull_rsyslog_rsyslog",
 	label="1. Pull Requests-rsyslog-rsyslog",
 	builderNames=[  "rsyslog clang static analyzer"
+			,"rsyslog compile clang8"
 			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
@@ -820,6 +840,7 @@ lc['schedulers'].append(ForceScheduler(
 	name="forceall_rsyslog_rsyslog",
 	label="2. Force All-rsyslog-rsyslog",
 	builderNames=[	"rsyslog clang static analyzer"
+			,"rsyslog compile clang8"
 			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
@@ -852,6 +873,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/rsyslog"),
 	builderNames=[  "rsyslog clang static analyzer"
+			,"rsyslog compile clang8"
 			,"rsyslog codestyle check"
 			# ,"rsyslog ubuntu16 rsyslog" # schedule for removal
 			,"rsyslog debian rsyslog"
