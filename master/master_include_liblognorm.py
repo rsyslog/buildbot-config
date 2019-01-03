@@ -12,6 +12,9 @@ from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
+from master_includes import appendSchedulers
+from master_includes import appendBuilders
+
 # --- liblognorm factory settings
 factoryLibLogNorm = BuildFactory()
 factoryLibLogNorm.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -71,7 +74,7 @@ factoryLibLogNormRaspian.addStep(ShellCommand(command=["make", "distcheck", "V=0
 # ---
 
 #Add liblognorm builders for main repo
-appendBuilders(	'rsyslog', 'liblognorm', 
+appendBuilders(	lc, 'rsyslog', 'liblognorm', 
 		factoryLibLogNorm,		# Debian 
 		factoryLibLogNorm,		# Debian9
 		factoryLibLogNormRaspian,	# Raspbian 

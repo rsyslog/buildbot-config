@@ -12,6 +12,9 @@ from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
+from master_includes import appendSchedulers
+from master_includes import appendBuilders
+
 # --- libestr factory settings
 factoryLibestr= BuildFactory()
 factoryLibestr.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -36,7 +39,7 @@ factoryLibestrSolaris.addStep(ShellCommand(command=["./configure", "--prefix=/us
 factoryLibestrSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solarisenv_gcc))
 
 #Add libfastjson builders for main repo
-appendBuilders( 'rsyslog', 'libestr',
+appendBuilders( lc, 'rsyslog', 'libestr',
 		factoryLibestr,		# Debian 
 		factoryLibestr,		# Debian 9
 		factoryLibestr,		# Raspbian 

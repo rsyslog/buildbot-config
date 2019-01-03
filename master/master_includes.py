@@ -7,33 +7,18 @@
 #	* rsyslog factory settings
 #	*
 
-from buildbot.process.properties import Interpolate
 from buildbot.config import BuilderConfig
 from buildbot.schedulers.basic import SingleBranchScheduler
 from buildbot.schedulers.forcesched import ForceScheduler
 from buildbot.changes import filter
 from buildbot.plugins import schedulers, util
 
-# --- SHARED VARIABLES
-# dynamic repo URL
-repoGitUrl = Interpolate("git://github.com/%(prop:github_repo_owner)s/%(prop:github_repo_name)s.git")
-
-# Create ENV variables
-globalenv={'UNDER_CI':'YES'} # TODO: how to use???
-
-solarisenv_gcc = {'http_proxy': 'http://192.168.1.6:3128', 'CC': '/opt/csw/bin/gcc', 'CFLAGS': '-I/opt/csw/include', 'LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LD_LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LD_OPTIONS': '-R/opt/csw/lib', 'PKG_CONFIG_PATH': 'local_env/install/lib/pkgconfig:/opt/csw/lib/pkgconfig', 'PKG_CONFIG': '/opt/csw/bin/pkg-config', 'CONFIG_SHELL': '/opt/csw/bin/bash', 'RS_HEADCMD': 'ghead', 'RS_CMPCMD': 'gcmp', 'RS_SORTCMD': 'gsort', 'GREP': 'ggrep', 'USE_AUTO_DEBUG': 'off', 'PATH': '/opt/csw/gnu:/opt/csw/bin:/usr/bin:/usr/sbin:/usr/ccs/bin', 'UNDER_CI':'YES'}
-# Note: Solaris, at least SunStudio, needs the -mt option, else things go
-# terribly wrong (e.g. in RELP) -- remember meeting in the nordics
-solarisenv_sunstudio = {'http_proxy': 'http://192.168.1.6:3128', 'CC' : '/opt/solarisstudio12.4/bin/cc', 'CFLAGS': '-mt -I/opt/csw/include', 'LD_LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'LIBRARY_PATH': '../local_env/install/lib:/opt/csw/lib', 'PKG_CONFIG_PATH': 'local_env/install/lib/pkgconfig:/opt/csw/lib/pkgconfig', 'PKG_CONFIG': '/opt/csw/bin/pkg-config', 'CONFIG_SHELL': '/opt/csw/bin/bash', 'RS_HEADCMD': 'ghead', 'RS_CMPCMD': 'gcmp', 'RS_SORTCMD': 'gsort', 'GREP': 'ggrep', 'USE_AUTO_DEBUG': 'off', 'PATH': '/opt/csw/gnu:/opt/csw/bin:/usr/bin:/usr/sbin:/usr/ccs/bin', 'CURL_CFLAGS': '-I/opt/csw/include', 'CURL_LIBS': '-lcurl', 'UNDER_CI':'YES'}
-raspbianenv_gcc = { 'LC_ALL': 'C', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib' }
-# ---
-
 # Local reference to c
-lc = None
-# --- FUNCTIONS
+# lc = None
 
+# --- FUNCTIONS
 #Append Schedulers Helper Function
-def appendSchedulers(szRepoOwner, szRepoProject, szGitBranch):
+def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 	#lc['schedulers'].append(SingleBranchScheduler(
 			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-ubuntu",
 			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -98,7 +83,7 @@ def appendSchedulers(szRepoOwner, szRepoProject, szGitBranch):
 					]))
 
 #Append Builders Helper Function 
-def appendBuilders(	szRepoOwner, szRepoProject, 
+def appendBuilders(	lc, szRepoOwner, szRepoProject, 
 			factoryDebian, 
 			factoryDebian9, 
 			factoryRaspbian, 

@@ -12,6 +12,9 @@ from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
+from master_includes import appendSchedulers
+from master_includes import appendBuilders
+
 # --- libfastjson factory settings
 factoryLibFastJson = BuildFactory()
 factoryLibFastJson.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -60,7 +63,7 @@ factoryLibFastJsonFreeBsd.addStep(ShellCommand(command=["make", "check", "V=0"],
 # ---
 
 #Add libfastjson builders for main repo
-appendBuilders( 'rsyslog', 'libfastjson',
+appendBuilders( lc, 'rsyslog', 'libfastjson',
 		factoryLibFastJson,		# Debian 
 		factoryLibFastJson,		# Debian9
 		factoryLibFastJson,		# Raspbian 

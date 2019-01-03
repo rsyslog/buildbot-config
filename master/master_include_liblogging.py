@@ -12,6 +12,9 @@ from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
+from master_includes import appendSchedulers
+from master_includes import appendBuilders
+
 # --- liblogging factory settings
 factoryLiblogging= BuildFactory()
 factoryLiblogging.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -51,7 +54,7 @@ factoryLibloggingFreeBsd.addStep(ShellCommand(command=["make", "check", "V=0"], 
 # ---
 
 #Add libfastjson builders for main repo
-appendBuilders( 'rsyslog', 'liblogging',
+appendBuilders( lc, 'rsyslog', 'liblogging',
 		factoryLibloggingDebian,	# Debian 
 		factoryLiblogging,		# Debian9
 		factoryLiblogging,		# Raspbian 

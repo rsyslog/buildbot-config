@@ -12,6 +12,15 @@ from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
+from buildbot.plugins import schedulers, util
+from buildbot.config import BuilderConfig
+from buildbot.schedulers.basic import SingleBranchScheduler
+from buildbot.schedulers.forcesched import ForceScheduler
+from buildbot.changes import filter
+
+from master_includes import appendSchedulers
+from master_includes import appendBuilders
+
 # standard build steps
 librelp_make_check=ShellCommand(command=["make", "-j4", "check", "VERBOSE=1"], env={'UNDER_CI':'YES'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, timeout=300, name="distcheck (gtls only)")
 librelp_gather_check_logs=ShellCommand(command=["bash", "-c", "ls -l tests; find . -name '*.log'; cat $(find $(find . -name tests) -name \"*.log\" ! -name \"librelp*\"); exit 0"], haltOnFailure=False, name="gather individual test logs")
@@ -136,11 +145,10 @@ factoryLibrelp.addStep(ShellCommand(command=["bash", "-c", "ps aux|grep receive;
 factoryLibrelpDockerUbuntu18_codecov.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryLibrelpDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-tls --enable-tls-openssl"], env={'CC': 'gcc', "CFLAGS":"-g -O0 --coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc, coverage)"))
 factoryLibrelpDockerUbuntu18_codecov.addStep(ShellCommand(command=["make", "check", "V=0"], env={'UNDER_CI':'YES'}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=1800, haltOnFailure=False, name="check"))
-factoryLibrelpDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + secret_CODECOV_TOKEN_LIBRELP + " -n\"librelp buildbot PR\"; rm codecov.sh; find . -name '*.gcov' || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
-
+factoryLibrelpDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + g['secret_CODECOV_TOKEN_LIBRELP'] + " -n\"librelp buildbot PR\"; rm codecov.sh; find . -name '*.gcov' || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
 
 #Add libfastjson builders for main repo
-appendBuilders( 'rsyslog', 'librelp',
+appendBuilders( lc, 'rsyslog', 'librelp',
 		factoryLibrelp,		# Debian 
 		factoryLibrelp,		# Debian9
 		factoryLibrelp_no_valgrind,	# Raspbian 

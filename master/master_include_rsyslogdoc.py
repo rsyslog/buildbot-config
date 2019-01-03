@@ -12,6 +12,12 @@ from buildbot.steps.source.github import GitHub
 from buildbot.steps.shell import ShellCommand
 from buildbot.steps.shell import Configure 
 
+from buildbot.plugins import schedulers, util
+from buildbot.config import BuilderConfig
+from buildbot.schedulers.basic import SingleBranchScheduler
+from buildbot.schedulers.forcesched import ForceScheduler
+from buildbot.changes import filter
+
 #
 # rsyslog-doc: right now, only on Ubuntu16 slave
 #
