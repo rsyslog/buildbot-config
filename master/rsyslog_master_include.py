@@ -77,7 +77,7 @@ factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "-j"], haltOnFailure
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
 # there is so much to do...
-factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/lib/llvm-3.8/bin/llvm-symbolizer", 'LIBRARY_PATH': '/usr/local/lib', 'LD_LIBRARY_PATH': '/usr/local/lib', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4600))
+factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/lib/llvm-3.8/bin/llvm-symbolizer", 'LIBRARY_PATH': '/usr/local/lib', 'LD_LIBRARY_PATH': '/usr/local/lib', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4600))
 factoryRsyslogDebian9.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"]))
 
 factoryRsyslogRaspbian_gcc = BuildFactory()
@@ -370,10 +370,12 @@ factoryRsyslogDockerUbuntu18_codecov = BuildFactory()
 factoryRsyslogDockerUbuntu18_codecov.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["git", "log", "-3"], name="git branch information"))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-# gcc codecov instrumentation causes omprog tests to hang
-#factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc, coverage)"))
-factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug --disable-helgrind"], env={'CC': 'clang', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"--coverage"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang, coverage)"))
-factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=10000, haltOnFailure=False, name="check"))
+# gcc codecov instrumentation causes some omprog tests to hang
+factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc, coverage)"))
+# ... and clang codecov instrumentation misses quite some files :-(
+# but with clang we have incomplete reports ... so for now keeping with gcc
+#factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=yes --enable-debug --disable-helgrind"], env={'CC': 'clang', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"--coverage"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang, coverage)"))
+factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=10000, haltOnFailure=False, name="check"))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather check logs"))
 factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -x \"llvm-cov gcov\" -t" + g['secret_CODECOV_TOKEN'] + " -n\"rsyslog buildbot PR\"; rm codecov.sh || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
 # ---
@@ -386,9 +388,9 @@ factoryRsyslogDockerFedora28_nightly.addStep(GitHub(repourl=repoGitUrl, mode='fu
 factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["git", "log", "-3"], name="git branch information"))
 factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 # pre-coverage: factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-omprog --enable-extended-tests"], env={'CC': 'gcc', "CFLAGS":"-g -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["make", "check", "VERBOSE=1"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + g['secret_CODECOV_TOKEN'] + "; rm codecov.sh || exit 0"], name="CodeCov upload"))
+factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-omprog --enable-extended-tests"], env={'CC': 'gcc', "CFLAGS":"-g", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["make", "-j2", "check", "VERBOSE=1"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
+# DELETE ME: we now do coverarge reporting per master branch commit (because that's what we actually need) factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + g['secret_CODECOV_TOKEN'] + "; rm codecov.sh || exit 0"], name="CodeCov upload"))
 factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather test logs"))
 # ---
 
@@ -400,7 +402,7 @@ factoryRsyslogDockerArmUbuntu18.addStep(GitHub(repourl=repoGitUrl, mode='full', 
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "set -v; set -x; env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-mmdblookup --without-valgrind-testbench --disable-valgrind --enable-kafka-tests=no --disable-elasticsearch-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang)"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "-j4"], haltOnFailure=True, name="make [clang]"))
-factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib', 'RS_PWORK': '/mnt/rswork/', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5400, name="make check"))
+factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib', 'RS_PWORK': '/mnt/rswork/', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5400, name="make check"))
 factoryRsyslogDockerArmUbuntu18.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather test logs"))
 # ---
 
@@ -500,8 +502,13 @@ lc['builders'].append(
 ####### Create Builders
 
 factoryRsyslogCodeStyleCheck = BuildFactory()
-factoryRsyslogCodeStyleCheck.addStep(ShellCommand(command=["bash", "-c", "env; set -v; echo "], env={'xBUILDERNAME': util.Property('buildername'), 'URL':util.Property('url')}, name="buildbot properties (REMOVE STEP!)"))
 factoryRsyslogCodeStyleCheck.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogCodeStyleCheck.addStep(ShellCommand(command=["bash", "-c",
+	"if grep \"^export RSYSLOG_DEBUG=\" tests/diag.sh; then "
+        "    echo >&2 'ERROR: DEBUG enabled in tests/diag.sh - this is known to NOT work!'; "
+        "    echo >&2 'Most probably this was done accidently, so just comment it out again.'; "
+	"    exit 1; "
+	"fi"], haltOnFailure=True, name="check testbench DEBUG not enabled"))
 factoryRsyslogCodeStyleCheck.addStep(ShellCommand(command=["devtools/check-codestyle.sh"], haltOnFailure=True, name="codestyle check"))
 
 lc['builders'].append(
