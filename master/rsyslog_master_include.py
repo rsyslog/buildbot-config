@@ -331,14 +331,13 @@ factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["make", "-j2", "
 factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 # ---
 
-# Kafka special, as these tests are so flaky...
-factoryRsyslogDockerUbuntu_18_Kafka = BuildFactory()
-factoryRsyslogDockerUbuntu_18_Kafka.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogDockerUbuntu_18_Kafka.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
-factoryRsyslogDockerUbuntu_18_Kafka.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --enable-imfile --disable-fmhttp --enable-valgrind --enable-imkafka --enable-omkafka --disable-default-tests --enable-kafka-tests=yes --enable-extended-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-kafka)"))
-factoryRsyslogDockerUbuntu_18_Kafka.addStep(ShellCommand(command=["make", "-j3", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
-factoryRsyslogDockerUbuntu_18_Kafka.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
-factoryRsyslogDockerUbuntu_18_Kafka.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
+# gtls only special, as we need to test tcpflood 
+factoryRsyslogDockerUbuntu_18_gtls_only = BuildFactory()
+factoryRsyslogDockerUbuntu_18_gtls_only.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
+factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --disable-fmhttp --enable-valgrind --disable-default-tests --enable-gnutls --enable-extended-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-kafka)"))
+factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["make", "-j3", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
+factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 # ---
 
 
@@ -719,9 +718,9 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-ubuntu18-kafka FLACKY",
-     workernames=["docker-ubuntu18-kafka-w1", "docker-ubuntu18-kafka-w2", "docker-ubuntu18-kafka-w3", "docker-ubuntu18-kafka-w4"],
-      factory=factoryRsyslogDockerUbuntu_18_Kafka,
+   BuilderConfig(name="rsyslog docker-ubuntu18 GnuTLS only",
+     workernames=["docker-ubuntu18-gtls-w1", "docker-ubuntu18-gtls-w2", "docker-ubuntu18-gtls-w3", "docker-ubuntu18-gtls-w4"],
+      factory=factoryRsyslogDockerUbuntu_18_gtls_only,
       tags=["rsyslog", "docker"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -935,7 +934,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-codecov"
-			,"rsyslog docker-ubuntu18-kafka FLACKY"
+			,"rsyslog docker-ubuntu18 GnuTLS only"
 			,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-centos6" # disable until stable!
 			,"rsyslog docker-debian8"
