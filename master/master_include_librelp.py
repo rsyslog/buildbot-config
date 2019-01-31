@@ -138,6 +138,14 @@ factoryLibrelpDockerBuild_gcc8.addStep(ShellCommand(command=["./configure", "--e
 factoryLibrelpDockerBuild_gcc8.addStep(ShellCommand(command=["make", "-j4"], maxTime=1000, name="make"))
 factoryLibrelpDockerBuild_gcc8.addStep(ShellCommand(command=["make", "check", "TESTS="], maxTime=500, name="make testbench tools"))
 
+# build-only check: clang9
+factoryLibrelpDockerBuild_clang9 = BuildFactory()
+factoryLibrelpDockerBuild_clang9.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryLibrelpDockerBuild_clang9.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryLibrelpDockerBuild_clang9.addStep(ShellCommand(command=["./configure", "--enable-tls", "--enable-tls-openssl"], env={'CC': 'clang-9', "CFLAGS":"-pedantic"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure"))
+factoryLibrelpDockerBuild_clang9.addStep(ShellCommand(command=["make", "-j4"], maxTime=1000, name="make"))
+factoryLibrelpDockerBuild_clang9.addStep(ShellCommand(command=["make", "check", "TESTS="], maxTime=500, name="make testbench tools"))
+
 # CodeCov PR integration
 factoryLibrelpDockerUbuntu18_codecov = BuildFactory()
 factoryLibrelpDockerUbuntu18_codecov.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -193,6 +201,17 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
+   BuilderConfig(name="librelp build clang-9",
+     workernames=[  "docker-ubuntu-compilecheck-ubuntu1904-w1"
+		  , "docker-ubuntu-compilecheck-ubuntu1904-w2"],
+      factory=factoryLibrelpDockerBuild_clang9,
+      tags=["librelp", "docker"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "librelp",
+      },
+    ))
+lc['builders'].append(
    BuilderConfig(name="librelp codecov",
      workernames=["docker-ubuntu18-codecov-w4"],
       factory=factoryLibrelpDockerUbuntu18_codecov,
@@ -209,12 +228,14 @@ lc['schedulers'].append(SingleBranchScheduler(
 						project="rsyslog/librelp"),
 	builderNames=[	"librelp codecov"
 		      , "librelp koobs freebsd"
+		      , "librelp build clang-9"
 		      , "librelp build gcc-8"]
 ))
 lc['schedulers'].append(ForceScheduler(
 	name="forceall-librelp",
 	builderNames=[	"librelp codecov"
 		      , "librelp koobs freebsd"
+		      , "librelp build clang-9"
 		      , "librelp build gcc-8"]
 ))
 
