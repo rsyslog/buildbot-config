@@ -503,8 +503,9 @@ lc['builders'].append(
 
 factoryRsyslog_compile_gcc8 = BuildFactory()
 factoryRsyslog_compile_gcc8.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc-8', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc8)"))
+factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["devtools/run-configure.sh", "-fvi"], env={'CC': 'gcc-8'}, name="run-configure (gcc8)"))
+#factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+#factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'gcc-8'}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc8)"))
 factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make (gcc8)"))
 
 lc['builders'].append(
