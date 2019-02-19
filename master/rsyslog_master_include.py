@@ -32,7 +32,7 @@ factoryRsyslogCentos7VM = BuildFactory()
 factoryRsyslogCentos7VM.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
-factoryRsyslogCentos7VM.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-journal-tests", "--enable-compile-warnings=error", "--disable-helgrind"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig',  'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}))
+factoryRsyslogCentos7VM.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog","--enable-improg", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-journal-tests", "--enable-compile-warnings=error", "--disable-helgrind"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig',  'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["make", "-j4"], haltOnFailure=True))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["make", "-j3", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername'), "CI_ENV":"Centos7VM"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather check logs"))
@@ -217,7 +217,6 @@ factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "-j", "V=1"], 
 #	factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "check", "V=1"], env=solarisenv_gcc, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, timeout=3600))
 # clean up
 factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
-factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
 # ---
 
@@ -242,7 +241,6 @@ factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "-j", "V=0"], 
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "-j2", "check", "V=0"], env=solarisenv_sunstudio, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3000, timeout=1000))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh", "tests/*.sh.log"], env=solarisenv_sunstudio, maxTime=3000, timeout=60, name="gathering make check logs", descriptionDone="gathered make check logs"))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
-factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 # ---
 
 # Solaris unstable10s, which is so slow that the testbench
@@ -253,7 +251,7 @@ factoryRsyslogSolaris10sparc = BuildFactory()
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["rm", "-rf", "/export/home/buildbot-unstable10s/rsyslog/rsyslog_solaris10sparc_rsyslog/build/.git/index.lock"], env=solarisenv_gcc))
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["pwd"]))
 # cleanup
-factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["rm", "-rf", "localenv"], env=solarisenv_sunstudio, name="cleanup dependencies"))
+#factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["rm", "-rf", "localenv"], env=solarisenv_sunstudio, name="cleanup dependencies"))
 # begin work
 factoryRsyslogSolaris10sparc.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-librelp.sh"], env=solarisenv_sunstudio, name="building librelp dependency", descriptionDone="built librelp dependency"))
@@ -263,13 +261,12 @@ factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["autoreconf", "-fvi"]
 factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}, name="configure"))
 factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["gmake", "-j4", "V=0"], name="build with SunStudio", env=solarisenv_sunstudio))
 # make check does not work here due to too-slow machine
-factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/CI/interactive_exec_test_hook.sh", "tests/*.sh.log"], name="custom check scripts", env=solarisenv_sunstudio, maxTime=3000, timeout=1000))
-factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh", "tests/*.sh.log"], env=solarisenv_sunstudio, maxTime=3000, timeout=60, name="gathering make check logs", descriptionDone="gathered make check logs"))
+#factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/CI/interactive_exec_test_hook.sh", "tests/*.sh.log"], name="custom check scripts", env=solarisenv_sunstudio, maxTime=3000, timeout=1000))
+#factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh", "tests/*.sh.log"], env=solarisenv_sunstudio, maxTime=3000, timeout=60, name="gathering make check logs", descriptionDone="gathered make check logs"))
 
 # Note: we do not try build with gcc, as this takes another 20 minutes; the x86 case should
 # be good enough to cover this.
 # clean up
-factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
 # ---
 
 # Solaris unstable11s, which is so slow that the testbench
@@ -298,7 +295,7 @@ factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/
 # Note: we do not try build with gcc, as this takes another 20 minutes; the x86 case should
 # be good enough to cover this.
 # clean up
-factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=500, name="final cleanup" ))
+# not needed as buildbot does cleanup on startup factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "distclean"], env=solarisenv_sunstudio, maxTime=700, name="final cleanup" ))
 # ---
 
 factoryRsyslogDockerUbuntu16 = BuildFactory()
@@ -314,7 +311,6 @@ factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "-j2"], haltO
 # there is so much to do...
 	# TODO NOT WORKIGN YET !!! factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "-j3", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
-factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
 #rger 2018-06-29 factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, haltOnFailure=True, name="check"))
 #factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather make check logs"))
 # ---
@@ -648,7 +644,10 @@ lc['builders'].append(
 #    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-fedora28",
-      workernames=["docker-fedora28-w1", "docker-fedora28-w2", "docker-fedora28-w3", "docker-fedora28-w4"],
+      workernames=[#"docker-fedora28-w1",
+		#"docker-fedora28-w2",
+		"docker-fedora28-w3",
+		"docker-fedora28-w4"],
       factory=factoryRsyslogDockerFedora28,
       tags=["rsyslog"],
       properties={
@@ -718,7 +717,11 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-arm-ubuntu18",
-      workernames=["docker-armbian-w1", "docker-armbian-w2", "docker-armbian-w3", "docker-armbian-w4"],
+      workernames=["docker-armbian-w1",
+	"docker-armbian-w2",
+	"docker-armbian-w3",
+	#"docker-armbian-w4"
+	],
       factory=factoryRsyslogDockerArmUbuntu18,
       tags=["rsyslog"],
       properties={
@@ -748,7 +751,10 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
-     workernames=["docker-ubuntu18-san-w1", "docker-ubuntu18-san-w2", "docker-ubuntu18-san-w3", "docker-ubuntu18-san-w4"],
+     workernames=[#"docker-ubuntu18-san-w1",
+	#"docker-ubuntu18-san-w2",
+	"docker-ubuntu18-san-w3",
+	"docker-ubuntu18-san-w4"],
       factory=factoryRsyslogDockerUbuntu_18_SAN,
       tags=["rsyslog", "docker"],
       properties={
@@ -769,10 +775,10 @@ lc['builders'].append(
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
      workernames=["docker-ubuntu18-distcheck-w1",
-			"docker-ubuntu18-distcheck-w2",
-			"docker-ubuntu18-distcheck-w3",
+			#"docker-ubuntu18-distcheck-w2",
+			#"docker-ubuntu18-distcheck-w3",
 			"docker-ubuntu18-distcheck-w4",
-			"docker-ubuntu18-distcheck-w5"],
+			"docker-ubuntu18-distcheck-wg1"],
       factory=factoryRsyslogDockerUbuntu18_distcheck,
       tags=["rsyslog", "docker"],
       properties={
@@ -783,11 +789,11 @@ lc['builders'].append(
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-codecov",
      workernames=["docker-ubuntu18-codecov-w1",
-			"docker-ubuntu18-codecov-w2",
-			"docker-ubuntu18-codecov-w3",
+			# "docker-ubuntu18-codecov-w2",
+			#"docker-ubuntu18-codecov-w3",
 			"docker-ubuntu18-codecov-w4",
+			"docker-ubuntu18-codecov-wg1",
 			],
-			#"docker-ubuntu18-codecov-w5"],
       factory=factoryRsyslogDockerUbuntu18_codecov,
       tags=["rsyslog", "docker", "codecov"],
       properties={
@@ -797,7 +803,11 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos6",
-      workernames=["docker-centos6-w1", "docker-centos6-w2", "docker-centos6-w3", "docker-centos6-w4", "docker-centos6-w5"],
+      workernames=[#"docker-centos6-w1",
+	"docker-centos6-w2",
+	"docker-centos6-w3",
+	"docker-centos6-w4",
+	"docker-centos6-w5"],
       factory=factoryRsyslogDockerCentos6,
       tags=["rsyslog", "docker"],
       properties={
@@ -807,7 +817,10 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
-      workernames=["docker-centos7", "docker-centos7-w2", "docker-centos7-w3", "docker-centos7-w4"],
+      workernames=["docker-centos7",
+	#"docker-centos7-w2",
+	"docker-centos7-w3",
+	"docker-centos7-w4"],
       factory=factoryRsyslogDockerCentos7,
       tags=["rsyslog", "docker"],
       properties={
@@ -817,8 +830,10 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-suse-tumbleweed",
-      #workernames=[ "docker-suse-tumbleweed-w3_2"],
-      workernames=["docker-suse-tumbleweed-w1", "docker-suse-tumbleweed-w2", "docker-suse-tumbleweed-w3", "docker-suse-tumbleweed-w3_2"],
+      workernames=["docker-suse-tumbleweed-w1",
+	#"docker-suse-tumbleweed-w2",
+	"docker-suse-tumbleweed-w3",
+	"docker-suse-tumbleweed-w3_2"],
       factory=factoryRsyslogDockerSuse,
       tags=["rsyslog", "docker"],
       properties={
