@@ -1012,11 +1012,15 @@ lc['schedulers'].append(ForceScheduler(
 ))
 
 # Start Nightly Scheduler once at night!
-lc['schedulers'].append(schedulers.Nightly(name='nightly',
-	branch='master',
-	builderNames=["nightly rsyslog docker-fedora28",
-	              "rsyslog docker-ubuntu18-codecov"],
-	hour=1, minute=0))
+# we do not need them any longer as we have the on-master-change schedulers
+# They were originally meant for CodeCov, but also ensure that current master
+# had is tested. Change on 2019-04-29 - probably delete this in two month from now.
+# see also https://github.com/rsyslog/rsyslog/issues/2909
+#lc['schedulers'].append(schedulers.Nightly(name='nightly',
+#	branch='master',
+#	builderNames=["nightly rsyslog docker-fedora28",
+#	              "rsyslog docker-ubuntu18-codecov"],
+#	hour=1, minute=0))
 
 # build master commits so that CodeCov has references for all commits
 lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sched',
