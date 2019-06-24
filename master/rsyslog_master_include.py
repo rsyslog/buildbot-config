@@ -383,13 +383,13 @@ factoryRsyslogDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c",
 
 # This is for the nightly builds. It's almost equivalent to the "regular" one, but
 # with kafka tests enabled.
-factoryRsyslogDockerFedora28_nightly = BuildFactory()
-factoryRsyslogDockerFedora28_nightly.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["git", "log", "-3"], name="git branch information"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-omprog --enable-extended-tests"], env={'CC': 'gcc', "CFLAGS":"-g", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["make", "-j2", "check", "VERBOSE=1"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
-factoryRsyslogDockerFedora28_nightly.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather test logs"))
+factoryRsyslogDockerFedora30_nightly = BuildFactory()
+factoryRsyslogDockerFedora30_nightly.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDockerFedora30_nightly.addStep(ShellCommand(command=["git", "log", "-3"], name="git branch information"))
+factoryRsyslogDockerFedora30_nightly.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
+factoryRsyslogDockerFedora30_nightly.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-omprog --enable-extended-tests"], env={'CC': 'gcc', "CFLAGS":"-g", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerFedora30_nightly.addStep(ShellCommand(command=["make", "-j2", "check", "VERBOSE=1"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
+factoryRsyslogDockerFedora30_nightly.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather test logs"))
 # ---
 
 
@@ -450,7 +450,7 @@ factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make -j2 c
 
 
 # ---
-# This is both for Fedora28 and Fedora29 -- the container handles the differences
+# This is both for Fedora30 and Fedora29 -- the container handles the differences
 factoryRsyslogDockerFedora = BuildFactory()
 factoryRsyslogDockerFedora.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerFedora.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
@@ -658,11 +658,11 @@ lc['builders'].append(
 #      },
 #    ))
 lc['builders'].append(
-    BuilderConfig(name="rsyslog docker-fedora28",
-      workernames=[#"docker-fedora28-w1",
-		#"docker-fedora28-w2",
-		"docker-fedora28-w3",
-		"docker-fedora28-w4"],
+    BuilderConfig(name="rsyslog docker-fedora30",
+      workernames=[#"docker-fedora30-w1",
+		#"docker-fedora30-w2",
+		"docker-fedora30-w3",
+		"docker-fedora30-w4"],
       factory=factoryRsyslogDockerFedora,
       tags=["rsyslog"],
       properties={
@@ -868,9 +868,9 @@ lc['builders'].append(
 
 
 lc['builders'].append(
-   BuilderConfig(name="nightly rsyslog docker-fedora28",
-     workernames=["docker-fedora28-nightly"],
-      factory=factoryRsyslogDockerFedora28_nightly,
+   BuilderConfig(name="nightly rsyslog docker-fedora30",
+     workernames=["docker-fedora30-nightly"],
+      factory=factoryRsyslogDockerFedora30_nightly,
       tags=["rsyslog", "nightly", "docker"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -904,7 +904,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog raspbian clang compile"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7-5"
-			,"rsyslog docker-fedora28"
+			,"rsyslog docker-fedora30"
 			,"rsyslog docker-fedora29"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
@@ -950,7 +950,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7-5"
 			#,"rsyslog fedora26x64 rsyslog"
-			,"rsyslog docker-fedora28"
+			,"rsyslog docker-fedora30"
 			,"rsyslog docker-fedora29"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
@@ -984,7 +984,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian clang compile"
 			,"rsyslog centos7-5"
-			,"rsyslog docker-fedora28"
+			,"rsyslog docker-fedora30"
 			,"rsyslog docker-fedora29"
 			,"rsyslog freebsd rsyslog"
 			,"rsyslog suse rsyslog"
@@ -1008,7 +1008,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 lc['schedulers'].append(ForceScheduler(
 	name="forceallcron_rsyslog_rsyslog",
 	label="3. Force All Cron-rsyslog-rsyslog",
-	builderNames=["nightly rsyslog docker-fedora28"],
+	builderNames=["nightly rsyslog docker-fedora30"],
 ))
 
 # Start Nightly Scheduler once at night!
@@ -1018,7 +1018,7 @@ lc['schedulers'].append(ForceScheduler(
 # see also https://github.com/rsyslog/rsyslog/issues/2909
 #lc['schedulers'].append(schedulers.Nightly(name='nightly',
 #	branch='master',
-#	builderNames=["nightly rsyslog docker-fedora28",
+#	builderNames=["nightly rsyslog docker-fedora30",
 #	              "rsyslog docker-ubuntu18-codecov"],
 #	hour=1, minute=0))
 
