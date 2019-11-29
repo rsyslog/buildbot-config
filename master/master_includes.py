@@ -67,10 +67,10 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    treeStableTimer=None,
 			    builderNames=[szRepoProject + " suse " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-freebsd",
+			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-freebsd12",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " freebsd " + szRepoOwner]))
+			    builderNames=[szRepoProject + " freebsd12 " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-solaris",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -185,8 +185,8 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 	      },
 	    ))
 	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " freebsd " + szRepoOwner,
-	      workernames=["slave-freebsd"],
+	    BuilderConfig(name=szRepoProject + " freebsd12 " + szRepoOwner,
+	      workernames=["slave-freebsd12"],
 	      factory=factoryFreebsd,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
@@ -299,7 +299,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " fedora26x64 " + szRepoOwner
-				,szRepoProject + " freebsd " + szRepoOwner
+				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
@@ -332,7 +332,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " fedora26x64 " + szRepoOwner
-				,szRepoProject + " freebsd " + szRepoOwner
+				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
@@ -355,7 +355,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " fedora26x64 " + szRepoOwner
-				,szRepoProject + " freebsd " + szRepoOwner
+				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
