@@ -115,7 +115,7 @@ factoryLibrelpFreebsd= BuildFactory()
 factoryLibrelpFreebsd.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryLibrelpFreebsd.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio))
 factoryLibrelpFreebsd.addStep(ShellCommand(command=["./configure", "V=0"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
-factoryLibrelpFreebsd.addStep(ShellCommand(command=["make"], env=solarisenv_sunstudio))
+factoryLibrelpFreebsd.addStep(ShellCommand(command=["make", "-j4"], env=solarisenv_sunstudio))
 factoryLibrelpFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env=solarisenv_sunstudio, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=600))
 # ---
 
@@ -180,8 +180,8 @@ appendBuilders( lc, 'rsyslog', 'librelp',
 		)
 
 lc['builders'].append(
-   BuilderConfig(name="librelp koobs freebsd",
-     workernames=[  "koobs-freebsd-current" ],
+   BuilderConfig(name="librelp freebsd",
+     workernames=[  "slave-freebsd12" ],
       factory=factoryLibrelpFreebsd,
       tags=["librelp", "vm"],
       properties={
@@ -202,7 +202,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="librelp build clang-9",
-     workernames=["docker-ubuntu-compilecheck-ubuntu1904"],
+     workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
       factory=factoryLibrelpDockerBuild_clang9,
       tags=["librelp", "docker"],
       properties={
@@ -226,14 +226,14 @@ lc['schedulers'].append(SingleBranchScheduler(
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/librelp"),
 	builderNames=[	"librelp codecov"
-		      , "librelp koobs freebsd"
+		      , "librelp freebsd"
 		      , "librelp build clang-9"
 		      , "librelp build gcc-8"]
 ))
 lc['schedulers'].append(ForceScheduler(
 	name="forceall-librelp",
 	builderNames=[	"librelp codecov"
-		      , "librelp koobs freebsd"
+		      , "librelp freebsd"
 		      , "librelp build clang-9"
 		      , "librelp build gcc-8"]
 ))

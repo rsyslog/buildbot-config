@@ -506,13 +506,46 @@ factoryRsyslog_compile_clang9 = BuildFactory()
 factoryRsyslog_compile_clang9.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'clang-9', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang 9)"))
-factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (clang 9[experiemental])"))
+factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (clang 9)"))
 
 # we need dedicated machines as clang 9 currently requires dedicated container (issue with v8 coexistence)
 lc['builders'].append(
 	BuilderConfig(name="rsyslog compile clang9",
-		workernames=["docker-ubuntu-compilecheck-ubuntu1904"],
+		workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
 		factory=factoryRsyslog_compile_clang9,
+		tags=["rsyslog"], 
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog",
+		} ))
+
+
+factoryRsyslog_compile_clang10 = BuildFactory()
+factoryRsyslog_compile_clang10.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslog_compile_clang10.addStep(ShellCommand(command=["devtools/run-configure.sh"], env={'CC': 'clang-10', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="run-configure (clang 10)"))
+factoryRsyslog_compile_clang10.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (clang 10[experimental])"))
+
+lc['builders'].append(
+	BuilderConfig(name="rsyslog compile clang10",
+		workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
+		factory=factoryRsyslog_compile_clang10,
+		tags=["rsyslog"], 
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog",
+		} ))
+
+
+
+factoryRsyslog_compile_gcc9 = BuildFactory()
+factoryRsyslog_compile_gcc9.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslog_compile_gcc9.addStep(ShellCommand(command=["devtools/run-configure.sh"], env={'CC': 'gcc-9', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="run-configure (gcc 9)"))
+factoryRsyslog_compile_gcc9.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (gcc 9)"))
+
+lc['builders'].append(
+	BuilderConfig(name="rsyslog compile gcc9",
+		workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
+		factory=factoryRsyslog_compile_gcc9,
 		tags=["rsyslog"], 
 		properties={
 			"github_repo_owner": "rsyslog",
@@ -594,7 +627,7 @@ lc['builders'].append(
 
 factoryRsyslogStaticAnalyzer = BuildFactory()
 factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:16.04', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --disable-omhiredis"}, haltOnFailure=True))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:19.10', 'SCAN_BUILD_CC':'clang-9', 'SCAN_BUILD': 'scan-build-9', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12"}, haltOnFailure=True))
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog clang static analyzer",
@@ -985,8 +1018,10 @@ lc['schedulers'].append(ForceScheduler(
 	label="1. Pull Requests-rsyslog-rsyslog",
 	builderNames=[  "rsyslog clang static analyzer"
 			,"rsyslog compile gcc8"
+			,"rsyslog compile gcc9"
 			,"rsyslog compile clang8"
 			,"rsyslog compile clang9"
+			,"rsyslog compile clang10"
 			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
@@ -1035,8 +1070,10 @@ lc['schedulers'].append(ForceScheduler(
 	label="2. Force All-rsyslog-rsyslog",
 	builderNames=[	"rsyslog clang static analyzer"
 			,"rsyslog compile gcc8"
+			,"rsyslog compile gcc9"
 			,"rsyslog compile clang8"
 			,"rsyslog compile clang9"
+			,"rsyslog compile clang10"
 			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
@@ -1077,8 +1114,10 @@ lc['schedulers'].append(SingleBranchScheduler(
 	builderNames=[  "rsyslog clang static analyzer"
 			,"rsyslog PR structure validation"
 			,"rsyslog compile gcc8"
+			,"rsyslog compile gcc9"
 			,"rsyslog compile clang8"
 			,"rsyslog compile clang9"
+			,"rsyslog compile clang10"
 			,"rsyslog codestyle check"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
