@@ -995,8 +995,6 @@ lc['builders'].append(
       workernames=[
 	"docker-centos6-w2",
 	"docker-centos6-w3",
-	#"docker-centos6-w5",
-	#"docker-centos6-wg1"
 	],
       factory=factoryRsyslogDockerCentos6,
       tags=["rsyslog", "docker"],
@@ -1008,8 +1006,7 @@ lc['builders'].append(
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
       workernames=["docker-centos7",
-	"docker-centos7-w2",
-	"docker-centos7-w4"],
+	"docker-centos7-w2"],
       factory=factoryRsyslogDockerCentos7,
       tags=["rsyslog", "docker"],
       properties={
