@@ -58,12 +58,11 @@ factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/
 factoryRsyslogDebian.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 # use clang!
 factoryRsyslogDebian.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-omkafka=no", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'clang', "CFLAGS":"-g -fsanitize=address"}, logfiles={"config.log": "config.log"}))
-#factoryRsyslogDebian.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind"], logfiles={"config.log": "config.log"}))
 factoryRsyslogDebian.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=True))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
 # there is so much to do...
-factoryRsyslogDebian.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.5", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
+factoryRsyslogDebian.addStep(ShellCommand(command=["make", "-j4", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.5", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600))
 factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 
 factoryRsyslogDebian9 = BuildFactory()
@@ -71,15 +70,15 @@ factoryRsyslogDebian9.addStep(ShellCommand(command=["sleep", "2"], name="wait fo
 factoryRsyslogDebian9.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDebian9.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"]))
 factoryRsyslogDebian9.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
-factoryRsyslogDebian9.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
+factoryRsyslogDebian9.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], name="autoreconf"))
 # use clang!
 factoryRsyslogDebian9.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--enable-imdocker", "--disable-generate-man-pages", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-omjournal", "--enable-imjournal", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-omkafka", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--enable-impcap", "--enable-mmcapture", "-enable-omhttp", "--enable-mmdarwin", "--without-valgrind-testbench", "--enable-compile-warnings=error"], env={'CC': 'clang', "CFLAGS":"-g -O2 -fsanitize=address"}, logfiles={"config.log": "config.log"}, name="configure"))
 factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "-j", "V=1"], name="make", haltOnFailure=True))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
 # there is so much to do...
-factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/lib/llvm-3.8/bin/llvm-symbolizer", 'LIBRARY_PATH': '/usr/local/lib', 'LD_LIBRARY_PATH': '/usr/local/lib', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4600))
-factoryRsyslogDebian9.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"]))
+factoryRsyslogDebian9.addStep(ShellCommand(command=["make", "-j8", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/lib/llvm-3.8/bin/llvm-symbolizer", 'LIBRARY_PATH': '/usr/local/lib', 'LD_LIBRARY_PATH': '/usr/local/lib', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4600, name="make check"))
+#factoryRsyslogDebian9.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"]))
 
 factoryRsyslogRaspbian_gcc = BuildFactory()
 factoryRsyslogRaspbian_gcc.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -445,7 +444,7 @@ factoryRsyslogDockerSuse = BuildFactory()
 factoryRsyslogDockerSuse.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "devtools/run-configure.sh"], env={'CONFIGURE_OPTS_OVERRIDE': '--disable-elasticsearch --disable-elasticsearch-tests'}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="run-configure.sh"))
 factoryRsyslogDockerSuse.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=True, name="build"))
-factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make -j2 check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_DEBUG_TIMEOUTS_TO_STDERR": "on", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
+factoryRsyslogDockerSuse.addStep(ShellCommand(command=["bash", "-c", "make -j8 check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_DEBUG_TIMEOUTS_TO_STDERR": "on", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
 
 
 
@@ -456,9 +455,9 @@ factoryRsyslogDockerFedora.addStep(GitHub(repourl=repoGitUrl, mode='full', retry
 factoryRsyslogDockerFedora.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 # we temporarily disable ES tests, as one valgrind test seems to fail consistently with
 # lib-related issues. rgerhards, 2018-09-19
-factoryRsyslogDockerFedora.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no --disable-elasticsearch-tests --enable-debug"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerFedora.addStep(ShellCommand(command=["make", "-j2"], lazylogfiles=True, maxTime=1000, haltOnFailure=True, name="make (gcc)"))
-factoryRsyslogDockerFedora.addStep(ShellCommand(command=["bash", "-c", "make -j4 check V=0"], env={'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=True, name="check"))
+factoryRsyslogDockerFedora.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-kafka-tests=no --disable-elasticsearch-tests --enable-debug"], env={"CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerFedora.addStep(ShellCommand(command=["make", "-j8"], lazylogfiles=True, maxTime=1000, haltOnFailure=True, name="make (default cc)"))
+factoryRsyslogDockerFedora.addStep(ShellCommand(command=["bash", "-c", "make -j6 check V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=True, name="check"))
 # ---
 
 # check for elasticsearch, which is known to cause many false positives
@@ -481,6 +480,17 @@ factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", 
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["make", "-j", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", "make -j2 check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + g['secret_CODECOV_TOKEN'] + " -n\"rsyslog buildbot PR\"; rm codecov.sh || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
+# ---
+
+# check for kaffka, which is known to cause many false positives
+factoryRsyslogKafka_codecov = BuildFactory()
+factoryRsyslogKafka_codecov.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogKafka_codecov.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
+factoryRsyslogKafka_codecov.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp --enable-valgrind --enable-valgrind-testbench --disable-helgrind --disable-default-tests --enable-kafka-tests --enable-omkafka --enable-imkafka"], env={'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (coverage)"))
+factoryRsyslogKafka_codecov.addStep(ShellCommand(command=["make", "-j", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
+# nothing in parallel!!! kafka is highly timing-sensitive
+factoryRsyslogKafka_codecov.addStep(ShellCommand(command=["bash", "-c", "make -j2 check"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
+factoryRsyslogKafka_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + g['secret_CODECOV_TOKEN'] + " -n\"rsyslog buildbot PR\"; rm codecov.sh || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
 # ---
 
 
@@ -705,7 +715,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog debian9 rsyslog",
-      workernames=["slave-debian9", "slave-debian9-w2"],
+      workernames=["slave-debian9"], #TODO REMOVE VM, "slave-debian9-w2"],
       factory=factoryRsyslogDebian9,
       tags=["rsyslog"],
       properties={
@@ -774,9 +784,18 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
+    BuilderConfig(name="rsyslog Kafka codecov",
+      workernames=['docker-s1-fedora30'],
+      factory=factoryRsyslogKafka_codecov,
+      tags=["rsyslog", "docker"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
     BuilderConfig(name="rsyslog docker-fedora31",
       workernames=[ "docker-fedora31-w1"],
-			#"docker-s1-ubuntu18"],
       factory=factoryRsyslogDockerFedora,
       tags=["rsyslog"],
       properties={
@@ -786,10 +805,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-fedora30",
-      workernames=[#"docker-fedora30-w1",
-		#"docker-fedora30-w2",
-		"docker-fedora30-w3",
-		"docker-fedora30-w4"],
+      workernames=["docker-s1-fedora30"],
       factory=factoryRsyslogDockerFedora,
       tags=["rsyslog"],
       properties={
@@ -873,7 +889,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
-     workernames=["docker-ubuntu16-w2", "docker-ubuntu16-w3", "docker-ubuntu16-w4", "docker-ubuntu16"],
+     workernames=["docker-ubuntu16-w2", "docker-ubuntu16-w4", "docker-ubuntu16"],
       factory=factoryRsyslogDockerUbuntu16,
       tags=["rsyslog"],
       properties={
@@ -883,7 +899,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18 GnuTLS only",
-     workernames=["docker-ubuntu18-gtls-w3", "docker-ubuntu18-gtls-wg1"],
+     workernames=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-ubuntu18-lbm", "docker-s1-ubuntu18"],
       factory=factoryRsyslogDockerUbuntu_18_gtls_only,
       tags=["rsyslog", "docker"],
       properties={
@@ -893,12 +909,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-tsan rsyslog",
-     workernames=[
-	#"docker-ubuntu18-tsan-w3",
-	#"docker-ubuntu18-tsan-wg1"
-	"docker-ubuntu18-lbm"
-	, "docker-s1-ubuntu18"
-	],
+     workernames=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-ubuntu18-lbm", "docker-s1-ubuntu18"],
       factory=factoryRsyslogDockerUbuntu_18_TSAN,
       tags=["rsyslog", "docker"],
       properties={
@@ -908,10 +919,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
-     workernames=[
-	"docker-ubuntu18-san-w3",
-	#"docker-ubuntu18-san-w5",
-	"docker-ubuntu18-san-wg1"],
+     workernames=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-ubuntu18-lbm", "docker-s1-ubuntu18"],
       factory=factoryRsyslogDockerUbuntu_18_SAN,
       tags=["rsyslog", "docker"],
       properties={
@@ -921,7 +929,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-debian10",
-     workernames=["docker-debian10-w1", "docker-debian10-w2", "docker-debian10-w3"],
+     workernames=["docker-debian10-w1"], #, "docker-debian10-w2"],
       factory=factoryRsyslogDockerDebian_8,
       tags=["rsyslog", "docker"],
       properties={
@@ -931,10 +939,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
-     workernames=[#"docker-ubuntu18-distcheck-w1",
-			"docker-ubuntu18-lbm"
-			, "docker-s1-ubuntu18"
-		],
+     workernames=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-ubuntu18-lbm", "docker-s1-ubuntu18"],
       factory=factoryRsyslogDockerUbuntu18_distcheck,
       tags=["rsyslog", "docker"],
       properties={
@@ -944,11 +949,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-codecov",
-     workernames=[#"docker-ubuntu18-codecov-w1",
-			"docker-ubuntu18-codecov-w4",
-			"docker-ubuntu18-codecov-wg1",
-			"docker-s1-ubuntu18",
-			],
+     workernames=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-ubuntu18-lbm", "docker-s1-ubuntu18"],
       factory=factoryRsyslogDockerUbuntu18_codecov,
       tags=["rsyslog", "docker", "codecov"],
       properties={
@@ -960,7 +961,7 @@ lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos6",
       workernames=[
 	"docker-centos6-w2",
-	"docker-centos6-w3",
+	"docker-centos6-w5",
 	],
       factory=factoryRsyslogDockerCentos6,
       tags=["rsyslog", "docker"],
@@ -971,7 +972,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-centos7 rsyslog",
-      workernames=["docker-centos7-w2", "docker-centos7"],
+      workernames=["docker-centos7", "docker-centos7-w4"],
       factory=factoryRsyslogDockerCentos7,
       tags=["rsyslog", "docker"],
       properties={
@@ -991,8 +992,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-suse-tumbleweed",
-      workernames=["docker-suse-tumbleweed-w3",
-	#"docker-suse-tumbleweed-w5",
+      workernames=[#"docker-suse-tumbleweed-w5",
 	"docker-suse-tumbleweed-wg1"],
       factory=factoryRsyslogDockerSuse,
       tags=["rsyslog", "docker"],
@@ -1045,6 +1045,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos7-5"
 			,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
+			,"rsyslog Kafka codecov"
 			,"rsyslog docker-fedora31"
 			,"rsyslog docker-fedora30"
 			,"rsyslog freebsd12 rsyslog"
@@ -1097,6 +1098,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog centos7-5"
 			,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
+			,"rsyslog Kafka codecov"
 			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora31"
 			,"rsyslog docker-fedora30"
@@ -1139,6 +1141,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog centos7-5"
 			,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
+			,"rsyslog Kafka codecov"
 			,"rsyslog docker-fedora31"
 			,"rsyslog docker-fedora30"
 			,"rsyslog freebsd12 rsyslog"
@@ -1183,8 +1186,8 @@ lc['schedulers'].append(ForceScheduler(
 lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sched',
 	change_filter=util.ChangeFilter(project='rsyslog/rsyslog', branch='master'),
 	treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
-	builderNames=["rsyslog docker-ubuntu18-codecov"
-			,"background rsyslog centos7-5"],
+	builderNames=[#"rsyslog docker-ubuntu18-codecov" TODO: add second one!
+			"background rsyslog centos7-5"],
 	# TODO: replace with this value: builderNames=["master rsyslog"],
 	))
 

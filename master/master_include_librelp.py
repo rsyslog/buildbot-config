@@ -212,7 +212,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="librelp codecov",
-     workernames=["docker-ubuntu18-codecov-w4"],
+     workernames=["docker-ubuntu18"],
       factory=factoryLibrelpDockerUbuntu18_codecov,
       tags=["librelp", "docker", "codecov"],
       properties={
