@@ -166,7 +166,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 	    ))
 	lc['builders'].append(
 	    BuilderConfig(name=szRepoProject + " centos7 " + szRepoOwner,
-	      workernames=["slave-centos7"],
+	      workernames=["vm-centos7-5-w1"],
 	      factory=factoryCentos7,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
