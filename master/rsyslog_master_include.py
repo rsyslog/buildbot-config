@@ -26,13 +26,14 @@ from buildbot.changes import filter
 # reserved to checks known not to support concurrency due to time-sensitivy
 # as well as Centos6, which does not support parallel builds.
 generic_small_workers=['generic-s1', 'generic-s2','generic-s3']
-generic_workers=['generic-w1', 'generic-w2', 'generic-w3', 'generic-w4', 'generic-w5', 'generic-w6']
+generic_workers=['generic-w1', 'generic-w2', 'generic-w3', 'generic-w4', 'generic-w5',
+	'generic-w6', 'generic-w7', 'generic-w8']
 generic_logfiles={'failed-tests.log': 'failed-tests.log',
           "test-suite.log": "tests/test-suite.log",
           "config.log": "config.log"
 }
 #docker_workers=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-s1-ubuntu18", "docker-ubuntu18-w6"]
-docker_workers=["docker-ubuntu18-w6"]
+docker_workers=["docker-ubuntu18", "docker-ubuntu18-w1"]
 
 docker_cleanup_step = ShellCommand(command=["bash", "-c",
 	'docker ps; '
@@ -377,7 +378,7 @@ factoryRsyslogGeneric_Ubuntu18_SAN.addStep(ShellCommand(command=['bash', '-c', '
 			'-g -O3 -fno-omit-frame-pointer -fno-color-diagnostics',
 		'LSAN_OPTIONS':'detect_leaks=0',
 		'UBSAN_OPTIONS':'print_stacktrace=1',
-		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests --disable-kafka-tests '
+		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests '#--disable-kafka-tests '
 			'--disable-libfaketime --without-valgrind-testbench --disable-valgrind',
 		'CI_MAKE_OPT': '-j20',
 		'CI_MAKE_CHECK_OPT': '-j2',
@@ -400,17 +401,17 @@ factoryRsyslogGeneric_Ubuntu18_TSAN.addStep(ShellCommand(command=['bash', '-c', 
 		'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_ubuntu:18.04',
 		'CC': 'clang-8',
 		'CFLAGS':'-fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=thread '
-			'-g -O2 -fno-omit-frame-pointer -fno-color-diagnostics',
+			'-g -O0 -fno-omit-frame-pointer -fno-color-diagnostics',
 		'CI_SANITIZE_BLACKLIST':'tests/tsan.supp',
 		'TSAN_OPTIONS':"halt_on_error=1",
 		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests '
-			'--disable-impstats --disable-kafka-tests ' #ipstats has known and OK races
+			'--disable-impstats --disable-kafka-tests ' #impstats has known and OK races
 			'--disable-libfaketime --without-valgrind-testbench --disable-valgrind',
 		'CI_MAKE_OPT': '-j20',
-		'CI_MAKE_CHECK_OPT': '-j3',
+		'CI_MAKE_CHECK_OPT': '-j4',
 		'CI_CHECK_CMD': 'check',
 		'USE_AUTO_DEBUG': 'off',
-		'ABORT_ALL_ON_TEST_FAIL':'NO',
+		'ABORT_ALL_ON_TEST_FAIL':'YES',
 		'RSYSLOG_STATSURL': 'http://build.rsyslog.com/testbench-failedtest.php',
 		'CI_BUILD_URL': util.URLForBuild,
 		'VCS_SLUG':util.Property('buildername')
@@ -429,10 +430,10 @@ factoryRsyslogGeneric_Ubuntu18_distcheck.addStep(ShellCommand(command=['bash', '
 		'CC': 'gcc',
 		'CFLAGS':'-g',
 		'CI_MAKE_OPT': '-j20',
-		'CI_MAKE_CHECK_OPT': '-j3',
-		'CI_CHECK_CMD': 'check',
+		'CI_MAKE_CHECK_OPT': '-j4',
+		'CI_CHECK_CMD': 'distcheck',
 		'USE_AUTO_DEBUG': 'off',
-		'ABORT_ALL_ON_TEST_FAIL':'xYES',
+		'ABORT_ALL_ON_TEST_FAIL':'YES',
 		'RSYSLOG_STATSURL': 'http://build.rsyslog.com/testbench-failedtest.php',
 		'CI_BUILD_URL': util.URLForBuild,
 		'VCS_SLUG':util.Property('buildername')
@@ -597,7 +598,7 @@ factoryRsyslogGeneric_Fedora30.addStep(ShellCommand(command=["bash", "-c", "if [
 		'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_fedora:30',
 		'CFLAGS': '-g',
 		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests --disable-kafka-tests '
-			'--enable-debug',
+			'--disable-clickhouse-tests --enable-debug',
 		'CI_MAKE_OPT': '-j20',
 		'CI_MAKE_CHECK_OPT': '-j8',
 		'CI_CHECK_CMD': 'check',
@@ -640,13 +641,106 @@ factoryRsyslogGeneric_Kafka_codecov.addStep(ShellCommand(command=["bash", "-c", 
 
 
 
+factoryRsyslogGeneric_Kafka_distcheck = BuildFactory()
+factoryRsyslogGeneric_Kafka_distcheck.addStep(docker_cleanup_step)
+factoryRsyslogGeneric_Kafka_distcheck.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogGeneric_Kafka_distcheck.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh --rm devtools/run-ci.sh"],
+	env={
+		'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_ubuntu:18.04',
+		'CC': 'gcc',
+		'CFLAGS':'-g',
+		# Note: we completely override the container configure options here!
+		'RSYSLOG_CONFIGURE_OPTIONS_OVERRIDE':  '--enable-testbench --enable-omstdout --enable-imdiag '
+			'--disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp '
+			'--enable-valgrind --enable-valgrind-testbench --disable-helgrind '
+			'--disable-default-tests --enable-kafka-tests --enable-omkafka --enable-gnutls '
+			'--enable-imkafka',
+		'CI_MAKE_OPT': '-j20',
+		'CI_MAKE_CHECK_OPT': '-j2',
+		'CI_CHECK_CMD': 'distcheck',
+		'USE_AUTO_DEBUG': 'off',
+		'ABORT_ALL_ON_TEST_FAIL':'YES',
+		"RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php",
+		'CI_BUILD_URL': util.URLForBuild,
+		'VCS_SLUG':util.Property('buildername')
+	},
+	logfiles=generic_logfiles,
+	lazylogfiles=True, maxTime=3600,
+	haltOnFailure=False, name="run CI script"))
+
+
+factoryRsyslogGeneric_Kafka_TSAN = BuildFactory()
+factoryRsyslogGeneric_Kafka_TSAN.addStep(docker_cleanup_step)
+factoryRsyslogGeneric_Kafka_TSAN.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogGeneric_Kafka_TSAN.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh --rm devtools/run-ci.sh"],
+	env={
+		'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_ubuntu:18.04',
+		'CC': 'clang-8',
+		'CFLAGS':'-fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=thread '
+			'-g -O2 -fno-omit-frame-pointer -fno-color-diagnostics',
+		'CI_SANITIZE_BLACKLIST':'tests/tsan.supp',
+		'TSAN_OPTIONS':"halt_on_error=1",
+		# Note: we completely override the container configure options here!
+		'RSYSLOG_CONFIGURE_OPTIONS_OVERRIDE':  '--enable-testbench --enable-omstdout --enable-imdiag '
+			'--disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp '
+			'--enable-valgrind --enable-valgrind-testbench --disable-helgrind '
+			'--disable-default-tests --enable-kafka-tests --enable-omkafka '
+			'--enable-imkafka',
+		'CI_MAKE_OPT': '-j20',
+		'CI_MAKE_CHECK_OPT': '-j2',
+		'CI_CHECK_CMD': 'check',
+		'USE_AUTO_DEBUG': 'off',
+		'ABORT_ALL_ON_TEST_FAIL':'YES',
+		"RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php",
+		'CI_BUILD_URL': util.URLForBuild,
+		'VCS_SLUG':util.Property('buildername')
+	},
+	logfiles=generic_logfiles,
+	lazylogfiles=True, maxTime=3600,
+	haltOnFailure=False, name="run CI script"))
+
+
+factoryRsyslogGeneric_Kafka_SAN = BuildFactory()
+factoryRsyslogGeneric_Kafka_SAN.addStep(docker_cleanup_step)
+factoryRsyslogGeneric_Kafka_SAN.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogGeneric_Kafka_SAN.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh --rm devtools/run-ci.sh"],
+	env={
+		'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_ubuntu:18.04',
+		'CC': 'clang-8',
+		'CFLAGS':'-g  -fstack-protector -D_FORTIFY_SOURCE=2 '
+			'-fsanitize=address,undefined,nullability,unsigned-integer-overflow '
+			'-fno-sanitize-recover=undefined,nullability,unsigned-integer-overflow '
+			'-g -O3 -fno-omit-frame-pointer -fno-color-diagnostics',
+		'LSAN_OPTIONS':'detect_leaks=0',
+		'UBSAN_OPTIONS':'print_stacktrace=1',
+		# Note: we completely override the container configure options here!
+		'RSYSLOG_CONFIGURE_OPTIONS_OVERRIDE':  '--enable-testbench --enable-omstdout --enable-imdiag '
+			'--disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp '
+			'--enable-valgrind --enable-valgrind-testbench --disable-helgrind '
+			'--disable-default-tests --enable-kafka-tests --enable-omkafka '
+			'--enable-imkafka',
+		'CI_MAKE_OPT': '-j20',
+		'CI_MAKE_CHECK_OPT': '-j2',
+		'CI_CHECK_CMD': 'check',
+		'USE_AUTO_DEBUG': 'off',
+		'ABORT_ALL_ON_TEST_FAIL':'YES',
+		"RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php",
+		'CI_BUILD_URL': util.URLForBuild,
+		'VCS_SLUG':util.Property('buildername')
+	},
+	logfiles=generic_logfiles,
+	lazylogfiles=True, maxTime=3600,
+	haltOnFailure=False, name="run CI script"))
+
+
+
 # This is our environment for LLVM TSAN
 factoryRsyslogDockerUbuntu_18_TSAN = BuildFactory()
 factoryRsyslogDockerUbuntu_18_TSAN.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
-factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["bash", "-c", 'env; export CFLAGS="-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=thread -fsanitize-blacklist=$(pwd)/tests/tsan.supp -g -O2 -fno-omit-frame-pointer -fno-color-diagnostics"; echo "SHOWING NEW CFLAGS: " $CFLAGS; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-valgrind --without-valgrind-testbench --enable-imptcp --disable-impstats --disable-omprog --disable-elasticsearch --disable-elasticsearch-tests --disable-libfaketime --enable-kafka-tests=no'], env={'CC': 'clang-8', "CFLAGS":"-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=thread -g -O2 -fno-omit-frame-pointer -fno-color-diagnostics"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-8-TSAN)"))
+factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["bash", "-c", 'env; export CFLAGS="-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=thread -fsanitize-blacklist=$(pwd)/tests/tsan.supp -g -O0 -fno-omit-frame-pointer -fno-color-diagnostics"; echo "SHOWING NEW CFLAGS: " $CFLAGS; ./configure $RSYSLOG_CONFIGURE_OPTIONS --disable-valgrind --without-valgrind-testbench --enable-imptcp --disable-impstats --disable-omprog --disable-elasticsearch --disable-elasticsearch-tests --disable-libfaketime --enable-kafka-tests=no'], env={'CC': 'clang-8', "CFLAGS":"-g  -fstack-protector -D_FORTIFY_SOURCE=2 -fsanitize=thread -g -O2 -fno-omit-frame-pointer -fno-color-diagnostics"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-8-TSAN)"))
 factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["make", "-j2", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
-factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'TSAN_OPTIONS':"halt_on_error=1", 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
+factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["make", "-j4", "check", "V=0"], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'TSAN_OPTIONS':"halt_on_error=1", 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 factoryRsyslogDockerUbuntu_18_TSAN.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
 # ---
 
@@ -667,7 +761,7 @@ factoryRsyslogDockerUbuntu_18_SAN.addStep(ShellCommand(command=["bash", "-c", "i
 factoryRsyslogDockerUbuntu_18_gtls_only = BuildFactory()
 factoryRsyslogDockerUbuntu_18_gtls_only.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
-factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --disable-fmhttp --enable-valgrind --disable-default-tests --enable-gnutls --enable-extended-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-gnutls)"))
+factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --disable-fmhttp --enable-valgrind --disable-default-tests --enable-gnutls --disable-imfile-tests --enable-extended-tests"], env={'CC': 'clang', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang-gnutls)"))
 factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["make", "-j8", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
 factoryRsyslogDockerUbuntu_18_gtls_only.addStep(ShellCommand(command=["make", "-j4", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 # ---
@@ -692,7 +786,7 @@ factoryRsyslogDockerUbuntu18_distcheck = BuildFactory()
 factoryRsyslogDockerUbuntu18_distcheck.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-mysql-tests=yes --enable-kafka-tests=yes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "-j4", "distcheck", "V=0"], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
+factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "-j6", "distcheck", "V=0"], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
 # ---
 
@@ -1238,6 +1332,36 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog gen kafka distcheck",
+      workernames=generic_small_workers,
+      factory=factoryRsyslogGeneric_Kafka_distcheck,
+      tags=["rsyslog", "generic"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog gen kafka TSAN",
+      workernames=generic_small_workers,
+      factory=factoryRsyslogGeneric_Kafka_TSAN,
+      tags=["rsyslog", "generic"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
+lc['builders'].append(
+    BuilderConfig(name="rsyslog gen kafka SAN",
+      workernames=generic_small_workers,
+      factory=factoryRsyslogGeneric_Kafka_SAN,
+      tags=["rsyslog", "generic"],
+      properties={
+	"github_repo_owner": "rsyslog",
+	"github_repo_name": "rsyslog",
+      },
+    ))
 #lc['builders'].append(
     #BuilderConfig(name="rsyslog Kafka codecov",
       #workernames=['docker-s1-fedora30'],
@@ -1372,16 +1496,16 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-ubuntu18-tsan rsyslog",
-      workernames=docker_workers,
-      factory=factoryRsyslogDockerUbuntu_18_TSAN,
-      tags=["rsyslog", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+   #BuilderConfig(name="rsyslog docker-ubuntu18-tsan rsyslog",
+      #workernames=docker_workers,
+      #factory=factoryRsyslogDockerUbuntu_18_TSAN,
+      #tags=["rsyslog", "docker"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 lc['builders'].append(
    BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
       workernames=docker_workers,
@@ -1526,9 +1650,12 @@ lc['schedulers'].append(ForceScheduler(
 			#,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
-			,"rsyslog docker-ubuntu18-tsan rsyslog"
+			#,"rsyslog docker-ubuntu18-tsan rsyslog"
 			#,"rsyslog docker-debian10"
 			,"rsyslog gen kafka codecov"
+			,"rsyslog gen kafka distcheck"
+			#does not work,"rsyslog gen kafka TSAN"
+			#does not work,"rsyslog gen kafka SAN"
 			,"rsyslog gen suse thumbleweed"
 			,"rsyslog gen debian10"
 			,"rsyslog gen centos6"
@@ -1590,13 +1717,16 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
-			,"rsyslog docker-ubuntu18-tsan rsyslog"
+			#,"rsyslog docker-ubuntu18-tsan rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
 			#,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			#,"rsyslog docker-centos6"
 			#,"rsyslog docker-debian10"
 			,"rsyslog gen kafka codecov"
+			,"rsyslog gen kafka distcheck"
+			,"rsyslog gen kafka TSAN"
+			,"rsyslog gen kafka SAN"
 			,"rsyslog gen suse thumbleweed"
 			,"rsyslog gen debian10"
 			,"rsyslog gen centos6"
@@ -1624,7 +1754,8 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog gen ubuntu16"
 			,"rsyslog gen ubuntu18 SAN"
 			,"rsyslog gen ubuntu18 TSAN"
-			,"rsyslog gen ubuntu18 distcheck"
+			# too slow, use docker instead,"rsyslog gen ubuntu18 distcheck"
+			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog gen ubuntu18 codecov"
 			,"rsyslog codestyle check"
 			,"rsyslog debian rsyslog"
@@ -1636,7 +1767,6 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog ElasticSearch codecov"
 			#,"rsyslog Kafka codecov"
 			,"rsyslog docker-fedora31"
-			#,"rsyslog docker-fedora30"
 			,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
 			,"rsyslog solaris10x64 rsyslog"
@@ -1645,15 +1775,16 @@ lc['schedulers'].append(SingleBranchScheduler(
 			# far too slow at the moment, disable 2019-02-31 rgerhards: ,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
-			#,"rsyslog docker-ubuntu16 rsyslog"
-			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			#,"rsyslog docker-ubuntu18-codecov"
 			,"rsyslog docker-ubuntu18 GnuTLS only"
 			#,"rsyslog docker-ubuntu18-san rsyslog"
-			,"rsyslog docker-ubuntu18-tsan rsyslog"
+			#,"rsyslog docker-ubuntu18-tsan rsyslog"
 			#,"rsyslog docker-centos6" # disable until stable!
 			#,"rsyslog docker-debian10"
 			,"rsyslog gen kafka codecov"
+			,"rsyslog gen kafka distcheck"
+			#does not work,"rsyslog gen kafka TSAN"
+			#does not work,"rsyslog gen kafka SAN"
 			,"rsyslog gen suse thumbleweed"
 			,"rsyslog gen debian10"
 			,"rsyslog gen centos6"
