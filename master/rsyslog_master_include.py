@@ -29,10 +29,9 @@ generic_small_workers=['generic-s1', 'generic-s2','generic-s3']
 generic_workers=['generic-w1', 'generic-w2', 'generic-w3', 'generic-w4', 'generic-w5',
 	'generic-w6', 'generic-w7', 'generic-w8']
 generic_logfiles={'failed-tests.log': 'failed-tests.log',
-          "test-suite.log": "tests/test-suite.log",
+#re-enable          "test-suite.log": "tests/test-suite.log",
           "config.log": "config.log"
 }
-#docker_workers=["docker-ubuntu18-w1", "docker-ubuntu18", "docker-s1-ubuntu18", "docker-ubuntu18-w6"]
 docker_workers=["docker-ubuntu18", "docker-ubuntu18-w1"]
 
 docker_cleanup_step = ShellCommand(command=["bash", "-c",
@@ -45,7 +44,11 @@ docker_cleanup_step = ShellCommand(command=["bash", "-c",
 	'if [ "$(docker ps -q -a)" != "" ]; then '
 	'    docker rm $(docker ps -q -a); '
 	'fi '
-], haltOnFailure=True, name="cleanup left-over docker containers")
+], alwaysRun=True, haltOnFailure=False, name="cleanup left-over docker containers")
+
+gather_logs_step = ShellCommand(command=["bash", "-c", 'devtools/gather-check-logs.sh'],
+	logfiles={"failed-tests.log": "failed-tests.log"}, lazylogfiles=True, 
+	alwaysRun=True, haltOnFailure=True, name="show failed logs")
 
 
 
@@ -159,7 +162,8 @@ factoryRsyslogFreebsd.addStep(ShellCommand(command=["./configure", "--disable-de
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="build"))
 # add for testing:  mmexternal-SegFault-vg.sh mmexternal-SegFault.sh
 factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=2500, name="check"))
-factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
+factoryRsyslogFreebsd.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"],
+ 	alwaysRun=True, name="gather check logs"))
 
 #factoryRsyslogUbuntu = BuildFactory()
 #factoryRsyslogUbuntu.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
@@ -362,6 +366,8 @@ factoryRsyslogGeneric_Ubuntu16.addStep(ShellCommand(command=["bash", "-c", "if [
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Ubuntu16.addStep(gather_logs_step)
+factoryRsyslogGeneric_Ubuntu16.addStep(docker_cleanup_step)
 ################################################################################
 
 
@@ -379,7 +385,7 @@ factoryRsyslogGeneric_Ubuntu18_SAN.addStep(ShellCommand(command=['bash', '-c', '
 		'LSAN_OPTIONS':'detect_leaks=0',
 		'UBSAN_OPTIONS':'print_stacktrace=1',
 		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests '#--disable-kafka-tests '
-			'--disable-libfaketime --without-valgrind-testbench --disable-valgrind',
+			'--enable-imfile-tests --disable-libfaketime --without-valgrind-testbench --disable-valgrind',
 		'CI_MAKE_OPT': '-j20',
 		'CI_MAKE_CHECK_OPT': '-j2',
 		'CI_CHECK_CMD': 'check',
@@ -391,6 +397,7 @@ factoryRsyslogGeneric_Ubuntu18_SAN.addStep(ShellCommand(command=['bash', '-c', '
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Ubuntu18_SAN.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Ubuntu18_TSAN = BuildFactory()
@@ -404,8 +411,9 @@ factoryRsyslogGeneric_Ubuntu18_TSAN.addStep(ShellCommand(command=['bash', '-c', 
 			'-g -O0 -fno-omit-frame-pointer -fno-color-diagnostics',
 		'CI_SANITIZE_BLACKLIST':'tests/tsan.supp',
 		'TSAN_OPTIONS':"halt_on_error=1",
-		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests '
+		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests --enable-imfile-tests '
 			'--disable-impstats --disable-kafka-tests ' #impstats has known and OK races
+			'--disable-mmpstrucdata ' # TEMPORARILY disabled because of a threading hang on shutdown
 			'--disable-libfaketime --without-valgrind-testbench --disable-valgrind',
 		'CI_MAKE_OPT': '-j20',
 		'CI_MAKE_CHECK_OPT': '-j4',
@@ -419,6 +427,8 @@ factoryRsyslogGeneric_Ubuntu18_TSAN.addStep(ShellCommand(command=['bash', '-c', 
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=7200,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Ubuntu18_TSAN.addStep(gather_logs_step)
+factoryRsyslogGeneric_Ubuntu18_TSAN.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Ubuntu18_distcheck = BuildFactory()
@@ -441,6 +451,8 @@ factoryRsyslogGeneric_Ubuntu18_distcheck.addStep(ShellCommand(command=['bash', '
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Ubuntu18_distcheck.addStep(gather_logs_step)
+factoryRsyslogGeneric_Ubuntu18_distcheck.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Ubuntu18_codecov = BuildFactory()
@@ -468,6 +480,8 @@ factoryRsyslogGeneric_Ubuntu18_codecov.addStep(ShellCommand(command=['bash', '-c
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Ubuntu18_codecov.addStep(gather_logs_step);
+factoryRsyslogGeneric_Ubuntu18_codecov.addStep(docker_cleanup_step);
 
 
 #.addStep(ShellCommand(command=["bash", "-c", "make -j8 check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "ASAN_OPTIONS": "detect_leaks=0", "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer-3.4", "RSYSLOG_DEBUG_TIMEOUTS_TO_STDERR": "on", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="check"))
@@ -490,6 +504,8 @@ factoryRsyslogGeneric_Thumbleweed.addStep(ShellCommand(command=['bash', '-c', 'd
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Thumbleweed.addStep(gather_logs_step)
+factoryRsyslogGeneric_Thumbleweed.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Debian10 = BuildFactory()
@@ -512,6 +528,8 @@ factoryRsyslogGeneric_Debian10.addStep(ShellCommand(command=["bash", "-c", "if [
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Thumbleweed.addStep(gather_logs_step)
+factoryRsyslogGeneric_Thumbleweed.addStep(docker_cleanup_step)
 
 
 #.addStep(ShellCommand(command=["./configure", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch=no", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--disable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--disable-ax-compiler-flags"], logfiles={"config.log": "config.log"}))
@@ -542,6 +560,7 @@ factoryRsyslogGeneric_Centos6.addStep(ShellCommand(command=["bash", "-c", "devto
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Centos6.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Centos7 = BuildFactory()
@@ -566,6 +585,8 @@ factoryRsyslogGeneric_Centos7.addStep(ShellCommand(command=["bash", "-c", "if [ 
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Centos7.addStep(gather_logs_step)
+factoryRsyslogGeneric_Centos7.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Centos8 = BuildFactory()
@@ -588,6 +609,8 @@ factoryRsyslogGeneric_Centos8.addStep(ShellCommand(command=["bash", "-c", "if [ 
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Centos8.addStep(gather_logs_step)
+factoryRsyslogGeneric_Centos8.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Fedora30 = BuildFactory()
@@ -610,6 +633,8 @@ factoryRsyslogGeneric_Fedora30.addStep(ShellCommand(command=["bash", "-c", "if [
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Fedora30.addStep(gather_logs_step)
+factoryRsyslogGeneric_Fedora30.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Kafka_codecov = BuildFactory()
@@ -625,7 +650,7 @@ factoryRsyslogGeneric_Kafka_codecov.addStep(ShellCommand(command=["bash", "-c", 
 			'--disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp '
 			'--enable-valgrind --enable-valgrind-testbench --disable-helgrind '
 			'--disable-default-tests --enable-kafka-tests --enable-omkafka '
-			'--enable-imkafka',
+			'--enable-gnutls --disable-gnutls-tests --enable-imkafka',
 		'CI_MAKE_OPT': '-j20',
 		'CI_MAKE_CHECK_OPT': '-j2',
 		'CI_CHECK_CMD': 'check',
@@ -638,6 +663,8 @@ factoryRsyslogGeneric_Kafka_codecov.addStep(ShellCommand(command=["bash", "-c", 
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Kafka_codecov.addStep(gather_logs_step)
+factoryRsyslogGeneric_Kafka_codecov.addStep(docker_cleanup_step)
 
 
 
@@ -654,7 +681,7 @@ factoryRsyslogGeneric_Kafka_distcheck.addStep(ShellCommand(command=["bash", "-c"
 			'--disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp '
 			'--enable-valgrind --enable-valgrind-testbench --disable-helgrind '
 			'--disable-default-tests --enable-kafka-tests --enable-omkafka --enable-gnutls '
-			'--enable-imkafka',
+			'--disable-gnutls-tests --enable-imkafka',
 		'CI_MAKE_OPT': '-j20',
 		'CI_MAKE_CHECK_OPT': '-j2',
 		'CI_CHECK_CMD': 'distcheck',
@@ -667,6 +694,8 @@ factoryRsyslogGeneric_Kafka_distcheck.addStep(ShellCommand(command=["bash", "-c"
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Kafka_distcheck.addStep(gather_logs_step)
+factoryRsyslogGeneric_Kafka_distcheck.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Kafka_TSAN = BuildFactory()
@@ -698,6 +727,8 @@ factoryRsyslogGeneric_Kafka_TSAN.addStep(ShellCommand(command=["bash", "-c", "de
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Kafka_TSAN.addStep(gather_logs_step)
+factoryRsyslogGeneric_Kafka_TSAN.addStep(docker_cleanup_step)
 
 
 factoryRsyslogGeneric_Kafka_SAN = BuildFactory()
@@ -731,6 +762,8 @@ factoryRsyslogGeneric_Kafka_SAN.addStep(ShellCommand(command=["bash", "-c", "dev
 	logfiles=generic_logfiles,
 	lazylogfiles=True, maxTime=3600,
 	haltOnFailure=False, name="run CI script"))
+factoryRsyslogGeneric_Kafka_SAN.addStep(gather_logs_step)
+factoryRsyslogGeneric_Kafka_SAN.addStep(docker_cleanup_step)
 
 
 
@@ -785,9 +818,11 @@ factoryRsyslogDockerDebian_8.addStep(ShellCommand(command=["bash", "-c", "if [ -
 factoryRsyslogDockerUbuntu18_distcheck = BuildFactory()
 factoryRsyslogDockerUbuntu18_distcheck.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-mysql-tests=yes --enable-kafka-tests=yes"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
-factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "-j6", "distcheck", "V=0"], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
-factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "cat $(find . -name test-suite.log); pwd; exit 0"], haltOnFailure=False, name="show distcheck test log"))
+factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "env; ./configure $RSYSLOG_CONFIGURE_OPTIONS --enable-mysql-tests=yes --disable-kafka-tests --enable-imfile-tests"], env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc)"))
+factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["make", "-j6", "distcheck", "V=0"], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, lazylogfiles=True, maxTime=7200, haltOnFailure=False, name="distcheck"))
+factoryRsyslogDockerUbuntu18_distcheck.addStep(ShellCommand(command=["bash", "-c", "devtools/gather-check-logs.sh"],
+	logfiles={"failed-tests.log": "failed-tests.log"}, lazylogfiles=True,
+	alwaysRun=True, haltOnFailure=False, name="show distcheck test logs"))
 # ---
 
 # CodeCov PR integration
