@@ -387,7 +387,7 @@ factoryRsyslogGeneric_Ubuntu18_SAN.addStep(ShellCommand(command=['bash', '-c', '
 		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests '#--disable-kafka-tests '
 			'--enable-imfile-tests --disable-libfaketime --without-valgrind-testbench --disable-valgrind',
 		'CI_MAKE_OPT': '-j20',
-		'CI_MAKE_CHECK_OPT': '-j2',
+		'1CI_MAKE_CHECK_OPT': '-j2',
 		'CI_CHECK_CMD': 'check',
 		'USE_AUTO_DEBUG': 'off',
 		'RSYSLOG_STATSURL': 'http://build.rsyslog.com/testbench-failedtest.php',
@@ -969,7 +969,7 @@ factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["make", "-j1"], halt
 # we need dedicated machines as clang 9 currently requires dedicated container (issue with v8 coexistence)
 lc['builders'].append(
 	BuilderConfig(name="rsyslog compile clang9",
-		workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
+		workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
 		factory=factoryRsyslog_compile_clang9,
 		tags=["rsyslog"], 
 		properties={
@@ -985,7 +985,7 @@ factoryRsyslog_compile_clang10.addStep(ShellCommand(command=["make", "-j1"], hal
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog compile clang10",
-		workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
+		workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
 		factory=factoryRsyslog_compile_clang10,
 		tags=["rsyslog"], 
 		properties={
@@ -1002,7 +1002,7 @@ factoryRsyslog_compile_gcc9.addStep(ShellCommand(command=["make", "-j1"], haltOn
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog compile gcc9",
-		workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
+		workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
 		factory=factoryRsyslog_compile_gcc9,
 		tags=["rsyslog"], 
 		properties={
@@ -1101,8 +1101,8 @@ lc['builders'].append(
 # the end of this file!!!!
 factoryRsyslogRpmBuild = BuildFactory()
 # Prepare enviromment
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL":"rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment"))
-
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL":"rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=False, name="Init environment"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "rm rpmbuild/SOURCES/*.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="Init environment: rm existing tar.gz files from SOURCES"))
 ## DEBUG TESTING docker-fedora30-fix BRANCH 
 #factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "git checkout -f docker-fedora30-fix && sed -i \"s/szLocalUser\=test/szLocalUser\=pkg/g\" config.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", haltOnFailure=True, name="DEBUG alorbach git update"))
 #factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL":"rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="DEBUG Init environment 2"))
@@ -1129,11 +1129,10 @@ factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSL
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log"}, name="build epel-8/x86_64 rpms"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log"}, name="build epel-7/x86_64 rpms"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"v8-stable-testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
-
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log"}, name="build epel-7/x86_64 rpms"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log"}, name="build epel-8/x86_64 rpms"))
 
 lc['builders'].append(
    BuilderConfig(name="rsyslog rpmbuild",
@@ -1571,16 +1570,16 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-ubuntu18-codecov",
-      workernames=docker_workers,
-      factory=factoryRsyslogDockerUbuntu18_codecov,
-      tags=["rsyslog", "docker", "codecov"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+#   BuilderConfig(name="rsyslog docker-ubuntu18-codecov",
+#      workernames=docker_workers,
+#      factory=factoryRsyslogDockerUbuntu18_codecov,
+#      tags=["rsyslog", "docker", "codecov"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 #lc['builders'].append(
 #   BuilderConfig(name="rsyslog docker-centos6",
 #      workernames=["docker-centos6-wg1", "docker-centos6-w5"],
@@ -1741,7 +1740,6 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
 			#,"rsyslog Kafka codecov"
-			#,"rsyslog fedora26x64 rsyslog"
 			,"rsyslog docker-fedora31"
 			#,"rsyslog docker-fedora30"
 			,"rsyslog freebsd12 rsyslog"
@@ -1853,10 +1851,9 @@ lc['schedulers'].append(ForceScheduler(
 lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sched',
 	change_filter=util.ChangeFilter(project='rsyslog/rsyslog', branch='master'),
 	treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
-	builderNames=["rsyslog docker-ubuntu18-codecov"
+	builderNames=[   "rsyslog gen ubuntu18 codecov"
 			,"background rsyslog centos7-5"
 			,"rsyslog gen kafka codecov"
-			#,"rsyslog Kafka codecov"
 		     ],
 	# TODO: replace with this value: builderNames=["master rsyslog"],
 	))
@@ -1865,6 +1862,7 @@ lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sc
 factoryRsyslogRpmBuild_nightly = BuildFactory()
 # Prepare enviromment
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL":"rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "rm rpmbuild/SOURCES/*.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="Init environment: rm existing tar.gz files from SOURCES"))
 
 ## DEBUG TESTING docker-fedora30-fix BRANCH 
 #factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "git checkout -f docker-fedora30-fix && sed -i \"s/szLocalUser\=test/szLocalUser\=pkg/g\" config.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", haltOnFailure=True, name="DEBUG alorbach git update"))
@@ -1894,8 +1892,8 @@ factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -
 # - BUILD RPMS
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log", "build.log": "/var/lib/mock/epel-6-i386/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-6-x86_64/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
 
 # - UPLOAD RPMs to v8-stable-nightly repo
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-nightly", "REPOUSERNAME": "pkgbuild", "REPOURL": "rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-nightly repo"))

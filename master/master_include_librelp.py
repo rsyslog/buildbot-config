@@ -202,7 +202,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="librelp build clang-9",
-     workernames=["docker-ubuntu-compilecheck-ubuntu1910"],
+     workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
       factory=factoryLibrelpDockerBuild_clang9,
       tags=["librelp", "docker"],
       properties={

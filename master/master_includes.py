@@ -60,7 +60,7 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    treeStableTimer=None,
 			    builderNames=[	szRepoProject + " centos6 " + szRepoOwner, 
 						szRepoProject + " centos7 " + szRepoOwner,
-						szRepoProject + " fedora26x64 " + szRepoOwner ]))
+						]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-suse",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -168,16 +168,6 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 	    BuilderConfig(name=szRepoProject + " centos7 " + szRepoOwner,
 	      workernames=["vm-centos7-5-w1"],
 	      factory=factoryCentos7,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " fedora26x64 " + szRepoOwner,
-	      workernames=["slave-fedora26x64"],
-	      factory=factoryFedora64,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
 		"github_repo_owner": szRepoOwner,
@@ -298,7 +288,6 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " fedora26x64 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
@@ -331,7 +320,6 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " fedora26x64 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
@@ -354,7 +342,6 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " fedora26x64 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
