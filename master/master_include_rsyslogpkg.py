@@ -102,57 +102,8 @@ lc['schedulers'].append(ForceScheduler(
 # SUSE OBS builders
 # ----------------------------------------------------------------------
 
-#factory_obs_pkg_ci = BuildFactory()
-#factory_obs_pkg_ci.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", "mkdir _OBS; cd _OBS; osc co home:rgerhards/rsyslog "], haltOnFailure=True, maxTime=1200, timeout=1200, name="checkout OBS rsyslog project"))
-# We pull from git because SUSE OBS rate-limits frequent requests - not good for CI...
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", "mkdir _OBS; cd _OBS; git clone https://github.com/rsyslog/pkg_obs-clone.git ; ls ; find ."], haltOnFailure=True, maxTime=1200, timeout=1200, name="checkout OBS rsyslog project"))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; osc repairwc . ; #rm *xz *dsc'], env={'PKG_PROJ':'../../..'}, haltOnFailure=True, maxTime=1200, timeout=1200, name="fix OBS work dir (due to git checkout)"))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; source ./build-ubuntu.sh; git diff'], env={'PKG_PROJ':'../../..'}, haltOnFailure=True, maxTime=1200, timeout=1200, name="rebuild OBS debian package defs"))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; osc build --trust-all-projects --local-package xUbuntu_20.04 x86_64'], haltOnFailure=True, maxTime=1200, timeout=1200, name="build Ubuntu 20.04 (focal)"))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; osc build --trust-all-projects --local-package xUbuntu_18.04 x86_64'], haltOnFailure=True, maxTime=1200, timeout=1200, name="build Ubuntu 18.04 (bionic)"))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; osc build --trust-all-projects --local-package xUbuntu_16.04 x86_64'], haltOnFailure=True, maxTime=1200, timeout=1200, name="build Ubuntu 16.04 (xenial)"))
-#factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; osc build --trust-all-projects --local-package xUbuntu_14.04 x86_64'], haltOnFailure=True, maxTime=1200, timeout=1200, name="build Ubuntu 14.04 (trusty)"))
-# 19.10 does currently not build for an OBS-internal reason factory_obs_pkg_ci.addStep(ShellCommand(command=["bash", "-c", 'cd _OBS/pkg_obs-clone/rsyslog ; osc build --trust-all-projects --local-package xUbuntu_19.10 x86_64'], haltOnFailure=True, maxTime=1200, timeout=1200, name="build Ubuntu 19.10 (eoan)"))
-
-#lc['builders'].append(
-   #BuilderConfig(name="rsyslog obs_pkg_ci",
-     #workernames=["docker-suse-obs"],
-      #factory=factory_obs_pkg_ci,
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog-pkg-ubuntu",
-      #},
-    #))
-
-#lc['schedulers'].append(ForceScheduler(
-	#name="pull_rsyslog_rsyslog-pkg-ubuntu", # name is "fixed": pull_<org>_<project>
-	#label="PR scheduler for obs_pkg_ci",
-	#builderNames=[ "rsyslog obs_pkg_ci"],
-	#codebases=[
-		#util.CodebaseParameter(
-			#"", 
-			#branch=util.StringParameter(
-				#name="branch", 
-				#label="Pull Request Number:", 
-				#required=True, 
-				#default="refs/pull/<NUMBER>/head", 
-				#size=80),
-			#),
-	#] ))
-#lc['schedulers'].append(ForceScheduler(
-	#name="forceall_rsyslog_obs_pkg_ci",
-	#label="2. Force All-rsyslog_obs_pkg_ci",
-	#builderNames=[ "rsyslog obs_pkg_ci" ] ))
-#
-#lc['schedulers'].append(SingleBranchScheduler(
-	#name="github_rsyslog_obs_pkg_ci",
-	#change_filter=filter.ChangeFilter(	category="pull", 
-						#project="rsyslog/rsyslog-pkg-ubuntu"),
-	#builderNames=[ "rsyslog obs_pkg_ci"] ))
-
-
-##################################### NEW TRY
+# Note: this has currently been replaced by github actions, but is kept
+# here for a while (just in case).
 
 obs_container_call='docker run --rm --privileged -e PKG_PROJ -v/buildbot/pkg:/host -v$(pwd):/work rsyslog/rsyslog_obs:basic bash -c '
 factory_obs_pkg_ci2 = BuildFactory()

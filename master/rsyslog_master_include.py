@@ -26,8 +26,7 @@ from buildbot.changes import filter
 # reserved to checks known not to support concurrency due to time-sensitivy
 # as well as Centos6, which does not support parallel builds.
 generic_small_workers=['generic-s1', 'generic-s2','generic-s3']
-generic_workers=['generic-w1', 'generic-w2', 'generic-w3', 'generic-w4', 'generic-w5',
-	'generic-w6', 'generic-w7', 'generic-w8']
+generic_workers=['generic-w1', 'generic-w2', 'generic-w3', 'generic-w4', 'generic-w5']
 generic_logfiles={'failed-tests.log': 'failed-tests.log',
 #re-enable          "test-suite.log": "tests/test-suite.log",
           "config.log": "config.log"
@@ -1257,26 +1256,6 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
-    BuilderConfig(name="rsyslog gen ubuntu18 TSAN",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Ubuntu18_TSAN,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen ubuntu18 SAN",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Ubuntu18_SAN,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
     BuilderConfig(name="rsyslog gen ubuntu18 codecov",
       workernames=generic_workers,
       factory=factoryRsyslogGeneric_Ubuntu18_codecov,
@@ -1297,16 +1276,6 @@ lc['builders'].append(
       },
     ))
 lc['builders'].append(
-    BuilderConfig(name="rsyslog gen suse thumbleweed",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Thumbleweed,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
     BuilderConfig(name="rsyslog gen debian10",
       workernames=generic_workers,
       factory=factoryRsyslogGeneric_Debian10,
@@ -1320,26 +1289,6 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog gen centos6",
       workernames=generic_small_workers,
       factory=factoryRsyslogGeneric_Centos6,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen centos7",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Centos7,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen centos8",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Centos8,
       tags=["rsyslog", "generic"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -1370,16 +1319,6 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog gen kafka distcheck",
       workernames=generic_small_workers,
       factory=factoryRsyslogGeneric_Kafka_distcheck,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen kafka TSAN",
-      workernames=generic_small_workers,
-      factory=factoryRsyslogGeneric_Kafka_TSAN,
       tags=["rsyslog", "generic"],
       properties={
 	"github_repo_owner": "rsyslog",
@@ -1656,8 +1595,8 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog compile clang8"
 			,"rsyslog rpmbuild"
 			,"rsyslog gen ubuntu16"
-			,"rsyslog gen ubuntu18 SAN"
-			,"rsyslog gen ubuntu18 TSAN"
+			#,"rsyslog gen ubuntu18 SAN"
+			#,"rsyslog gen ubuntu18 TSAN"
 			,"rsyslog gen ubuntu18 distcheck"
 			,"rsyslog gen ubuntu18 codecov"
 			,"rsyslog codestyle check"
@@ -1681,25 +1620,16 @@ lc['schedulers'].append(ForceScheduler(
 			# far too slow at the moment, disable 2019-02-31 rgerhards: ,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
-			#,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
-			#,"rsyslog docker-ubuntu18-tsan rsyslog"
-			#,"rsyslog docker-debian10"
 			,"rsyslog gen kafka codecov"
 			,"rsyslog gen kafka distcheck"
-			#does not work,"rsyslog gen kafka TSAN"
-			#does not work,"rsyslog gen kafka SAN"
-			,"rsyslog gen suse thumbleweed"
+			#,"rsyslog gen suse thumbleweed"
 			,"rsyslog gen debian10"
 			,"rsyslog gen centos6"
-			,"rsyslog gen centos7"
-			,"rsyslog gen centos8"
+			#,"rsyslog gen centos7"
+			#,"rsyslog gen centos8"
 			,"rsyslog gen fedora30"
-			#,"rsyslog docker-centos6"
-			#,"rsyslog docker-centos7 rsyslog"
-			#,"rsyslog docker-centos8 rsyslog"
-			#,"rsyslog docker-suse-tumbleweed"
 		],
 	codebases=[
 		util.CodebaseParameter(
@@ -1725,8 +1655,8 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog compile clang8"
 			,"rsyslog rpmbuild"
 			,"rsyslog gen ubuntu16"
-			,"rsyslog gen ubuntu18 SAN"
-			,"rsyslog gen ubuntu18 TSAN"
+			#,"rsyslog gen ubuntu18 SAN"
+			#,"rsyslog gen ubuntu18 TSAN"
 			,"rsyslog gen ubuntu18 distcheck"
 			,"rsyslog gen ubuntu18 codecov"
 			,"rsyslog codestyle check"
@@ -1750,25 +1680,18 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
-			#,"rsyslog docker-ubuntu18-tsan rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
-			#,"rsyslog docker-ubuntu16 rsyslog"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			#,"rsyslog docker-centos6"
-			#,"rsyslog docker-debian10"
 			,"rsyslog gen kafka codecov"
 			,"rsyslog gen kafka distcheck"
-			,"rsyslog gen kafka TSAN"
+			#,"rsyslog gen kafka TSAN"
 			,"rsyslog gen kafka SAN"
-			,"rsyslog gen suse thumbleweed"
+			#,"rsyslog gen suse thumbleweed"
 			,"rsyslog gen debian10"
 			,"rsyslog gen centos6"
-			,"rsyslog gen centos7"
-			,"rsyslog gen centos8"
+			#,"rsyslog gen centos7"
+			#,"rsyslog gen centos8"
 			,"rsyslog gen fedora30"
-			#,"rsyslog docker-centos7 rsyslog"
-			#,"rsyslog docker-centos8 rsyslog"
-			#,"rsyslog docker-suse-tumbleweed"
 			],
 ))
 
@@ -1785,8 +1708,8 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog compile clang8"
 			,"rsyslog rpmbuild"
 			,"rsyslog gen ubuntu16"
-			,"rsyslog gen ubuntu18 SAN"
-			,"rsyslog gen ubuntu18 TSAN"
+			#,"rsyslog gen ubuntu18 SAN"
+			#,"rsyslog gen ubuntu18 TSAN"
 			# too slow, use docker instead,"rsyslog gen ubuntu18 distcheck"
 			,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog gen ubuntu18 codecov"
@@ -1818,11 +1741,11 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog gen kafka distcheck"
 			#does not work,"rsyslog gen kafka TSAN"
 			#does not work,"rsyslog gen kafka SAN"
-			,"rsyslog gen suse thumbleweed"
+			#,"rsyslog gen suse thumbleweed"
 			,"rsyslog gen debian10"
 			,"rsyslog gen centos6"
-			,"rsyslog gen centos7"
-			,"rsyslog gen centos8"
+			#,"rsyslog gen centos7"
+			#,"rsyslog gen centos8"
 			,"rsyslog gen fedora30"
 			#,"rsyslog docker-centos7 rsyslog"
 			#,"rsyslog docker-centos8 rsyslog"

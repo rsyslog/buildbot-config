@@ -59,7 +59,7 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    treeStableTimer=None,
 			    builderNames=[	szRepoProject + " centos6 " + szRepoOwner, 
-						szRepoProject + " centos7 " + szRepoOwner,
+						#szRepoProject + " centos7 " + szRepoOwner,
 						]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-suse",
