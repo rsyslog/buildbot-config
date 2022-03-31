@@ -26,7 +26,7 @@ from buildbot.changes import filter
 # reserved to checks known not to support concurrency due to time-sensitivy
 # as well as Centos6, which does not support parallel builds.
 generic_small_workers=['generic-s1', 'generic-s2','generic-s3']
-generic_workers=['generic-w1', 'generic-w2', 'generic-w3', 'generic-w4', 'generic-w5']
+generic_workers=['generic-w1', 'generic-w2']
 generic_logfiles={'failed-tests.log': 'failed-tests.log',
 #re-enable          "test-suite.log": "tests/test-suite.log",
           "config.log": "config.log"
@@ -48,8 +48,6 @@ docker_cleanup_step = ShellCommand(command=["bash", "-c",
 gather_logs_step = ShellCommand(command=["bash", "-c", 'devtools/gather-check-logs.sh'],
 	logfiles={"failed-tests.log": "failed-tests.log"}, lazylogfiles=True, 
 	alwaysRun=True, haltOnFailure=True, name="show failed logs")
-
-
 
 # --- rsyslog factory settings
 factoryRsyslogCentos6 = BuildFactory()
@@ -201,7 +199,7 @@ factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f test
 factoryRsyslogSolaris10x64_sunstudio = BuildFactory()
 # first step only in case git has aborted!
 #	factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["rm", "-rf", "/export/home/buildbot-unstable10s/rsyslog/rsyslog_solaris10sparc_rsyslog/build/.git/index.lock"], env=solarisenv_gcc))
-factoryRsyslogSolaris10x64_sunstudio.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogSolaris10x64_sunstudio.addStep(GitHub(repourl="http://github.com/rsyslog/rsyslog.git/", mode='full', retryFetch=True))
 factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["bash", "-c", "tests/CI/buildbot_cleanup.sh"], name="cleanup"))
 # cleanup
 factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
@@ -229,7 +227,7 @@ factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["bash", "-c",
 factoryRsyslogSolaris10x64_gcc = BuildFactory()
 # first step only in case git has aborted!
 #	factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["rm", "-rf", "/export/home/buildbot-unstable10s/rsyslog/rsyslog_solaris10sparc_rsyslog/build/.git/index.lock"], env=solarisenv_gcc))
-factoryRsyslogSolaris10x64_gcc.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogSolaris10x64_gcc.addStep(GitHub(repourl="http://github.com/rsyslog/rsyslog.git/", mode='full', retryFetch=True))
 factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["bash", "-c", "tests/CI/buildbot_cleanup.sh"], name="cleanup"))
 # cleanup
 factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["rm", "-rf", "localenv"], env=solarisenv_gcc, name="cleanup dependencies"))
@@ -246,6 +244,7 @@ factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["gmake", "-j", "V=1
 
 # ---
 factoryRsyslogSolaris11x64 = BuildFactory()
+factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["git", "config", "--global", "http.proxy", "http://proxy:3128"], name="set http proxy in git config"))
 factoryRsyslogSolaris11x64.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 # cleanup
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["df", "-h"], env=solarisenv_sunstudio))
@@ -277,7 +276,7 @@ factoryRsyslogSolaris10sparc = BuildFactory()
 # cleanup
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["rm", "-rf", "localenv"], env=solarisenv_sunstudio, name="cleanup dependencies"))
 # begin work
-factoryRsyslogSolaris10sparc.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogSolaris10sparc.addStep(GitHub(repourl="http://github.com/rsyslog/rsyslog.git/", mode='full', retryFetch=True))
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-librelp.sh"], env=solarisenv_sunstudio, name="building librelp dependency", descriptionDone="built librelp dependency"))
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_sunstudio, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
 # begin "real" work
@@ -302,8 +301,9 @@ factoryRsyslogSolaris11sparc = BuildFactory()
 #	factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["pwd"]))
 # cleanup
 factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["rm", "-rf", "localenv"], env=solarisenv_sunstudio, name="cleanup dependencies"))
+factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["git", "config", "--global", "http.proxy", "http://proxy:3128"], name="set http proxy in git config"))
 # begin work
-factoryRsyslogSolaris11sparc.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogSolaris11sparc.addStep(GitHub(repourl="http://github.com/rsyslog/rsyslog.git/", mode='full', retryFetch=True))
 factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-librelp.sh"], env=solarisenv_sunstudio, name="building librelp dependency", descriptionDone="built librelp dependency"))
 #factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_sunstudio, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
 # begin "real" work
@@ -344,30 +344,30 @@ factoryRsyslogDockerUbuntu16.addStep(ShellCommand(command=["make", "-j3", "check
 # GENERIC DOCKER factories for use on docker-enabled VM - used for "load balancing" via
 # buildbot.
 # This is almost identical except for the options choosen.
-factoryRsyslogGeneric_Ubuntu16 = BuildFactory()
-factoryRsyslogGeneric_Ubuntu16.addStep(docker_cleanup_step)
-factoryRsyslogGeneric_Ubuntu16.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogGeneric_Ubuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f devtools/run-ci.sh ] ; then devtools/devcontainer.sh --rm devtools/run-ci.sh; fi"],
-	env={
-		'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_ubuntu:16.04',
-		'CC': 'gcc',
-		'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests --disable-kafka-tests '
-			'--disable-omrabbitmq',
-			#'--disable-omrabbitmq --disable-clickhouse-tests',
-		'CI_MAKE_OPT': '-j20',
-		'CI_MAKE_CHECK_OPT': '-j8',
-		'CI_CHECK_CMD': 'check',
-		'USE_AUTO_DEBUG': 'off',
-		"RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php",
-		'CI_BUILD_URL': util.URLForBuild,
-		'VCS_SLUG':util.Property('buildername')
-	},
-	logfiles=generic_logfiles,
-	lazylogfiles=True, maxTime=3600,
-	haltOnFailure=False, name="run CI script"))
-factoryRsyslogGeneric_Ubuntu16.addStep(gather_logs_step)
-factoryRsyslogGeneric_Ubuntu16.addStep(docker_cleanup_step)
-################################################################################
+#factoryRsyslogGeneric_Ubuntu16 = BuildFactory()
+#factoryRsyslogGeneric_Ubuntu16.addStep(docker_cleanup_step)
+#factoryRsyslogGeneric_Ubuntu16.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+#factoryRsyslogGeneric_Ubuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f devtools/run-ci.sh ] ; then devtools/devcontainer.sh --rm devtools/run-ci.sh; fi"],
+	#env={
+		#'RSYSLOG_DEV_CONTAINER': 'rsyslog/rsyslog_dev_base_ubuntu:16.04',
+		#'CC': 'gcc',
+		#'RSYSLOG_CONFIGURE_OPTIONS_EXTRA':  '--disable-elasticsearch-tests --disable-kafka-tests '
+			#'--disable-omrabbitmq',
+			##'--disable-omrabbitmq --disable-clickhouse-tests',
+		#'CI_MAKE_OPT': '-j20',
+		#'CI_MAKE_CHECK_OPT': '-j8',
+		#'CI_CHECK_CMD': 'check',
+		#'USE_AUTO_DEBUG': 'off',
+		#"RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php",
+		#'CI_BUILD_URL': util.URLForBuild,
+		#'VCS_SLUG':util.Property('buildername')
+	#},
+	#logfiles=generic_logfiles,
+	#lazylogfiles=True, maxTime=3600,
+	#haltOnFailure=False, name="run CI script"))
+#factoryRsyslogGeneric_Ubuntu16.addStep(gather_logs_step)
+#factoryRsyslogGeneric_Ubuntu16.addStep(docker_cleanup_step)
+#################################################################################
 
 
 factoryRsyslogGeneric_Ubuntu18_SAN = BuildFactory()
@@ -966,15 +966,15 @@ factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["bash", "-c", "./con
 factoryRsyslog_compile_clang9.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (clang 9)"))
 
 # we need dedicated machines as clang 9 currently requires dedicated container (issue with v8 coexistence)
-lc['builders'].append(
-	BuilderConfig(name="rsyslog compile clang9",
-		workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
-		factory=factoryRsyslog_compile_clang9,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog compile clang9",
+		#workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
+		#factory=factoryRsyslog_compile_clang9,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+		#} ))
 
 
 factoryRsyslog_compile_clang10 = BuildFactory()
@@ -982,33 +982,33 @@ factoryRsyslog_compile_clang10.addStep(GitHub(repourl=repoGitUrl, mode='full', r
 factoryRsyslog_compile_clang10.addStep(ShellCommand(command=["devtools/run-configure.sh"], env={'CC': 'clang-10', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="run-configure (clang 10)"))
 factoryRsyslog_compile_clang10.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (clang 10[experimental])"))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog compile clang10",
-		workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
-		factory=factoryRsyslog_compile_clang10,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
-
-
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog compile clang10",
+		#workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
+		#factory=factoryRsyslog_compile_clang10,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+		#} ))
+#
+#
 
 factoryRsyslog_compile_gcc9 = BuildFactory()
 factoryRsyslog_compile_gcc9.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslog_compile_gcc9.addStep(ShellCommand(command=["devtools/run-configure.sh"], env={'CC': 'gcc-9', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="run-configure (gcc 9)"))
 factoryRsyslog_compile_gcc9.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (gcc 9)"))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog compile gcc9",
-		workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
-		factory=factoryRsyslog_compile_gcc9,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
-
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog compile gcc9",
+		#workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
+		#factory=factoryRsyslog_compile_gcc9,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+		#} ))
+#
 
 
 factoryRsyslog_compile_clang8 = BuildFactory()
@@ -1017,31 +1017,31 @@ factoryRsyslog_compile_clang8.addStep(ShellCommand(command=["autoreconf", "-fvi"
 factoryRsyslog_compile_clang8.addStep(ShellCommand(command=["bash", "-c", "./configure $RSYSLOG_CONFIGURE_OPTIONS"], env={'CC': 'clang-8', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (clang 8)"))
 factoryRsyslog_compile_clang8.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (clang 8)"))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog compile clang8",
-		workernames=["docker-ubuntu-compilecheck"],
-		factory=factoryRsyslog_compile_clang8,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
-
-
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog compile clang8",
+		#workernames=["docker-ubuntu-compilecheck"],
+		#factory=factoryRsyslog_compile_clang8,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+		#} ))
+#
+#
 factoryRsyslog_compile_gcc8 = BuildFactory()
 factoryRsyslog_compile_gcc8.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["devtools/run-configure.sh", "-fvi"], env={'CC': 'gcc-8'}, haltOnFailure=True, name="run-configure (gcc8)"))
 factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["make", "-j1"], haltOnFailure=True, name="make (gcc8)"))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog compile gcc8",
-		workernames=["docker-ubuntu-compilecheck"],
-		factory=factoryRsyslog_compile_gcc8,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog compile gcc8",
+		#workernames=["docker-ubuntu-compilecheck"],
+		#factory=factoryRsyslog_compile_gcc8,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+		#} ))
 
 
 factoryRsyslog_compile_PRvalidate = BuildFactory()
@@ -1084,7 +1084,7 @@ lc['builders'].append(
 
 factoryRsyslogStaticAnalyzer = BuildFactory()
 factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:19.10', 'SCAN_BUILD_CC':'clang-9', 'SCAN_BUILD': 'scan-build-9', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12"}, haltOnFailure=True))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:20.04', 'SCAN_BUILD_CC':'clang-9', 'SCAN_BUILD': 'scan-build-9', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12"}, haltOnFailure=True))
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog clang static analyzer",
@@ -1120,16 +1120,18 @@ factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "pip install 
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
 # - SET version and release in SPECFile
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace rsyslog version in v8-stable"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace release number with date in v8-stable"))
+#factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace rsyslog version in v8-stable"))
+#factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace release number with date in v8-stable"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
+# CentOS 6 is past EOL and can no longer be build!
+#factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
+#factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
+# TODO: remove CentOS 6 (just left in for testing 2021-02-01 rger)
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log"}, name="build epel-7/x86_64 rpms"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log"}, name="build epel-8/x86_64 rpms"))
 
@@ -1225,16 +1227,16 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog ElasticSearch",
-      workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
-      factory=factoryRsyslogElasticSearchPlain,
-      tags=["rsyslog", "vm"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+#    BuilderConfig(name="rsyslog ElasticSearch",
+#      workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
+#      factory=factoryRsyslogElasticSearchPlain,
+#      tags=["rsyslog", "vm"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog ElasticSearch codecov",
       workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
@@ -1245,76 +1247,76 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen ubuntu16",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Ubuntu16,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen ubuntu18 codecov",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Ubuntu18_codecov,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen ubuntu18 distcheck",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Ubuntu18_distcheck,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen debian10",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Debian10,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen centos6",
-      workernames=generic_small_workers,
-      factory=factoryRsyslogGeneric_Centos6,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen fedora30",
-      workernames=generic_workers,
-      factory=factoryRsyslogGeneric_Fedora30,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog gen kafka codecov",
-      workernames=generic_small_workers,
-      factory=factoryRsyslogGeneric_Kafka_codecov,
-      tags=["rsyslog", "generic"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen ubuntu16",
+      #workernames=generic_workers,
+      #factory=factoryRsyslogGeneric_Ubuntu16,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen ubuntu18 codecov",
+      #workernames=generic_workers,
+      #factory=factoryRsyslogGeneric_Ubuntu18_codecov,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen ubuntu18 distcheck",
+      #workernames=generic_workers,
+      #factory=factoryRsyslogGeneric_Ubuntu18_distcheck,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen debian10",
+      #workernames=generic_workers,
+      #factory=factoryRsyslogGeneric_Debian10,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen centos6",
+      #workernames=generic_small_workers,
+      #factory=factoryRsyslogGeneric_Centos6,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen fedora30",
+      #workernames=generic_workers,
+      #factory=factoryRsyslogGeneric_Fedora30,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog gen kafka codecov",
+      #workernames=generic_small_workers,
+      #factory=factoryRsyslogGeneric_Kafka_codecov,
+      #tags=["rsyslog", "generic"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 lc['builders'].append(
     BuilderConfig(name="rsyslog gen kafka distcheck",
       workernames=generic_small_workers,
@@ -1345,16 +1347,16 @@ lc['builders'].append(
 	#"github_repo_name": "rsyslog",
       #},
     #))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog docker-fedora31",
-      workernames=[ "docker-fedora31-w1"],
-      factory=factoryRsyslogDockerFedora,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+#    BuilderConfig(name="rsyslog docker-fedora31",
+#      workernames=[ "docker-fedora31-w1"],
+#      factory=factoryRsyslogDockerFedora,
+#      tags=["rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 #lc['builders'].append(
 #    BuilderConfig(name="rsyslog docker-fedora30",
 #      workernames=["docker-s1-fedora30"],
@@ -1499,16 +1501,16 @@ lc['builders'].append(
 #        "github_repo_name": "rsyslog",
 #      },
 #    ))
-lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
-      workernames=docker_workers,
-      factory=factoryRsyslogDockerUbuntu18_distcheck,
-      tags=["rsyslog", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+   #BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
+      #workernames=docker_workers,
+      #factory=factoryRsyslogDockerUbuntu18_distcheck,
+      #tags=["rsyslog", "docker"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 #lc['builders'].append(
 #   BuilderConfig(name="rsyslog docker-ubuntu18-codecov",
 #      workernames=docker_workers,
@@ -1588,17 +1590,17 @@ lc['schedulers'].append(ForceScheduler(
 	name="pull_rsyslog_rsyslog",
 	label="1. Pull Requests-rsyslog-rsyslog",
 	builderNames=[  "rsyslog clang static analyzer"
-			,"rsyslog compile gcc9"
-			,"rsyslog compile gcc8"
-			,"rsyslog compile clang10"
-			,"rsyslog compile clang9"
-			,"rsyslog compile clang8"
+			#,"rsyslog compile gcc9"
+			#,"rsyslog compile gcc8"
+			#,"rsyslog compile clang10"
+			#,"rsyslog compile clang9"
+			#,"rsyslog compile clang8"
 			,"rsyslog rpmbuild"
-			,"rsyslog gen ubuntu16"
+			#,"rsyslog gen ubuntu16"
 			#,"rsyslog gen ubuntu18 SAN"
 			#,"rsyslog gen ubuntu18 TSAN"
-			,"rsyslog gen ubuntu18 distcheck"
-			,"rsyslog gen ubuntu18 codecov"
+			#,"rsyslog gen ubuntu18 distcheck"
+			#,"rsyslog gen ubuntu18 codecov"
 			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
@@ -1607,10 +1609,10 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog raspbian clang compile"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7-5"
-			,"rsyslog ElasticSearch"
+			#,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
 			#,"rsyslog Kafka codecov"
-			,"rsyslog docker-fedora31"
+			#,"rsyslog docker-fedora31"
 			#,"rsyslog docker-fedora30"
 			,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
@@ -1620,16 +1622,16 @@ lc['schedulers'].append(ForceScheduler(
 			# far too slow at the moment, disable 2019-02-31 rgerhards: ,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
-			,"rsyslog docker-ubuntu18-distcheck rsyslog"
+			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
-			,"rsyslog gen kafka codecov"
+			#,"rsyslog gen kafka codecov"
 			,"rsyslog gen kafka distcheck"
 			#,"rsyslog gen suse thumbleweed"
-			,"rsyslog gen debian10"
-			,"rsyslog gen centos6"
+			#,"rsyslog gen debian10"
+			#,"rsyslog gen centos6"
 			#,"rsyslog gen centos7"
 			#,"rsyslog gen centos8"
-			,"rsyslog gen fedora30"
+			#,"rsyslog gen fedora30"
 		],
 	codebases=[
 		util.CodebaseParameter(
@@ -1648,17 +1650,17 @@ lc['schedulers'].append(ForceScheduler(
 	name="forceall_rsyslog_rsyslog",
 	label="2. Force All-rsyslog-rsyslog",
 	builderNames=[	"rsyslog clang static analyzer"
-			,"rsyslog compile gcc9"
-			,"rsyslog compile gcc8"
-			,"rsyslog compile clang10"
-			,"rsyslog compile clang9"
-			,"rsyslog compile clang8"
+			#,"rsyslog compile gcc9"
+			#,"rsyslog compile gcc8"
+			#,"rsyslog compile clang10"
+			#,"rsyslog compile clang9"
+			#,"rsyslog compile clang8"
 			,"rsyslog rpmbuild"
-			,"rsyslog gen ubuntu16"
+			#,"rsyslog gen ubuntu16"
 			#,"rsyslog gen ubuntu18 SAN"
 			#,"rsyslog gen ubuntu18 TSAN"
-			,"rsyslog gen ubuntu18 distcheck"
-			,"rsyslog gen ubuntu18 codecov"
+			#,"rsyslog gen ubuntu18 distcheck"
+			#,"rsyslog gen ubuntu18 codecov"
 			,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			,"rsyslog debian rsyslog"
@@ -1667,10 +1669,10 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog raspbian clang compile"
 			,"rsyslog centos6 rsyslog"
 			,"rsyslog centos7-5"
-			,"rsyslog ElasticSearch"
+			#,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
 			#,"rsyslog Kafka codecov"
-			,"rsyslog docker-fedora31"
+			#,"rsyslog docker-fedora31"
 			#,"rsyslog docker-fedora30"
 			,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
@@ -1681,17 +1683,17 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
-			,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			,"rsyslog gen kafka codecov"
+			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
+			#,"rsyslog gen kafka codecov"
 			,"rsyslog gen kafka distcheck"
 			#,"rsyslog gen kafka TSAN"
 			,"rsyslog gen kafka SAN"
 			#,"rsyslog gen suse thumbleweed"
-			,"rsyslog gen debian10"
-			,"rsyslog gen centos6"
+			#,"rsyslog gen debian10"
+			#,"rsyslog gen centos6"
 			#,"rsyslog gen centos7"
 			#,"rsyslog gen centos8"
-			,"rsyslog gen fedora30"
+			#,"rsyslog gen fedora30"
 			],
 ))
 
@@ -1701,28 +1703,28 @@ lc['schedulers'].append(SingleBranchScheduler(
 						project="rsyslog/rsyslog"),
 	builderNames=[  "rsyslog clang static analyzer"
 			,"rsyslog PR structure validation"
-			,"rsyslog compile gcc9"
-			,"rsyslog compile gcc8"
-			,"rsyslog compile clang10"
-			,"rsyslog compile clang9"
-			,"rsyslog compile clang8"
-			,"rsyslog rpmbuild"
-			,"rsyslog gen ubuntu16"
+			#,"rsyslog compile gcc9"
+			#,"rsyslog compile gcc8"
+			#,"rsyslog compile clang10"
+			#,"rsyslog compile clang9"
+			#,"rsyslog compile clang8"
+			#,"rsyslog rpmbuild"
+			#,"rsyslog gen ubuntu16"
 			#,"rsyslog gen ubuntu18 SAN"
 			#,"rsyslog gen ubuntu18 TSAN"
-			# too slow, use docker instead,"rsyslog gen ubuntu18 distcheck"
-			,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			,"rsyslog gen ubuntu18 codecov"
+			## too slow, use docker instead,"rsyslog gen ubuntu18 distcheck"
+			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
+			#,"rsyslog gen ubuntu18 codecov"
 			,"rsyslog codestyle check"
 			,"rsyslog debian rsyslog"
 			,"rsyslog debian9 rsyslog"
 			,"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian clang compile"
 			,"rsyslog centos7-5"
-			,"rsyslog ElasticSearch"
+			#,"rsyslog ElasticSearch"
 			,"rsyslog ElasticSearch codecov"
 			#,"rsyslog Kafka codecov"
-			,"rsyslog docker-fedora31"
+			#,"rsyslog docker-fedora31"
 			,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
 			,"rsyslog solaris10x64 rsyslog"
@@ -1737,16 +1739,16 @@ lc['schedulers'].append(SingleBranchScheduler(
 			#,"rsyslog docker-ubuntu18-tsan rsyslog"
 			#,"rsyslog docker-centos6" # disable until stable!
 			#,"rsyslog docker-debian10"
-			,"rsyslog gen kafka codecov"
+			#,"rsyslog gen kafka codecov"
 			,"rsyslog gen kafka distcheck"
 			#does not work,"rsyslog gen kafka TSAN"
 			#does not work,"rsyslog gen kafka SAN"
 			#,"rsyslog gen suse thumbleweed"
-			,"rsyslog gen debian10"
-			,"rsyslog gen centos6"
+			#,"rsyslog gen debian10"
+			#,"rsyslog gen centos6"
 			#,"rsyslog gen centos7"
 			#,"rsyslog gen centos8"
-			,"rsyslog gen fedora30"
+			#,"rsyslog gen fedora30"
 			#,"rsyslog docker-centos7 rsyslog"
 			#,"rsyslog docker-centos8 rsyslog"
 			#,"rsyslog docker-suse-tumbleweed"
@@ -1774,9 +1776,9 @@ lc['schedulers'].append(ForceScheduler(
 lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sched',
 	change_filter=util.ChangeFilter(project='rsyslog/rsyslog', branch='master'),
 	treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
-	builderNames=[   "rsyslog gen ubuntu18 codecov"
-			,"background rsyslog centos7-5"
-			,"rsyslog gen kafka codecov"
+	builderNames=[  # "rsyslog gen ubuntu18 codecov"
+			"background rsyslog centos7-5"
+			#,"rsyslog gen kafka codecov"
 		     ],
 	# TODO: replace with this value: builderNames=["master rsyslog"],
 	))
@@ -1805,21 +1807,23 @@ factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "pip 
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
 # - SET version and release in SPECFile
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace rsyslog version in v8-stable"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace release number with date in v8-stable"))
+#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace rsyslog version in v8-stable"))
+#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace release number with date in v8-stable"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log", "build.log": "/var/lib/mock/epel-6-i386/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-6-x86_64/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-nightly"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
+# CentOS 6 is past EOL and can no longer be build!
+#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log", "build.log": "/var/lib/mock/epel-6-i386/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
+#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-6-x86_64/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
+# TODO: remove CentOS 6 (just left in for testing 2021-02-01 rger)
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
 
-# - UPLOAD RPMs to v8-stable-nightly repo
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-nightly", "REPOUSERNAME": "pkgbuild", "REPOURL": "rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-nightly repo"))
+# - UPLOAD RPMs to v8-stable-build repo
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-build", "REPOUSERNAME": "pkgbuild", "REPOURL": "rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-build repo"))
 
 # --- Builders for nightly RPM build
 lc['builders'].append(

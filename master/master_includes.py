@@ -164,16 +164,16 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		"github_repo_name": szRepoProject,
 	      },
 	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " centos7 " + szRepoOwner,
-	      workernames=["vm-centos7-5-w1"],
-	      factory=factoryCentos7,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+	#lc['builders'].append(
+	#    BuilderConfig(name=szRepoProject + " centos7 " + szRepoOwner,
+	#      workernames=["vm-centos7-5-w1"],
+	#      factory=factoryCentos7,
+	#      tags=[szRepoProject + " " + szRepoOwner],
+	#      properties={
+	#	"github_repo_owner": szRepoOwner,
+	#	"github_repo_name": szRepoProject,
+	#      },
+	#    ))
 	lc['builders'].append(
 	    BuilderConfig(name=szRepoProject + " freebsd12 " + szRepoOwner,
 	      workernames=["slave-freebsd12"],
@@ -287,7 +287,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
-				,szRepoProject + " centos7 " + szRepoOwner
+				#,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
@@ -319,7 +319,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
-				,szRepoProject + " centos7 " + szRepoOwner
+				#,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
@@ -341,7 +341,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
-				,szRepoProject + " centos7 " + szRepoOwner
+				#,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris10x64 " + szRepoOwner
