@@ -31,7 +31,7 @@ generic_logfiles={'failed-tests.log': 'failed-tests.log',
 #re-enable          "test-suite.log": "tests/test-suite.log",
           "config.log": "config.log"
 }
-docker_workers=["docker-ubuntu18", "docker-ubuntu18-w1"]
+#docker_workers=["docker-ubuntu18", "docker-ubuntu18-w1"]
 
 docker_cleanup_step = ShellCommand(command=["bash", "-c",
 	'docker ps; '
@@ -1239,7 +1239,8 @@ lc['builders'].append(
 #    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog ElasticSearch codecov",
-      workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
+      #workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
+      workernames=["vm-centos7-5-w1"], # this one has more main memory, which we need here!
       factory=factoryRsyslogElasticSearch_codecov,
       tags=["rsyslog", "vm"],
       properties={
@@ -1461,16 +1462,16 @@ lc['builders'].append(
 #	"github_repo_name": "rsyslog",
 #      },
 #    ))
-lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-ubuntu18 GnuTLS only",
-      workernames=docker_workers,
-      factory=factoryRsyslogDockerUbuntu_18_gtls_only,
-      tags=["rsyslog", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+   #BuilderConfig(name="rsyslog docker-ubuntu18 GnuTLS only",
+      #workernames=docker_workers,
+      #factory=factoryRsyslogDockerUbuntu_18_gtls_only,
+      #tags=["rsyslog", "docker"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 #lc['builders'].append(
    #BuilderConfig(name="rsyslog docker-ubuntu18-tsan rsyslog",
       #workernames=docker_workers,
@@ -1481,16 +1482,16 @@ lc['builders'].append(
 	#"github_repo_name": "rsyslog",
       #},
     #))
-lc['builders'].append(
-   BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
-      workernames=docker_workers,
-      factory=factoryRsyslogDockerUbuntu_18_SAN,
-      tags=["rsyslog", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+   #BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
+      #workernames=docker_workers,
+      #factory=factoryRsyslogDockerUbuntu_18_SAN,
+      #tags=["rsyslog", "docker"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 #lc['builders'].append(
 #   BuilderConfig(name="rsyslog docker-debian10",
 #     workernames=["docker-debian10-w1"],
@@ -1623,7 +1624,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
 			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			,"rsyslog docker-ubuntu18-san rsyslog"
+			#,"rsyslog docker-ubuntu18-san rsyslog"
 			#,"rsyslog gen kafka codecov"
 			,"rsyslog gen kafka distcheck"
 			#,"rsyslog gen suse thumbleweed"
@@ -1681,7 +1682,7 @@ lc['schedulers'].append(ForceScheduler(
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			,"rsyslog docker-ubuntu18-san rsyslog"
+			#,"rsyslog docker-ubuntu18-san rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
 			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			#,"rsyslog gen kafka codecov"
@@ -1734,7 +1735,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
 			#,"rsyslog docker-ubuntu18-codecov"
-			,"rsyslog docker-ubuntu18 GnuTLS only"
+			#,"rsyslog docker-ubuntu18 GnuTLS only"
 			#,"rsyslog docker-ubuntu18-san rsyslog"
 			#,"rsyslog docker-ubuntu18-tsan rsyslog"
 			#,"rsyslog docker-centos6" # disable until stable!
@@ -1816,14 +1817,14 @@ factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "expo
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
 # CentOS 6 is past EOL and can no longer be build!
-#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log", "build.log": "/var/lib/mock/epel-6-i386/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
-#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-6-x86_64/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
+#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-i386/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"i386", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-6-i386/result/root.log", "build.log": "/var/lib/mock/epel-6-i386/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/i386 rpms"))
+#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-6-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable', "RPM_PLATFORM":"epel-6", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-6-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-6-x86_64/result/build.log"}, maxTime=1200, timeout=1200, name="build epel-6/x86_64 rpms"))
 # TODO: remove CentOS 6 (just left in for testing 2021-02-01 rger)
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-build"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
 
-# - UPLOAD RPMs to v8-stable-build repo
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-build", "REPOUSERNAME": "pkgbuild", "REPOURL": "rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-build repo"))
+# - UPLOAD RPMs to v8-stable-daily repo
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-daily", "REPOUSERNAME": "pkgbuild", "REPOURL": "rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-daily repo"))
 
 # --- Builders for nightly RPM build
 lc['builders'].append(
