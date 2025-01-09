@@ -74,9 +74,8 @@ factoryLibLogNormRaspian.addStep(ShellCommand(command=["make", "distcheck", "V=0
 # ---
 
 #Add liblognorm builders for main repo
-appendBuilders(	lc, 'rsyslog', 'liblognorm', 
+appendBuilders( lc, 'rsyslog', 'liblognorm', 
 		factoryLibLogNorm,		# Debian 
-		factoryLibLogNorm,		# Debian9
 		factoryLibLogNormRaspian,	# Raspbian 
 		factoryLibLogNormFreeBsd,	# Freebsd 
 		factoryLibLogNorm,		# Suse 

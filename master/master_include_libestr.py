@@ -41,7 +41,6 @@ factoryLibestrSolaris.addStep(ShellCommand(command=["gmake", "V=0"], env=solaris
 #Add libfastjson builders for main repo
 appendBuilders( lc, 'rsyslog', 'libestr',
 		factoryLibestr,		# Debian 
-		factoryLibestr,		# Debian 9
 		factoryLibestr,		# Raspbian 
 		factoryLibestr,		# Freebsd 
 		factoryLibestr,		# Suse 

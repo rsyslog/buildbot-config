@@ -44,11 +44,11 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    treeStableTimer=None,
 			    builderNames=[szRepoProject + " debian " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-debian9",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " debian9 " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-debian9",
+			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+			    #treeStableTimer=None,
+			    #builderNames=[szRepoProject + " debian9 " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-raspbian",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -85,7 +85,6 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 #Append Builders Helper Function 
 def appendBuilders(	lc, szRepoOwner, szRepoProject, 
 			factoryDebian, 
-			factoryDebian9, 
 			factoryRaspbian, 
 			factoryFreebsd, 
 			factorySuse, 
@@ -116,7 +115,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 	    #))
 	lc['builders'].append(
 	   BuilderConfig(name=szRepoProject + " ubuntu16 " + szRepoOwner,
-	     workernames=["slave-ubuntu16"],
+	     workernames=["slave-ubuntu24"],
 	      factory=factoryUbuntu16,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
@@ -134,19 +133,19 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		"github_repo_name": szRepoProject,
 	      },
 	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " debian9 " + szRepoOwner,
-	      workernames=["slave-debian9"],
-	      factory=factoryDebian9,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+	#lc['builders'].append(
+	    #BuilderConfig(name=szRepoProject + " debian9 " + szRepoOwner,
+	      #workernames=["slave-debian9"],
+	      #factory=factoryDebian9,
+	      #tags=[szRepoProject + " " + szRepoOwner],
+	      #properties={
+		#"github_repo_owner": szRepoOwner,
+		#"github_repo_name": szRepoProject,
+	      #},
+	    #))
 	lc['builders'].append(
 	    BuilderConfig(name=szRepoProject + " raspbian " + szRepoOwner,
-	      workernames=["slave-raspbian"],
+	      workernames=["docker-armbian-compilecheck"], # slave-raspbian"],
 	      factory=factoryRaspbian,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
@@ -269,7 +268,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 # --- Cronjob only
 	lc['builders'].append(
 	   BuilderConfig(name="cron " + szRepoProject + " ubuntu16 " + szRepoOwner,
-	     workernames=["slave-ubuntu16"],
+	     workernames=["slave-ubuntu24"],
 	      factory=factoryUbuntuCron,
 	      tags=[szRepoProject + " " + szRepoOwner],
 	      properties={
@@ -284,7 +283,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		label="1. Pull Requests-" + szRepoOwner + "-" + szRepoProject,
 		builderNames=[  szRepoProject + " ubuntu16 " + szRepoOwner
 				,szRepoProject + " debian " + szRepoOwner
-				,szRepoProject + " debian9 " + szRepoOwner
+				#,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				#,szRepoProject + " centos7 " + szRepoOwner
@@ -316,7 +315,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		label="2. Force All-" + szRepoOwner + "-" + szRepoProject,
 		builderNames=[	szRepoProject + " ubuntu16 " + szRepoOwner
 				,szRepoProject + " debian " + szRepoOwner
-				,szRepoProject + " debian9 " + szRepoOwner
+				#,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				#,szRepoProject + " centos7 " + szRepoOwner
@@ -338,7 +337,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 							project=szRepoOwner + "/" + szRepoProject),
 		builderNames=[  szRepoProject + " ubuntu16 " + szRepoOwner
 				,szRepoProject + " debian " + szRepoOwner
-				,szRepoProject + " debian9 " + szRepoOwner
+				#,szRepoProject + " debian9 " + szRepoOwner
 				,szRepoProject + " raspbian " + szRepoOwner
 				,szRepoProject + " centos6 " + szRepoOwner
 				#,szRepoProject + " centos7 " + szRepoOwner

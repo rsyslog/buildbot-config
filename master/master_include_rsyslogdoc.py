@@ -18,16 +18,28 @@ from buildbot.schedulers.basic import SingleBranchScheduler
 from buildbot.schedulers.forcesched import ForceScheduler
 from buildbot.changes import filter
 
+doc_build_docker = 'rsyslog/rsyslog_doc_gen'
+doc_build_docker_v2 = 'rsyslog/rsyslog_dev_doc_base_ubuntu:22.04'
+
 #
-# rsyslog-doc: right now, only on Ubuntu16 slave
+# rsyslog-doc: On Alpine Docker with old container 
 #
 factoryRsyslogDocUbuntu16 = BuildFactory()
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["sleep", "2"], name="wait github sync"))
 factoryRsyslogDocUbuntu16.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["git", "log", "-4"], name="git branch information"))
-factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["docker", "pull", "rsyslog/rsyslog_doc_gen"], name="pull docker docgen image"))
-factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["bash", "-c", "docker run -u`id -u`:`id -g` -eSPHINX_EXTRA_OPTS=-q -v`pwd`:/rsyslog-doc rsyslog/rsyslog_doc_gen"], logfiles={"preview_url": "preview_url"}, lazylogfiles=True, name="generate doc"))
+factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["docker", "pull", doc_build_docker], name="pull docker docgen image"))
+factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["bash", "-c", "docker run -u`id -u`:`id -g` -eSPHINX_EXTRA_OPTS=-q -v`pwd`:/rsyslog-doc " + doc_build_docker], logfiles={"preview_url": "preview_url"}, lazylogfiles=True, name="generate doc"))
 factoryRsyslogDocUbuntu16.addStep(ShellCommand(command=["bash", "-c", "FILE=\"`date +doc-%Y-%m-%d-%H-%M-%S`-`git log -1 --pretty=format:\"%h\"`\"; mkdir /var/www/html/doc/; mkdir /var/www/html/doc/$FILE; cp -rv build/* /var/www/html/doc/$FILE; echo \"http://ubuntu16.rsyslog.com/doc/$FILE\" > preview_url"], logfiles={"preview_url": "preview_url"}, lazylogfiles=True, name="make PREVIEW available")) 
+
+#
+# rsyslog-doc: On Ubuntu22 Docker with new container 
+#
+factoryRsyslogDocUbuntu22 = BuildFactory()
+factoryRsyslogDocUbuntu22.addStep(ShellCommand(command=["sleep", "2"], name="wait github sync"))
+factoryRsyslogDocUbuntu22.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogDocUbuntu22.addStep(ShellCommand(command=["bash", "-c", 'docker run -u`id -u`:`id -g` -v`pwd`:/rsyslog --rm ' + doc_build_docker_v2 + ' bash -c "sphinx-build -b html -D html_theme=sphinx_rtd_theme source output/html"'], haltOnFailure=True, name="run sphinx-build"))
+factoryRsyslogDocUbuntu22.addStep(ShellCommand(command=["bash", "-c", "FILE=\"`date +doc-%Y-%m-%d-%H-%M-%S`-`git log -1 --pretty=format:\"%h\"`\"; mkdir /var/www/html/doc/; mkdir /var/www/html/doc/$FILE; cp -rv output/html/* /var/www/html/doc/$FILE; echo \"http://ubuntu16.rsyslog.com/doc/$FILE\" > preview_url"], logfiles={"preview_url": "preview_url"}, lazylogfiles=True, name="make PREVIEW available")) 
 
 ######### hardcoded scheduler for rsyslog-doc generation
 # ----------------------------------------------------------------------
@@ -35,8 +47,8 @@ from buildbot.config import BuilderConfig
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog-doc ubuntu16 rsyslog",
-		workernames=["slave-ubuntu16"],
-		factory=factoryRsyslogDocUbuntu16, 
+		workernames=["slave-ubuntu24"],
+		factory=factoryRsyslogDocUbuntu22, 
 		tags=["rsyslog-doc rsyslog"], 
 		properties={
 			"github_repo_owner": "rsyslog",

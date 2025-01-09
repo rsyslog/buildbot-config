@@ -65,7 +65,6 @@ factoryLibFastJsonFreeBsd.addStep(ShellCommand(command=["make", "check", "V=0"],
 #Add libfastjson builders for main repo
 appendBuilders( lc, 'rsyslog', 'libfastjson',
 		factoryLibFastJson,		# Debian 
-		factoryLibFastJson,		# Debian9
 		factoryLibFastJson,		# Raspbian 
 		factoryLibFastJsonFreeBsd,	# Freebsd 
 		factoryLibFastJson,		# Suse 
@@ -85,4 +84,3 @@ appendBuilders( lc, 'rsyslog', 'libfastjson',
 		factoryLibFastJson,		# DockerUbuntu18on18
 		factoryLibFastJson		# DockerCentos7
 		)
-

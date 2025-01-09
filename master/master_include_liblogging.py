@@ -56,7 +56,6 @@ factoryLibloggingFreeBsd.addStep(ShellCommand(command=["make", "check", "V=0"], 
 #Add libfastjson builders for main repo
 appendBuilders( lc, 'rsyslog', 'liblogging',
 		factoryLibloggingDebian,	# Debian 
-		factoryLiblogging,		# Debian9
 		factoryLiblogging,		# Raspbian 
 		factoryLibloggingFreeBsd,	# Freebsd 
 		factoryLiblogging,		# Suse 

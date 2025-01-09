@@ -158,7 +158,6 @@ factoryLibrelpDockerUbuntu18_codecov.addStep(ShellCommand(command=["bash", "-c",
 #Add libfastjson builders for main repo
 appendBuilders( lc, 'rsyslog', 'librelp',
 		factoryLibrelp,		# Debian 
-		factoryLibrelp,		# Debian9
 		factoryLibrelp_no_valgrind,	# Raspbian 
 		factoryLibrelp,		# Freebsd 
 		factoryLibrelp,		# Suse 
@@ -202,7 +201,7 @@ lc['builders'].append(
     ))
 lc['builders'].append(
    BuilderConfig(name="librelp build clang-9",
-     workernames=["docker-ubuntu-compilecheck-ubuntu2004"],
+     workernames=["docker-ubuntu-compilecheck"],
       factory=factoryLibrelpDockerBuild_clang9,
       tags=["librelp", "docker"],
       properties={
