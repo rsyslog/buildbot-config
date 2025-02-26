@@ -46,15 +46,14 @@ factoryRsyslogPkgRealRpmBuild.addStep(ShellCommand(command=["bash", "-c", "./do_
 ######### hardcoded scheduler for rsyslogrpm generation
 # ----------------------------------------------------------------------
 from buildbot.config import BuilderConfig
-#docker-fedora30-pkgbuild docker-fedora36-pkgbuild
 lc['builders'].append(
    BuilderConfig(name="rsyslogrpm rpmbuild",
      workernames=["docker-fedora36-pkgbuild"],
       factory=factoryRsyslogPkgRpmBuild,
       tags=["rsyslogrpm", "rpmbuild"],
       properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog-pkg-rhel-centos",
+        "github_repo_owner": "rsyslog",
+        "github_repo_name": "rsyslog-pkg-rhel-centos",
       },
     ))
 
@@ -64,8 +63,8 @@ lc['builders'].append(
       factory=factoryRsyslogPkgRealRpmBuild,
       tags=["rsyslogrpm", "real", "rpmbuild"],
       properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog-pkg-rhel-centos",
+        "github_repo_owner": "rsyslog",
+        "github_repo_name": "rsyslog-pkg-rhel-centos",
       },
     ))
 
