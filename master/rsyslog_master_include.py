@@ -1070,7 +1070,7 @@ lc['builders'].append(
 
 factoryRsyslogStaticAnalyzer = BuildFactory()
 factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:24.04', 'SCAN_BUILD_CC':'clang-18', 'SCAN_BUILD': 'scan-build-18', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12"}, haltOnFailure=True))
+factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:24.04', 'SCAN_BUILD_CC':'clang-18', 'SCAN_BUILD': 'scan-build-18', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --enable-omsendertrack"}, haltOnFailure=True))
 
 lc['builders'].append(
 	BuilderConfig(name="rsyslog clang static analyzer",
@@ -1356,26 +1356,26 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog solaris10x64 rsyslog",
-      workernames=["slave-solaris10x64"],
-      factory=factoryRsyslogSolaris10x64_gcc,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog solaris10x64 sunstudio",
-      workernames=["slave-solaris10x64"],
-      factory=factoryRsyslogSolaris10x64_sunstudio,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+#    BuilderConfig(name="rsyslog solaris10x64 rsyslog",
+#      workernames=["slave-solaris10x64"],
+#      factory=factoryRsyslogSolaris10x64_gcc,
+#      tags=["rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
+#lc['builders'].append(
+#    BuilderConfig(name="rsyslog solaris10x64 sunstudio",
+#      workernames=["slave-solaris10x64"],
+#      factory=factoryRsyslogSolaris10x64_sunstudio,
+#      tags=["rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog solaris11sparc rsyslog",
       workernames=["slave-solaris11sparc"],
@@ -1574,8 +1574,8 @@ lc['schedulers'].append(ForceScheduler(
 			#,"rsyslog docker-fedora30"
 			#,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
-			,"rsyslog solaris10x64 rsyslog"
-			,"rsyslog solaris10x64 sunstudio"
+#			,"rsyslog solaris10x64 rsyslog"
+#			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
 			# far too slow at the moment, disable 2019-02-31 rgerhards: ,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
@@ -1633,8 +1633,8 @@ lc['schedulers'].append(ForceScheduler(
 			#,"rsyslog docker-fedora30"
 			#,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
-			,"rsyslog solaris10x64 rsyslog"
-			,"rsyslog solaris10x64 sunstudio"
+#			,"rsyslog solaris10x64 rsyslog"
+#			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			#,"rsyslog docker-ubuntu18-san rsyslog"
@@ -1682,8 +1682,8 @@ lc['schedulers'].append(SingleBranchScheduler(
 			#,"rsyslog docker-fedora31"
                #,"rsyslog freebsd12 rsyslog"
 			,"rsyslog suse rsyslog"
-			,"rsyslog solaris10x64 rsyslog"
-			,"rsyslog solaris10x64 sunstudio"
+#			,"rsyslog solaris10x64 rsyslog"
+#			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
 			,"rsyslog docker-arm-ubuntu18"
@@ -1766,12 +1766,10 @@ factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "expo
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
-# EPEL7 SUPPORT DROPPED 
-# factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
-# 
+# EPEL7 SUPPORT DROPPED     # factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-9-x86_64/result/state.log"}, name="build epel-9/x86_64 rpms"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/rhel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-7-x86_64/result/state.log"}, name="build rhel-7/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-9-x86_64/result/state.log"}, name="build epel-9/x86_64 rpms"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/rhel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-7-x86_64/result/state.log"}, name="build rhel-7/x86_64 rpms"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 0; else cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/rhel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-8-x86_64/result/state.log"}, name="build rhel-8/x86_64 rpms"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/rhel-9-x86_64/result/build.log; exit 0; else cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/rhel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-9-x86_64/result/state.log"}, name="build rhel-9/x86_64 rpms"))
 
@@ -1805,64 +1803,60 @@ lc['schedulers'].append(schedulers.Nightly(
 		minute=0))
 # ---
 
-# --- Factory for omazureeventhubs RPM build 
-factoryRsyslogRpmBuild_omazureeventhubs = BuildFactory()
+# --- Factory for Custombuild RPM build 
+factoryRsyslogRpmBuild_custombuild = BuildFactory()
 # - Prepare enviromment
-#factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos", "PKGGITBRANCH":"pr-issue-5269"},  haltOnFailure=True, name="Init environment"))
-#factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "git checkout alorbach/omazureeventhubs"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", haltOnFailure=True, name="Checkout branch omazureeventhubs"))
-#factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment 2"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "rm rpmbuild/SOURCES/*.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="Init environment: rm existing tar.gz files"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "rm rpmbuild/SOURCES/*.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="Init environment: rm existing tar.gz files"))
 # - Build rsyslog, prepare and make dist file
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "autoreconf -fvi"], workdir="build/", name="autoreconf"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "./configure --disable-generate-man-pages"], workdir="build/", env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="dummy configure (gcc)"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "make dist"], haltOnFailure=True, workdir="build/", name="make dist (tar.gz)"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="build/", name="debug ls al ./"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/"], haltOnFailure=True, workdir="build/", name="move packagefile *.tar.gz for RPM build"))
+factoryRsyslogRpmBuild_custombuild.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "autoreconf -fvi"], workdir="build/", name="autoreconf"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "./configure --disable-generate-man-pages"], workdir="build/", env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="dummy configure (gcc)"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "make dist"], haltOnFailure=True, workdir="build/", name="make dist (tar.gz)"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="build/", name="debug ls al ./"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/"], haltOnFailure=True, workdir="build/", name="move packagefile *.tar.gz for RPM build"))
 # - GET rsyslog doc and BUILD
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
 # - SET version and release in SPECFile
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
-# factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-7-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-omazureeventhubs"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-8-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-omazureeventhubs"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-9-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-omazureeventhubs"}, logfiles={"root.log": "/var/lib/mock/epel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-9-x86_64/result/state.log"}, name="build epel-9/x86_64 rpms"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/rhel-7-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-omazureeventhubs"}, logfiles={"root.log": "/var/lib/mock/rhel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-7-x86_64/result/state.log"}, name="build rhel-7/x86_64 rpms"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/rhel-8-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-omazureeventhubs"}, logfiles={"root.log": "/var/lib/mock/rhel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-8-x86_64/result/state.log"}, name="build rhel-8/x86_64 rpms"))
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/rhel-9-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/rhel-9-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/rhel-9-x86_64/result/build.log; ls -al /var/lib/mock/rhel-9-x86_64/result; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-omazureeventhubs"}, logfiles={"root.log": "/var/lib/mock/rhel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-9-x86_64/result/state.log"}, name="build rhel-9/x86_64 rpms"))
-# - UPLOAD RPMs to v8-stable-omazureeventhubs repo
-factoryRsyslogRpmBuild_omazureeventhubs.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-omazureeventhubs", "REPOUSERNAME": "pkgbuild", "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-omazureeventhubs repo"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-8-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-9-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/epel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-9-x86_64/result/state.log"}, name="build epel-9/x86_64 rpms"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/rhel-7-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/rhel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=False, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/rhel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-7-x86_64/result/state.log"}, name="build rhel-7/x86_64 rpms"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/rhel-8-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/rhel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/rhel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-8-x86_64/result/state.log"}, name="build rhel-8/x86_64 rpms"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/rhel-9-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/rhel-9-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/rhel-9-x86_64/result/build.log; ls -al /var/lib/mock/rhel-9-x86_64/result; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"rhel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/rhel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/rhel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/rhel-9-x86_64/result/state.log"}, name="build rhel-9/x86_64 rpms"))
+# - UPLOAD RPMs to v8-stable-custombuild repo
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-custombuild", "REPOUSERNAME": "pkgbuild", "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-custombuild repo"))
 
-# --- Builders for omazureeventhubs RPM build
+# --- Builders for custombuild RPM build
 lc['builders'].append(
-   BuilderConfig(name="omazureeventhubs rsyslog rpmbuild",
+   BuilderConfig(name="custombuild rsyslog rpmbuild",
      workernames=["docker-fedora36-pkgbuild"],
-      factory=factoryRsyslogRpmBuild_omazureeventhubs,
-      tags=["rsyslog", "omazureeventhubs", "rpmbuild"],
+      factory=factoryRsyslogRpmBuild_custombuild,
+      tags=["rsyslog", "custombuild", "rpmbuild"],
       properties={
        "github_repo_owner": "rsyslog",
        "github_repo_name": "rsyslog",
       },
     ))
 
-# --- Schedulers for omazureeventhubs RPM build
+# --- Schedulers for custombuild RPM build
 lc['schedulers'].append(ForceScheduler(
-	name="master_omazureeventhubs_rsyslog_rpmbuild",
-	label="1. Build Master omazureeventhubs-rsyslog-rpmbuild",
-	builderNames=["omazureeventhubs rsyslog rpmbuild"],
+	name="master_custombuild_rsyslog_rpmbuild",
+	label="1. Build Master custombuild-rsyslog-rpmbuild",
+	builderNames=["custombuild rsyslog rpmbuild"],
 ))
 lc['schedulers'].append(ForceScheduler(
-	name="pull_omazureeventhubs_rsyslog_rpmbuild",
-	label="2. Build PR omazureeventhubs-rsyslog-rpmbuild",
-	builderNames=["omazureeventhubs rsyslog rpmbuild"],
+	name="pull_custombuild_rsyslog_rpmbuild",
+	label="2. Build PR custombuild-rsyslog-rpmbuild",
+	builderNames=["custombuild rsyslog rpmbuild"],
 	codebases=[
 		util.CodebaseParameter(
 			"", 

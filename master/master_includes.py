@@ -76,9 +76,9 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    treeStableTimer=None,
 			    builderNames=[
-						szRepoProject + " solaris10x64 " + szRepoOwner, 
+#						szRepoProject + " solaris10x64 " + szRepoOwner, 
 						szRepoProject + " solaris11sparc " + szRepoOwner, 
-						szRepoProject + " solaris10sparc " + szRepoOwner,
+#						szRepoProject + " solaris10sparc " + szRepoOwner,
 						szRepoProject + " solaris11x64 " + szRepoOwner, 
 					]))
 
@@ -193,26 +193,26 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		"github_repo_name": szRepoProject,
 	      },
 	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " solaris10sparc " + szRepoOwner,
-	      workernames=["slave-solaris10sparc"],
-	      factory=factorySolaris10sparc,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " solaris10x64 " + szRepoOwner,
-	      workernames=["slave-solaris10x64"],
-	      factory=factorySolaris10x64,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+#	lc['builders'].append(
+#	    BuilderConfig(name=szRepoProject + " solaris10sparc " + szRepoOwner,
+#	      workernames=["slave-solaris10sparc"],
+#	      factory=factorySolaris10sparc,
+#	      tags=[szRepoProject + " " + szRepoOwner],
+#	      properties={
+#		"github_repo_owner": szRepoOwner,
+#		"github_repo_name": szRepoProject,
+#	      },
+#	    ))
+#	lc['builders'].append(
+#	    BuilderConfig(name=szRepoProject + " solaris10x64 " + szRepoOwner,
+#	      workernames=["slave-solaris10x64"],
+#	      factory=factorySolaris10x64,
+#	      tags=[szRepoProject + " " + szRepoOwner],
+#	      properties={
+#		"github_repo_owner": szRepoOwner,
+#		"github_repo_name": szRepoProject,
+#	      },
+#	    ))
 	lc['builders'].append(
 	    BuilderConfig(name=szRepoProject + " solaris11sparc " + szRepoOwner,
 	      workernames=["slave-solaris11sparc"],
@@ -289,9 +289,9 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				#,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
-				,szRepoProject + " solaris10x64 " + szRepoOwner
+#				,szRepoProject + " solaris10x64 " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
-				,szRepoProject + " solaris10sparc " + szRepoOwner
+#				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
@@ -321,9 +321,9 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				#,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
-				,szRepoProject + " solaris10x64 " + szRepoOwner
+#				,szRepoProject + " solaris10x64 " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
-				,szRepoProject + " solaris10sparc " + szRepoOwner
+#				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
@@ -343,9 +343,9 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 				#,szRepoProject + " centos7 " + szRepoOwner
 				,szRepoProject + " freebsd12 " + szRepoOwner
 				,szRepoProject + " suse " + szRepoOwner
-				,szRepoProject + " solaris10x64 " + szRepoOwner
+#				,szRepoProject + " solaris10x64 " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
-				,szRepoProject + " solaris10sparc " + szRepoOwner
+#				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
 				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
