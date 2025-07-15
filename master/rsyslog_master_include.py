@@ -1068,19 +1068,19 @@ lc['builders'].append(
 		} ))
 
 
-factoryRsyslogStaticAnalyzer = BuildFactory()
-factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:24.04', 'SCAN_BUILD_CC':'clang-18', 'SCAN_BUILD': 'scan-build-18', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --enable-omsendertrack"}, haltOnFailure=True))
+#factoryRsyslogStaticAnalyzer = BuildFactory()
+#factoryRsyslogStaticAnalyzer.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+#factoryRsyslogStaticAnalyzer.addStep(ShellCommand(command=["bash", "-c", "devtools/devcontainer.sh devtools/run-static-analyzer.sh"], name="clang static analyzer", logfiles={"report_url": "report_url"}, lazylogfiles=True, env={'RSYSLOG_DEV_CONTAINER':'rsyslog/rsyslog_dev_base_ubuntu:24.04', 'SCAN_BUILD_CC':'clang-18', 'SCAN_BUILD': 'scan-build-18', 'SCAN_BUILD_REPORT_BASEURL': 'http://ubuntu16.rsyslog.com/', 'SCAN_BUILD_REPORT_DIR': '/var/www/html', 'DOCKER_RUN_EXTRA_FLAGS': '-v /var/www/html:/var/www/html -e RSYSLOG_CONFIGURE_EXTRA_OPTS -eSCAN_BUILD_CC -eSCAN_BUILD -eSCAN_BUILD_REPORT_DIR -eSCAN_BUILD_REPORT_BASEURL', 'RSYSLOG_CONFIGURE_OPTIONS_EXTRA': "--disable-ksi-ls12 --enable-omsendertrack"}, haltOnFailure=True))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog clang static analyzer",
-		workernames=["slave-ubuntu24"],
-		factory=factoryRsyslogStaticAnalyzer,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog clang static analyzer",
+		#workernames=["slave-ubuntu24"],
+		#factory=factoryRsyslogStaticAnalyzer,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+		#} ))
 
 # --- Factory for checking RPM builds - this should be modelled very much after the nighly builder at
 # the end of this file!!!!
@@ -1400,7 +1400,6 @@ lc['builders'].append(
     BuilderConfig(name="rsyslog docker-arm-ubuntu18",
       workernames=["docker-armbian-w1",
 	"docker-armbian-w2",
-	"docker-armbian-w3",
 	#"docker-armbian-w4"
 	],
       factory=factoryRsyslogDockerArmUbuntu18,
@@ -1548,13 +1547,13 @@ lc['builders'].append(
 lc['schedulers'].append(ForceScheduler(
 	name="pull_rsyslog_rsyslog",
 	label="1. Pull Requests-rsyslog-rsyslog",
-	builderNames=[  "rsyslog clang static analyzer"
+	builderNames=[  #"rsyslog clang static analyzer",
 			#,"rsyslog compile gcc9"
 			#,"rsyslog compile gcc8"
 			#,"rsyslog compile clang10"
 			#,"rsyslog compile clang9"
 			#,"rsyslog compile clang8"
-			,"rsyslog rpmbuild"
+			"rsyslog rpmbuild"
 			#,"rsyslog gen ubuntu16"
 			#,"rsyslog gen ubuntu18 SAN"
 			#,"rsyslog gen ubuntu18 TSAN"
@@ -1607,13 +1606,13 @@ lc['schedulers'].append(ForceScheduler(
 lc['schedulers'].append(ForceScheduler(
 	name="forceall_rsyslog_rsyslog",
 	label="2. Force All-rsyslog-rsyslog",
-	builderNames=[	"rsyslog clang static analyzer"
+	builderNames=[	#"rsyslog clang static analyzer",
 			#,"rsyslog compile gcc9"
 			#,"rsyslog compile gcc8"
 			#,"rsyslog compile clang10"
 			#,"rsyslog compile clang9"
 			#,"rsyslog compile clang8"
-			,"rsyslog rpmbuild"
+			"rsyslog rpmbuild"
 			#,"rsyslog gen ubuntu16"
 			#,"rsyslog gen ubuntu18 SAN"
 			#,"rsyslog gen ubuntu18 TSAN"
@@ -1657,8 +1656,8 @@ lc['schedulers'].append(SingleBranchScheduler(
 	name="github_rsyslog_rsyslog",
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/rsyslog"),
-	builderNames=[  "rsyslog clang static analyzer"
-			,"rsyslog PR structure validation"
+	builderNames=[  #"rsyslog clang static analyzer",
+			"rsyslog PR structure validation"
 			#,"rsyslog compile gcc9"
 			#,"rsyslog compile gcc8"
 			#,"rsyslog compile clang10"

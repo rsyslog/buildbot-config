@@ -21,9 +21,6 @@ def init_globals(globalvars_dict):
 	global g
 	g = globalvars_dict.get('g', {})
 
-# Local reference to c
-# lc = None
-
 # --- FUNCTIONS
 #Append Schedulers Helper Function
 def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
