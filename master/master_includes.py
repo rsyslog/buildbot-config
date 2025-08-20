@@ -386,7 +386,13 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 		'*.yaml',
 		'*.json',
 		'*.xml',
-		'*.html'
+		'*.html',
+		'*.sh',  # Ignore all .sh files by default
+	]
+	
+	# File patterns that should trigger builds (override ignore patterns)
+	BUILD_PATTERNS = [
+		'tests/*.sh',  # Only tests/*.sh files should trigger builds
 	]
 
 	def _has_skip(self, msg):
@@ -441,25 +447,43 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 		log.msg("RsyslogGitHubEventHandler: DEBUG - Checking if files should be skipped")
 		log.msg("RsyslogGitHubEventHandler: DEBUG - Files to check: {}".format(files))
 		log.msg("RsyslogGitHubEventHandler: DEBUG - Ignore patterns: {}".format(self.IGNORE_PATTERNS))
+		log.msg("RsyslogGitHubEventHandler: DEBUG - Build patterns: {}".format(self.BUILD_PATTERNS))
 		
 		if not files:
 			log.msg("RsyslogGitHubEventHandler: DEBUG - No files found, not skipping")
 			return False
 			
-		non_ignored_files = []
+		build_trigger_files = []
 		ignored_files = []
 		
 		for filename in files:
 			log.msg("RsyslogGitHubEventHandler: DEBUG - Checking file: {}".format(filename))
 			
-			# Check if file matches any ignore pattern
+			# First check if file matches any build pattern (these override ignore patterns)
+			matches_build_pattern = False
+			for pattern in self.BUILD_PATTERNS:
+				full_match = fnmatch.fnmatch(filename, pattern)
+				log.msg("RsyslogGitHubEventHandler: DEBUG - Build pattern '{}' vs '{}': full_match={}".format(
+					pattern, filename, full_match))
+				
+				if full_match:
+					matches_build_pattern = True
+					log.msg("RsyslogGitHubEventHandler: DEBUG - File '{}' matches build pattern '{}'".format(filename, pattern))
+					break
+			
+			if matches_build_pattern:
+				build_trigger_files.append(filename)
+				log.msg("RsyslogGitHubEventHandler: DEBUG - File '{}' will trigger build".format(filename))
+				continue
+			
+			# If no build pattern matched, check if file matches any ignore pattern
 			matches_ignore = False
 			for pattern in self.IGNORE_PATTERNS:
 				# Check both full path and basename
 				full_match = fnmatch.fnmatch(filename, pattern)
 				basename_match = fnmatch.fnmatch(filename.split('/')[-1], pattern)
 				
-				log.msg("RsyslogGitHubEventHandler: DEBUG - Pattern '{}' vs '{}': full_match={}, basename_match={}".format(
+				log.msg("RsyslogGitHubEventHandler: DEBUG - Ignore pattern '{}' vs '{}': full_match={}, basename_match={}".format(
 					pattern, filename, full_match, basename_match))
 				
 				if full_match or basename_match:
@@ -470,17 +494,18 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 			# Categorize files
 			if matches_ignore:
 				ignored_files.append(filename)
+				log.msg("RsyslogGitHubEventHandler: DEBUG - File '{}' will be ignored".format(filename))
 			else:
-				non_ignored_files.append(filename)
-				log.msg("RsyslogGitHubEventHandler: DEBUG - File '{}' does NOT match any ignore pattern".format(filename))
+				build_trigger_files.append(filename)
+				log.msg("RsyslogGitHubEventHandler: DEBUG - File '{}' does NOT match any ignore pattern and will trigger build".format(filename))
 		
-		log.msg("RsyslogGitHubEventHandler: DEBUG - Summary: {} ignored files, {} non-ignored files".format(
-			len(ignored_files), len(non_ignored_files)))
+		log.msg("RsyslogGitHubEventHandler: DEBUG - Summary: {} ignored files, {} build trigger files".format(
+			len(ignored_files), len(build_trigger_files)))
 		log.msg("RsyslogGitHubEventHandler: DEBUG - Ignored files: {}".format(ignored_files))
-		log.msg("RsyslogGitHubEventHandler: DEBUG - Non-ignored files: {}".format(non_ignored_files))
+		log.msg("RsyslogGitHubEventHandler: DEBUG - Build trigger files: {}".format(build_trigger_files))
 		
-		# If any file doesn't match ignore patterns, don't skip
-		should_skip = len(non_ignored_files) == 0
+		# If any file should trigger a build, don't skip
+		should_skip = len(build_trigger_files) == 0
 		log.msg("RsyslogGitHubEventHandler: DEBUG - Should skip build: {}".format(should_skip))
 		
 		return should_skip

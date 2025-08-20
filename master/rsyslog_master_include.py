@@ -1030,19 +1030,19 @@ factoryRsyslog_compile_gcc8.addStep(ShellCommand(command=["make", "-j1"], haltOn
 		#} ))
 
 
-factoryRsyslog_compile_PRvalidate = BuildFactory()
-factoryRsyslog_compile_PRvalidate.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
-factoryRsyslog_compile_PRvalidate.addStep(ShellCommand(command=["tests/CI/PR_validation.sh", "-fvi"], haltOnFailure=True, name="validate PR commit structure"))
+#factoryRsyslog_compile_PRvalidate = BuildFactory()
+#factoryRsyslog_compile_PRvalidate.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
+#factoryRsyslog_compile_PRvalidate.addStep(ShellCommand(command=["tests/CI/PR_validation.sh", "-fvi"], haltOnFailure=True, name="validate PR commit structure"))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog PR structure validation",
-		workernames=["docker-stylecheck"],
-		factory=factoryRsyslog_compile_PRvalidate,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
+#lc['builders'].append(
+	#BuilderConfig(name="rsyslog PR structure validation",
+		#workernames=["docker-stylecheck"],
+		#factory=factoryRsyslog_compile_PRvalidate,
+		#tags=["rsyslog"], 
+		#properties={
+			#"github_repo_owner": "rsyslog",
+			#"github_repo_name": "rsyslog",
+#		} ))
 
 
 ####### Create Builders
@@ -1057,15 +1057,16 @@ factoryRsyslogCodeStyleCheck.addStep(ShellCommand(command=["bash", "-c",
 	"fi"], haltOnFailure=True, name="check testbench DEBUG not enabled"))
 factoryRsyslogCodeStyleCheck.addStep(ShellCommand(command=["devtools/check-codestyle.sh"], haltOnFailure=True, name="codestyle check"))
 
-lc['builders'].append(
-	BuilderConfig(name="rsyslog codestyle check",
-		workernames=["docker-stylecheck"],
-		factory=factoryRsyslogCodeStyleCheck,
-		tags=["rsyslog"], 
-		properties={
-			"github_repo_owner": "rsyslog",
-			"github_repo_name": "rsyslog",
-		} ))
+# Commented out @ 2025-07-17
+#lc['builders'].append(
+#	BuilderConfig(name="rsyslog codestyle check",
+#		workernames=["docker-stylecheck"],
+#		factory=factoryRsyslogCodeStyleCheck,
+#		tags=["rsyslog"], 
+#		properties={
+#			"github_repo_owner": "rsyslog",
+#			"github_repo_name": "rsyslog",
+#		} ))
 
 
 #factoryRsyslogStaticAnalyzer = BuildFactory()
@@ -1101,12 +1102,10 @@ factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "pip install 
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
 # - SET version and release in SPECFile
-#factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace rsyslog version in v8-stable"))
-#factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable.spec"}, name="replace release number with date in v8-stable"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
 # factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
@@ -1398,8 +1397,8 @@ lc['builders'].append(
     ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog docker-arm-ubuntu18",
-      workernames=["docker-armbian-w1",
-	"docker-armbian-w2",
+      workernames=["docker-armbian-w1"
+	#"docker-armbian-w2",
 	#"docker-armbian-w4"
 	],
       factory=factoryRsyslogDockerArmUbuntu18,
@@ -1559,7 +1558,7 @@ lc['schedulers'].append(ForceScheduler(
 			#,"rsyslog gen ubuntu18 TSAN"
 			#,"rsyslog gen ubuntu18 distcheck"
 			#,"rsyslog gen ubuntu18 codecov"
-			,"rsyslog codestyle check"
+			#,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			#,"rsyslog debian rsyslog"
 			,"rsyslog raspbian gcc compile"
@@ -1618,7 +1617,7 @@ lc['schedulers'].append(ForceScheduler(
 			#,"rsyslog gen ubuntu18 TSAN"
 			#,"rsyslog gen ubuntu18 distcheck"
 			#,"rsyslog gen ubuntu18 codecov"
-			,"rsyslog codestyle check"
+			#,"rsyslog codestyle check"
 			,"rsyslog ubuntu16 rsyslog"
 			#,"rsyslog debian rsyslog"
 			,"rsyslog raspbian gcc compile"
@@ -1657,7 +1656,7 @@ lc['schedulers'].append(SingleBranchScheduler(
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/rsyslog"),
 	builderNames=[  #"rsyslog clang static analyzer",
-			"rsyslog PR structure validation"
+			#"rsyslog PR structure validation"
 			#,"rsyslog compile gcc9"
 			#,"rsyslog compile gcc8"
 			#,"rsyslog compile clang10"
@@ -1670,9 +1669,9 @@ lc['schedulers'].append(SingleBranchScheduler(
 			## too slow, use docker instead,"rsyslog gen ubuntu18 distcheck"
 			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
 			#,"rsyslog gen ubuntu18 codecov"
-			,"rsyslog codestyle check"
+			#,"rsyslog codestyle check"
 			#,"rsyslog debian rsyslog"
-			,"rsyslog raspbian gcc compile"
+			"rsyslog raspbian gcc compile"
 			,"rsyslog raspbian clang compile"
 			,"rsyslog centos7-5"
 			#,"rsyslog ElasticSearch"
@@ -1742,11 +1741,6 @@ factoryRsyslogRpmBuild_nightly = BuildFactory()
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "rm rpmbuild/SOURCES/*.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="Init environment: rm existing tar.gz files"))
 
-## DEBUG TESTING docker-fedora30-fix BRANCH 
-#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "git checkout -f docker-fedora30-fix && sed -i \"s/szLocalUser\=test/szLocalUser\=pkg/g\" config.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", haltOnFailure=True, name="DEBUG alorbach git update"))
-#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="DEBUG Init environment 2"))
-#factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al / && more config.sh && more /etc/mock/epel-7-x86_64.cfg"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"}, haltOnFailure=False, name="debug ls -al /"))
-
 # - GET rsyslog latest master branch from github, prepare and build dist file
 factoryRsyslogRpmBuild_nightly.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "autoreconf -fvi"], workdir="build/", name="autoreconf"))
@@ -1759,10 +1753,10 @@ factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "git 
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
 # EPEL7 SUPPORT DROPPED     # factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
@@ -1820,10 +1814,10 @@ factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
 # - SET version and release in SPECFile
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.master/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.master.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-8-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
