@@ -480,6 +480,7 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 		
 		return should_skip
 
+	@defer.inlineCallbacks
 	def _get_commit_msg(self, repo, sha):
 		'''
 		:param repo: the repo full name, ``{owner}/{project}``.
@@ -520,6 +521,7 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 		
 		log.msg('RsyslogGitHubEventHandler: Processing GitHub PR #{}'.format(number), logLevel=logging.DEBUG)
 
+		pr_files = None
 		# Check if only documentation files are changed
 		log.msg("RsyslogGitHubEventHandler: DEBUG - Starting file filtering check for PR #{}".format(number))
 		try:
@@ -583,6 +585,7 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 			'revision': payload['pull_request']['head']['sha'],
 			'when_timestamp': dateparse(payload['pull_request']['created_at']),
 			'branch': refname,
+			'files': pr_files if pr_files is not None else [],
 			'revlink': payload['pull_request']['_links']['html']['href'],
 			'repository': payload['repository']['html_url'],
 			'project': repo_full_name,
@@ -600,6 +603,10 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 
 		changes.append(change)
 
+		_files_for_change = change['files']
+		log.msg(
+			"RsyslogGitHubEventHandler: DEBUG - PR #{} change['files'] count={} (for scheduler filters): {}".format(
+				number, len(_files_for_change), _files_for_change))
 
 		#	yield c['schedulers']["pull_" + szRepoOwner + "_" + szRepoProject].force('user', branch='b', revision='c', repository='d', project='p',
 
@@ -659,3 +666,66 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 			log.msg("RsyslogGitHubEventHandler: ERROR posting GitHub status: {}".format(str(e)))
 			import traceback
 			log.msg("RsyslogGitHubEventHandler: Status error traceback: {}".format(traceback.format_exc()))
+
+
+# Paths under which PR changes do not warrant Solaris builders (plugins not built
+# on Solaris, etc.). Same fnmatch rules as IGNORE_PATTERNS: match full path or basename.
+SOLARIS_PR_IGNORE_PATTERNS = [
+	'plugins/omkafka/*',
+	'plugins/imkafka/*',
+	'plugins/omotel/*',
+]
+
+
+def _solaris_pr_path_ignored(filename):
+	for pattern in SOLARIS_PR_IGNORE_PATTERNS:
+		base = filename.split('/')[-1]
+		full_match = fnmatch.fnmatch(filename, pattern)
+		base_match = fnmatch.fnmatch(base, pattern)
+		log.msg(
+			"SolarisPRFilter: DEBUG - ignore pattern '{}' vs '{}': full_match={}, basename_match={}".format(
+				pattern, filename, full_match, base_match))
+		if full_match or base_match:
+			log.msg(
+				"SolarisPRFilter: DEBUG - path '{}' matches SOLARIS_PR_IGNORE_PATTERNS entry '{}'".format(
+					filename, pattern))
+			return True
+	return False
+
+
+def change_triggers_rsyslog_solaris_pr(change):
+	"""
+	True if this change should schedule rsyslog Solaris PR builders: at least one
+	changed file is .c/.h and not covered by SOLARIS_PR_IGNORE_PATTERNS.
+	"""
+	files = change.files or []
+	proj = getattr(change, 'project', '')
+	cat = getattr(change, 'category', '')
+	log.msg(
+		"SolarisPRFilter: DEBUG - change_triggers_rsyslog_solaris_pr project={!r} category={!r} file_count={}".format(
+			proj, cat, len(files)))
+	log.msg("SolarisPRFilter: DEBUG - SOLARIS_PR_IGNORE_PATTERNS: {}".format(SOLARIS_PR_IGNORE_PATTERNS))
+	if not files:
+		log.msg("SolarisPRFilter: DEBUG - no files on change; Solaris PR builders will not run")
+		return False
+	for filename in files:
+		base = filename.split('/')[-1].lower()
+		if base.endswith('.c'):
+			pass
+		elif base.endswith('.h') and not base.endswith('.hpp'):
+			pass
+		else:
+			log.msg(
+				"SolarisPRFilter: DEBUG - skip non-C/H file for Solaris gate: {}".format(filename))
+			continue
+		log.msg(
+			"SolarisPRFilter: DEBUG - candidate .c/.h for Solaris: {}".format(filename))
+		if _solaris_pr_path_ignored(filename):
+			log.msg(
+				"SolarisPRFilter: DEBUG - file excluded by Solaris ignore list: {}".format(filename))
+			continue
+		log.msg(
+			"SolarisPRFilter: DEBUG - MATCH: Solaris PR builders allowed (file: {})".format(filename))
+		return True
+	log.msg("SolarisPRFilter: DEBUG - no qualifying .c/.h after ignores; Solaris PR builders will not run")
+	return False

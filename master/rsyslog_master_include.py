@@ -20,6 +20,8 @@ from buildbot.schedulers.basic import SingleBranchScheduler
 from buildbot.schedulers.forcesched import ForceScheduler
 from buildbot.changes import filter
 
+from master_includes import change_triggers_rsyslog_solaris_pr
+
 #some globals
 
 # Note: small workers are to be used for -j1 check runs only; they should be
@@ -1319,12 +1321,23 @@ lc['schedulers'].append(SingleBranchScheduler(
 #			,"rsyslog raspbian clang compile"
 			"rsyslog ElasticSearch codecov"
 			#,"rsyslog suse rsyslog"
-#			,"rsyslog solaris10x64 rsyslog"
-#			,"rsyslog solaris10x64 sunstudio"
-			,"rsyslog solaris11sparc rsyslog"
-			,"rsyslog solaris11x64 rsyslog"
 #			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog gen kafka distcheck"
+		],
+))
+
+lc['schedulers'].append(SingleBranchScheduler(
+	name="github_rsyslog_rsyslog_solaris",
+	change_filter=filter.ChangeFilter(
+		category="pull",
+		project="rsyslog/rsyslog",
+		filter_fn=change_triggers_rsyslog_solaris_pr,
+	),
+	builderNames=[
+#			"rsyslog solaris10x64 rsyslog"
+#			,"rsyslog solaris10x64 sunstudio"
+			"rsyslog solaris11sparc rsyslog",
+			"rsyslog solaris11x64 rsyslog",
 		],
 ))
 
