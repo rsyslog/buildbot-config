@@ -178,69 +178,73 @@ appendBuilders( lc, 'rsyslog', 'librelp',
 		factoryLibrelp,		# DockerCentos7
 		)
 
-lc['builders'].append(
-   BuilderConfig(name="librelp freebsd",
-     workernames=[  "slave-freebsd12" ],
-      factory=factoryLibrelpFreebsd,
-      tags=["librelp", "vm"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "librelp",
-      },
-    ))
-lc['builders'].append(
-   BuilderConfig(name="librelp build gcc-8",
-     workernames=[  "docker-ubuntu18-buildtests-w1"
-		  , "docker-ubuntu18-buildtests-w2"],
-      factory=factoryLibrelpDockerBuild_gcc8,
-      tags=["librelp", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "librelp",
-      },
-    ))
-lc['builders'].append(
-   BuilderConfig(name="librelp build clang-9",
-     workernames=["docker-ubuntu-compilecheck"],
-      factory=factoryLibrelpDockerBuild_clang9,
-      tags=["librelp", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "librelp",
-      },
-    ))
-lc['builders'].append(
-   BuilderConfig(name="librelp codecov",
-     workernames=["docker-ubuntu18"],
-      factory=factoryLibrelpDockerUbuntu18_codecov,
-      tags=["librelp", "docker", "codecov"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "librelp",
-      },
-    ))
+#!Security DISABLED !
+if False:
+	lc['builders'].append(
+	BuilderConfig(name="librelp freebsd",
+		workernames=[  "slave-freebsd12" ],
+		factory=factoryLibrelpFreebsd,
+		tags=["librelp", "vm"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "librelp",
+		},
+		))
 
-lc['schedulers'].append(SingleBranchScheduler(
-	name="github_librelp",
-	change_filter=filter.ChangeFilter(	category="pull", 
-						project="rsyslog/librelp"),
-	builderNames=[	"librelp codecov"
-		      , "librelp freebsd"
-		      , "librelp build clang-9"
-		      , "librelp build gcc-8"]
-))
-lc['schedulers'].append(ForceScheduler(
-	name="forceall-librelp",
-	builderNames=[	"librelp codecov"
-		      , "librelp freebsd"
-		      , "librelp build clang-9"
-		      , "librelp build gcc-8"]
-))
+	lc['builders'].append(
+	BuilderConfig(name="librelp build gcc-8",
+		workernames=[  "docker-ubuntu18-buildtests-w1"],
+		factory=factoryLibrelpDockerBuild_gcc8,
+		tags=["librelp", "docker"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "librelp",
+		},
+		))
+	lc['builders'].append(
+	BuilderConfig(name="librelp build clang-9",
+		workernames=["docker-ubuntu-compilecheck"],
+		factory=factoryLibrelpDockerBuild_clang9,
+		tags=["librelp", "docker"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "librelp",
+		},
+		))
+	lc['builders'].append(
+		BuilderConfig(name="librelp codecov",
+		workernames=["docker-ubuntu18"],
+		factory=factoryLibrelpDockerUbuntu18_codecov,
+		tags=["librelp", "docker", "codecov"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "librelp",
+		},
+		))
 
-# build master commits so that CodeCov has references for all commits
-lc['schedulers'].append(schedulers.SingleBranchScheduler(name='librelp-master-sched',
-	change_filter=util.ChangeFilter(project='rsyslog/librelp', branch='master'),
-	treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
-	builderNames=["librelp codecov"]
+# SECURITY DISABLED !
+if False:
+	lc['schedulers'].append(SingleBranchScheduler(
+		name="github_librelp",
+		change_filter=filter.ChangeFilter(	category="pull", 
+							project="rsyslog/librelp"),
+		builderNames=[	"librelp codecov"
+				, "librelp freebsd"
+				, "librelp build clang-9"
+				, "librelp build gcc-8"]
 	))
+	lc['schedulers'].append(ForceScheduler(
+		name="forceall-librelp",
+		builderNames=[	"librelp codecov"
+				, "librelp freebsd"
+				, "librelp build clang-9"
+				, "librelp build gcc-8"]
+	))
+
+	# build master commits so that CodeCov has references for all commits
+	lc['schedulers'].append(schedulers.SingleBranchScheduler(name='librelp-master-sched',
+		change_filter=util.ChangeFilter(project='rsyslog/librelp', branch='master'),
+		treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
+		builderNames=["librelp codecov"]
+		))
 

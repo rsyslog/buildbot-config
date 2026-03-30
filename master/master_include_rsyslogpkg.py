@@ -23,6 +23,39 @@ factoryRsyslogPkgRpmBuild = BuildFactory()
 # - Prepare enviromment
 factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL":"rpms.adiscon.com:/home/makerpm/yumrepo", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos", "PKGGITBRANCH":util.Interpolate('%(src::branch)s')},  haltOnFailure=True, name="Init environment"))
 factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "cat ./rpmbuild/SPECS/v8-stable-el7.spec"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", haltOnFailure=True, name="cat SPECFILE"))
+
+# Extract rsyslog tar.gz to rsyslog-doc for doc build
+#factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c",
+#	"export RSYSLOG_TAR_FILE=`ls -t rpmbuild/SOURCES/rsyslog-[0-9]*.tar.gz | head -1` && echo RSYSLOG_TAR_FILE: $RSYSLOG_TAR_FILE && tar -xvzf $RSYSLOG_TAR_FILE -C ./ && ls -al"], haltOnFailure=True, 
+#	workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="extract rsyslog-[0-9]*.tar.gz for DOC build"))
+
+# New way to build doc
+#factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "cd \"$(ls -td rsyslog-[0-9]*/ | head -n1)/doc\" && pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="doc | pip installed requirements"))
+#factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "cd \"$(ls -td rsyslog-[0-9]*/ | head -n1)/doc\" && make html"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="doc | sphinx build doc"))
+#factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "ls -al && cd \"$(ls -td rsyslog-[0-9]*/ | head -n1)\" && ls -al && cd doc/build && ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="doc | ls -al"))
+#factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c",
+#		"export RSYSLOG_BUILD_DIR=$(ls -td rsyslog-[0-9]*/ | head -n1) && "
+#		"cd rpmbuild/SOURCES/ && "
+#		"export RSYSLOG_TARGZ_FILE=`ls -t rsyslog-[0-9]*.tar.gz | head -1` && "
+#		"export RSYSLOG_TARGZ_BASENAME=${RSYSLOG_TARGZ_FILE%.tar.gz} && "
+#		"gunzip $RSYSLOG_TARGZ_FILE && "
+#		"export RSYSLOG_TAR_FILE=$(ls -t rsyslog-[0-9]*.tar | head -1) && "
+#		"echo RSYSLOG_BUILD_DIR: $RSYSLOG_BUILD_DIR && "
+#		"echo RSYSLOG_TARGZ_FILE: $RSYSLOG_TARGZ_FILE && "
+#		"echo RSYSLOG_TARGZ_BASENAME: $RSYSLOG_TARGZ_BASENAME && "
+#		"echo RSYSLOG_TAR_FILE: $RSYSLOG_TAR_FILE && "
+#		"ls -al /home/pkg/rsyslog-pkg-rhel-centos/$RSYSLOG_BUILD_DIR/doc/build && "
+#		"tmpdir=$(mktemp -d) && "
+#		"tar -xf \"$RSYSLOG_TAR_FILE\" -C \"$tmpdir\" || true && "
+#		"rm -rf \"$tmpdir/$RSYSLOG_TARGZ_BASENAME/doc/*\" && "
+#		"rsync -a \"/home/pkg/rsyslog-pkg-rhel-centos/$RSYSLOG_BUILD_DIR/doc/build/html/\" \"$tmpdir/$RSYSLOG_TARGZ_BASENAME/doc/\" && "
+#		"tar --format=posix -C \"$tmpdir\" -cf \"$RSYSLOG_TAR_FILE.new\" . && "
+#		"mv \"$RSYSLOG_TAR_FILE.new\" \"$RSYSLOG_TAR_FILE\" && "
+#		"gzip -f \"$RSYSLOG_TAR_FILE\""
+#	], 
+#	haltOnFailure=True,	workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="doc | Add doc to rsyslog tar.gz"))
+#factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_TAR_FILE=`ls -t rpmbuild/SOURCES/rsyslog-[0-9]*.tar.gz | head -1` && tar -tzf $RSYSLOG_TAR_FILE"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="doc | tar -tzf file.tar.gz"))
+
 # - BUILD RPMS
 # factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
 factoryRsyslogPkgRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"testing"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
@@ -46,59 +79,61 @@ factoryRsyslogPkgRealRpmBuild.addStep(ShellCommand(command=["bash", "-c", "./do_
 ######### hardcoded scheduler for rsyslogrpm generation
 # ----------------------------------------------------------------------
 from buildbot.config import BuilderConfig
-lc['builders'].append(
-   BuilderConfig(name="rsyslogrpm rpmbuild",
-     workernames=["docker-fedora36-pkgbuild"],
-      factory=factoryRsyslogPkgRpmBuild,
-      tags=["rsyslogrpm", "rpmbuild"],
-      properties={
-        "github_repo_owner": "rsyslog",
-        "github_repo_name": "rsyslog-pkg-rhel-centos",
-      },
-    ))
 
-lc['builders'].append(
-   BuilderConfig(name="rsyslogrpm real rpmbuild",
-     workernames=["docker-fedora36-pkgbuild"],
-      factory=factoryRsyslogPkgRealRpmBuild,
-      tags=["rsyslogrpm", "real", "rpmbuild"],
-      properties={
-        "github_repo_owner": "rsyslog",
-        "github_repo_name": "rsyslog-pkg-rhel-centos",
-      },
-    ))
+if False:
+	lc['builders'].append(
+	BuilderConfig(name="rsyslogrpm rpmbuild",
+		workernames=["docker-fedora36-pkgbuild"],
+		factory=factoryRsyslogPkgRpmBuild,
+		tags=["rsyslogrpm", "rpmbuild"],
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog-pkg-rhel-centos",
+		},
+		))
 
-lc['schedulers'].append(ForceScheduler(
-	name="pull_rsyslog_rsyslogrpm",
-	label="1. Pull Requests-rsyslog-rsyslogrpm",
-	builderNames=[ "rsyslogrpm rpmbuild" ],
-	codebases=[
-		util.CodebaseParameter(
-			"", 
-			branch=util.StringParameter(
-				name="branch", 
-				label="Pull Request Number:", 
-				required=True, 
-				default="refs/pull/<NUMBER>/head", 
-				size=80),
-			),
-	] ))
+	lc['builders'].append(
+	BuilderConfig(name="rsyslogrpm real rpmbuild",
+		workernames=["docker-fedora36-pkgbuild"],
+		factory=factoryRsyslogPkgRealRpmBuild,
+		tags=["rsyslogrpm", "real", "rpmbuild"],
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog-pkg-rhel-centos",
+		},
+		))
+if False:
+	lc['schedulers'].append(ForceScheduler(
+		name="pull_rsyslog_rsyslogrpm",
+		label="1. Pull Requests-rsyslog-rsyslogrpm",
+		builderNames=[ "rsyslogrpm rpmbuild" ],
+		codebases=[
+			util.CodebaseParameter(
+				"", 
+				branch=util.StringParameter(
+					name="branch", 
+					label="Pull Request Number:", 
+					required=True, 
+					default="refs/pull/<NUMBER>/head", 
+					size=80),
+				),
+		] ))
 
-lc['schedulers'].append(ForceScheduler(
-	name="forceall_rsyslog_rsyslogrpm",
-	label="2. Force All-rsyslog-rsyslogrpm",
-	builderNames=[ "rsyslogrpm rpmbuild" ] ))
+	lc['schedulers'].append(ForceScheduler(
+		name="forceall_rsyslog_rsyslogrpm",
+		label="2. Force All-rsyslog-rsyslogrpm",
+		builderNames=[ "rsyslogrpm rpmbuild" ] ))
 
-lc['schedulers'].append(SingleBranchScheduler(
-	name="github_rsyslog-rsyslogrpm",
-	change_filter=filter.ChangeFilter(	category="pull", 
-						project="rsyslog/rsyslog-pkg-rhel-centos"),
-	builderNames=[ "rsyslogrpm rpmbuild"] ))
+	lc['schedulers'].append(SingleBranchScheduler(
+		name="github_rsyslog-rsyslogrpm",
+		change_filter=filter.ChangeFilter(	category="pull", 
+							project="rsyslog/rsyslog-pkg-rhel-centos"),
+		builderNames=[ "rsyslogrpm rpmbuild"] ))
 
-lc['schedulers'].append(ForceScheduler(
-	name="forceall_rsyslog_real_rsyslogrpm",
-	label="1. Force All-rsyslog-real-rsyslogrpm",
-	builderNames=[ "rsyslogrpm real rpmbuild" ] ))
+	lc['schedulers'].append(ForceScheduler(
+		name="forceall_rsyslog_real_rsyslogrpm",
+		label="1. Force All-rsyslog-real-rsyslogrpm",
+		builderNames=[ "rsyslogrpm real rpmbuild" ] ))
 
 # ----------------------------------------------------------------------
 # SUSE OBS builders

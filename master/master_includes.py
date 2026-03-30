@@ -34,31 +34,31 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    #treeStableTimer=None,
 			    #builderNames=["cron " + szRepoProject + " ubuntu " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-ubuntu16",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " ubuntu16 " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-docker-ubuntu16",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " docker-ubuntu16 " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-debian",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " debian " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-ubuntu24",
+			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+			    #treeStableTimer=None,
+			    #builderNames=[szRepoProject + " ubuntu24 " + szRepoOwner]))
+#	lc['schedulers'].append(SingleBranchScheduler(
+#			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-docker-ubuntu24",
+#			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+#			    treeStableTimer=None,
+#			    builderNames=[szRepoProject + " docker-ubuntu24 " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-debian",
+			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+			    #treeStableTimer=None,
+			    #builderNames=[szRepoProject + " debian " + szRepoOwner]))
 	#lc['schedulers'].append(SingleBranchScheduler(
 			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-debian9",
 			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
 			    #treeStableTimer=None,
 			    #builderNames=[szRepoProject + " debian9 " + szRepoOwner]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-raspbian",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " raspbian " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+	#		    name="sched-" + szRepoOwner + "-" + szRepoProject + "-raspbian",
+	#		    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+	#		    treeStableTimer=None,
+	#		    builderNames=[szRepoProject + " raspbian " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-centos",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -66,11 +66,11 @@ def appendSchedulers(lc, szRepoOwner, szRepoProject, szGitBranch):
 			    builderNames=[	szRepoProject + " centos6 " + szRepoOwner, 
 						#szRepoProject + " centos7 " + szRepoOwner,
 						]))
-	lc['schedulers'].append(SingleBranchScheduler(
-			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-suse",
-			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
-			    treeStableTimer=None,
-			    builderNames=[szRepoProject + " suse " + szRepoOwner]))
+	#lc['schedulers'].append(SingleBranchScheduler(
+			    #name="sched-" + szRepoOwner + "-" + szRepoProject + "-suse",
+			    #change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
+			    #treeStableTimer=None,
+			    #builderNames=[szRepoProject + " suse " + szRepoOwner]))
 	lc['schedulers'].append(SingleBranchScheduler(
 			    name="sched-" + szRepoOwner + "-" + szRepoProject + "-freebsd12",
 			    change_filter=filter.ChangeFilter(project=szRepoProject,branch=szGitBranch),
@@ -98,7 +98,7 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 			factoryFedora23, 
 			factoryFedora64, 
 			factoryUbuntu, 
-			factoryUbuntu16, 
+			factoryUbuntu24, 
 			factorySolaris10x64, 
 			factorySolaris10sparc, 
 			factorySolaris11x64, 
@@ -118,46 +118,37 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		#"github_repo_name": szRepoProject,
 	      #},
 	    #))
-	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " ubuntu16 " + szRepoOwner,
-	     workernames=["slave-ubuntu24"],
-	      factory=factoryUbuntu16,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " debian " + szRepoOwner,
-	      workernames=["slave-debian"],
-	      factory=factoryDebian,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
 	#lc['builders'].append(
-	    #BuilderConfig(name=szRepoProject + " debian9 " + szRepoOwner,
-	      #workernames=["slave-debian9"],
-	      #factory=factoryDebian9,
+	   #BuilderConfig(name=szRepoProject + " ubuntu24 " + szRepoOwner,
+	     #workernames=["slave-ubuntu24"],
+	      #factory=factoryUbuntu24,
 	      #tags=[szRepoProject + " " + szRepoOwner],
 	      #properties={
 		#"github_repo_owner": szRepoOwner,
 		#"github_repo_name": szRepoProject,
 	      #},
 	    #))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " raspbian " + szRepoOwner,
-	      workernames=["docker-armbian-compilecheck"], # slave-raspbian"],
-	      factory=factoryRaspbian,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+	#lc['builders'].append(
+	    #BuilderConfig(name=szRepoProject + " debian " + szRepoOwner,
+	      #workernames=["slave-debian"],
+	      #factory=factoryDebian,
+	      #tags=[szRepoProject + " " + szRepoOwner],
+	      #properties={
+		#"github_repo_owner": szRepoOwner,
+		#"github_repo_name": szRepoProject,
+	      #},
+	    #))
+#	# SECURITY DISABLED !
+#	lc['builders'].append(
+#	    BuilderConfig(name=szRepoProject + " raspbian " + szRepoOwner,
+#	      workernames=["docker-armbian-compilecheck"], # slave-raspbian"],
+#	      factory=factoryRaspbian,
+#	      tags=[szRepoProject + " " + szRepoOwner],
+#	      properties={
+#		"github_repo_owner": szRepoOwner,
+#		"github_repo_name": szRepoProject,
+#	      },
+#	    ))
 	lc['builders'].append(
 	    BuilderConfig(name=szRepoProject + " centos6 " + szRepoOwner,
 	    workernames=["slave-centos6"],
@@ -188,16 +179,16 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		"github_repo_name": szRepoProject,
 	      },
 	    ))
-	lc['builders'].append(
-	    BuilderConfig(name=szRepoProject + " suse " + szRepoOwner,
-	      workernames=["slave-suse"],
-	      factory=factorySuse,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+	#lc['builders'].append(
+	    #BuilderConfig(name=szRepoProject + " suse " + szRepoOwner,
+	      #workernames=["slave-suse"],
+	      #factory=factorySuse,
+	      #tags=[szRepoProject + " " + szRepoOwner],
+	      #properties={
+		#"github_repo_owner": szRepoOwner,
+		#"github_repo_name": szRepoProject,
+	      #},
+	    #))
 #	lc['builders'].append(
 #	    BuilderConfig(name=szRepoProject + " solaris10sparc " + szRepoOwner,
 #	      workernames=["slave-solaris10sparc"],
@@ -238,69 +229,63 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		"github_repo_name": szRepoProject,
 	      },
 	    ))
-
-	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " docker-ubuntu16 " + szRepoOwner,
-	     workernames=["docker-ubuntu16"],
-	      factory=factoryUbuntuDocker,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " docker-ubuntu18 " + szRepoOwner,
-	     workernames=["docker-ubuntu18"],
-	      factory=factoryUbuntu18Docker,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
-	lc['builders'].append(
-	   BuilderConfig(name=szRepoProject + " docker-centos7 " + szRepoOwner,
-	     workernames=["docker-centos7"],
-	      factory=factoryCentos7Docker,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+#	lc['builders'].append(
+#	   BuilderConfig(name=szRepoProject + " docker-ubuntu24 " + szRepoOwner,
+#	     workernames=["docker-ubuntu24"],
+#	      factory=factoryUbuntuDocker,
+#	      tags=[szRepoProject + " " + szRepoOwner],
+#	      properties={
+#		"github_repo_owner": szRepoOwner,
+#		"github_repo_name": szRepoProject,
+#	      },
+#	    ))
+#	lc['builders'].append(
+#	   BuilderConfig(name=szRepoProject + " docker-ubuntu18 " + szRepoOwner,
+#	     workernames=["docker-ubuntu18"],
+#	      factory=factoryUbuntu18Docker,
+#	      tags=[szRepoProject + " " + szRepoOwner],
+#	      properties={
+#		"github_repo_owner": szRepoOwner,
+#		"github_repo_name": szRepoProject,
+#	      },
+#	    ))
+#	lc['builders'].append(
+#	   BuilderConfig(name=szRepoProject + " docker-centos7 " + szRepoOwner,
+#	     workernames=["docker-centos7"],
+#	      factory=factoryCentos7Docker,
+#	      tags=[szRepoProject + " " + szRepoOwner],
+#	      properties={
+#		"github_repo_owner": szRepoOwner,
+#		"github_repo_name": szRepoProject,
+#	      },
+#	    ))
 
 # --- Cronjob only
-	lc['builders'].append(
-	   BuilderConfig(name="cron " + szRepoProject + " ubuntu16 " + szRepoOwner,
-	     workernames=["slave-ubuntu24"],
-	      factory=factoryUbuntuCron,
-	      tags=[szRepoProject + " " + szRepoOwner],
-	      properties={
-		"github_repo_owner": szRepoOwner,
-		"github_repo_name": szRepoProject,
-	      },
-	    ))
+	#lc['builders'].append(
+	   #BuilderConfig(name="cron " + szRepoProject + " ubuntu24 " + szRepoOwner,
+	     #workernames=["slave-ubuntu24"],
+	      #factory=factoryUbuntuCron,
+	      #tags=[szRepoProject + " " + szRepoOwner],
+	      #properties={
+		#"github_repo_owner": szRepoOwner,
+		#"github_repo_name": szRepoProject,
+	      #},
+	    #))
 # --- 
 
 	lc['schedulers'].append(ForceScheduler(
 		name="pull_" + szRepoOwner + "_" + szRepoProject,
 		label="1. Pull Requests-" + szRepoOwner + "-" + szRepoProject,
-		builderNames=[  szRepoProject + " ubuntu16 " + szRepoOwner
-				,szRepoProject + " debian " + szRepoOwner
-				#,szRepoProject + " debian9 " + szRepoOwner
-				,szRepoProject + " raspbian " + szRepoOwner
-				,szRepoProject + " centos6 " + szRepoOwner
-				#,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " freebsd12 " + szRepoOwner
-				,szRepoProject + " suse " + szRepoOwner
-#				,szRepoProject + " solaris10x64 " + szRepoOwner
+		builderNames=[  #szRepoProject + " ubuntu24 " + szRepoOwner
+				#,szRepoProject + " debian " + szRepoOwner
+#				,szRepoProject + " raspbian " + szRepoOwner
+				szRepoProject + " centos6 " + szRepoOwner
+				#,szRepoProject + " suse " + szRepoOwner
 				,szRepoProject + " solaris11sparc " + szRepoOwner
-#				,szRepoProject + " solaris10sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
-				,szRepoProject + " docker-centos7 " + szRepoOwner
+#				,szRepoProject + " docker-ubuntu24 " + szRepoOwner
+#				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
+#				,szRepoProject + " docker-centos7 " + szRepoOwner
 			],
 		codebases=[
 			util.CodebaseParameter(
@@ -318,21 +303,15 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 	lc['schedulers'].append(ForceScheduler(
 		name="forceall_" + szRepoOwner + "_" + szRepoProject,
 		label="2. Force All-" + szRepoOwner + "-" + szRepoProject,
-		builderNames=[	szRepoProject + " ubuntu16 " + szRepoOwner
-				,szRepoProject + " debian " + szRepoOwner
-				#,szRepoProject + " debian9 " + szRepoOwner
-				,szRepoProject + " raspbian " + szRepoOwner
-				,szRepoProject + " centos6 " + szRepoOwner
-				#,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " freebsd12 " + szRepoOwner
-				,szRepoProject + " suse " + szRepoOwner
-#				,szRepoProject + " solaris10x64 " + szRepoOwner
-				,szRepoProject + " solaris11sparc " + szRepoOwner
-#				,szRepoProject + " solaris10sparc " + szRepoOwner
+		builderNames=[	#szRepoProject + " ubuntu24 " + szRepoOwner
+				#,szRepoProject + " debian " + szRepoOwner
+#				,szRepoProject + " raspbian " + szRepoOwner
+				#szRepoProject + " suse " + szRepoOwner
+				szRepoProject + " solaris11sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
-				,szRepoProject + " docker-centos7 " + szRepoOwner
+#				,szRepoProject + " docker-ubuntu24 " + szRepoOwner
+#				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
+#				,szRepoProject + " docker-centos7 " + szRepoOwner
 				],
 	))
 	
@@ -340,29 +319,18 @@ def appendBuilders(	lc, szRepoOwner, szRepoProject,
 		name="github_" + szRepoOwner + "_" + szRepoProject,
 		change_filter=filter.ChangeFilter(	category="pull", 
 							project=szRepoOwner + "/" + szRepoProject),
-		builderNames=[  szRepoProject + " ubuntu16 " + szRepoOwner
-				,szRepoProject + " debian " + szRepoOwner
-				#,szRepoProject + " debian9 " + szRepoOwner
-				,szRepoProject + " raspbian " + szRepoOwner
-				,szRepoProject + " centos6 " + szRepoOwner
-				#,szRepoProject + " centos7 " + szRepoOwner
-				,szRepoProject + " freebsd12 " + szRepoOwner
-				,szRepoProject + " suse " + szRepoOwner
-#				,szRepoProject + " solaris10x64 " + szRepoOwner
-				,szRepoProject + " solaris11sparc " + szRepoOwner
-#				,szRepoProject + " solaris10sparc " + szRepoOwner
+		builderNames=[  #szRepoProject + " ubuntu24 " + szRepoOwner
+				#,szRepoProject + " debian " + szRepoOwner
+#				,szRepoProject + " raspbian " + szRepoOwner
+				#szRepoProject + " suse " + szRepoOwner
+				szRepoProject + " solaris11sparc " + szRepoOwner
 				,szRepoProject + " solaris11x64 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu16 " + szRepoOwner
-				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
-				,szRepoProject + " docker-centos7 " + szRepoOwner
+#				,szRepoProject + " docker-ubuntu24 " + szRepoOwner
+#				,szRepoProject + " docker-ubuntu18 " + szRepoOwner
+#				,szRepoProject + " docker-centos7 " + szRepoOwner
 			],
 	))
 
-	lc['schedulers'].append(ForceScheduler(
-		name="forceallcron_" + szRepoOwner + "_" + szRepoProject,
-		label="3. Force All Cron-" + szRepoOwner + "-" + szRepoProject,
-		builderNames=[ "cron " + szRepoProject + " ubuntu16 " + szRepoOwner ],
-	))
 
 # ----------------------------------------------
 ####### GITHUB HOOK
@@ -384,10 +352,12 @@ class RsyslogGitHubEventHandler(GitHubEventHandler):
 		'*.txt',
 		'*.rst',
 		'*.yaml',
+		'*.yml',
 		'*.json',
 		'*.xml',
 		'*.html',
 		'*.sh',  # Ignore all .sh files by default
+		'.github',  # Ignore .github folder
 	]
 	
 	# File patterns that should trigger builds (override ignore patterns)

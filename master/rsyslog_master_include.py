@@ -56,7 +56,7 @@ factoryRsyslogCentos6.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch
 factoryRsyslogCentos6.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"]))
 factoryRsyslogCentos6.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 factoryRsyslogCentos6.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch=no", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--disable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--disable-ax-compiler-flags"], env={'PKG_CONFIG_PATH': '/home/rger/localenv/lib/pkgconfig:/lib64/pkgconfig'}, logfiles={"config.log": "config.log"}))
-#factoryRsyslogCentos6.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind"],  env={'PKG_CONFIG_PATH': '/lib64/pkgconfig:/home/rger/localenv/lib/pkgconfig'}, logfiles={"config.log": "config.log"}))
+#factoryRsyslogCentos6.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind"],  env={'PKG_CONFIG_PATH': '/lib64/pkgconfig:/home/rger/localenv/lib/pkgconfig'}, logfiles={"config.log": "config.log"}))
 factoryRsyslogCentos6.addStep(ShellCommand(command=["make", "-j"]))
 factoryRsyslogCentos6.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_DEBUG_TIMEOUTS_TO_STDERR": "on", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, name="make check"))
 
@@ -65,7 +65,7 @@ factoryRsyslogCentos7VM = BuildFactory()
 factoryRsyslogCentos7VM.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
-factoryRsyslogCentos7VM.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imdocker", "--enable-imdocker-tests", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-improg", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-omrabbitmq", "--enable-journal-tests", "--enable-mmdarwin", "--enable-compile-warnings=error", "--disable-helgrind"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig',  'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}))
+factoryRsyslogCentos7VM.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imdocker", "--enable-imdocker-tests", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-improg", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-omrabbitmq", "--enable-journal-tests", "--enable-mmdarwin", "--enable-compile-warnings=error", "--disable-helgrind"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig',  'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=True))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["make", "-j4", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername'), "CI_ENV":"Centos7VM"}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000))
 factoryRsyslogCentos7VM.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather check logs"))
@@ -76,7 +76,7 @@ factoryRsyslogCentos7VM_bg = BuildFactory()
 factoryRsyslogCentos7VM_bg.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["bash", "-c", "tests/CI/buildbot_cleanup.sh"]))
 factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["autoreconf", "-fvi"]))
-factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch", "--enable-elasticsearch-tests", "--enable-imdocker", "--enable-imdocker-tests", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-journal-tests", "--without-valgrind-testbench", "--enable-compile-warnings=error"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig',  'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}))
+factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-elasticsearch", "--enable-elasticsearch-tests", "--enable-imdocker", "--enable-imdocker-tests", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-omjournal", "--enable-libsystemd=yes", "--enable-mmkubernetes", "--enable-imjournal", "--enable-omkafka", "--enable-imkafka", "--enable-ommongodb=no", "--enable-journal-tests", "--without-valgrind-testbench", "--enable-compile-warnings=error"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig',  'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}))
 factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=True))
 factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["make", "-j2", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000))
 factoryRsyslogCentos7VM_bg.addStep(ShellCommand(command=["bash", "-c", "tests/CI/gather_all_logs.sh"], name="gather check logs"))
@@ -89,7 +89,7 @@ factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/
 factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/buildbot_cleanup.sh ] ; then tests/CI/buildbot_cleanup.sh ; fi"]))
 factoryRsyslogDebian.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
 # use clang!
-factoryRsyslogDebian.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-omkafka=no", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'clang', "CFLAGS":"-g -fsanitize=address"}, logfiles={"config.log": "config.log"}))
+factoryRsyslogDebian.addStep(ShellCommand(command=["./configure", "--prefix=/opt/rsyslog", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--enable-silent-rules", "--docdir=/usr/share/doc/rsyslog", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-omkafka=no", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'clang', "CFLAGS":"-g -fsanitize=address"}, logfiles={"config.log": "config.log"}))
 factoryRsyslogDebian.addStep(ShellCommand(command=["make", "-j"], haltOnFailure=True))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
@@ -101,7 +101,7 @@ factoryRsyslogDebian.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/
 factoryRsyslogRaspbian_gcc = BuildFactory()
 factoryRsyslogRaspbian_gcc.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=raspbianenv_gcc, haltOnFailure=True))
-factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imdocker=no", "--enable-impcap", "--enable-mmcapture", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--enable-omrabbitmq", "--enable-mmdarwin", "--without-valgrind-testbench"], logfiles={"config.log": "config.log"}, env=raspbianenv_gcc, lazylogfiles=True, haltOnFailure=True, name="configure [gcc]"))
+factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imdocker=no", "--enable-impcap", "--enable-mmcapture", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--enable-omrabbitmq", "--enable-mmdarwin", "--without-valgrind-testbench"], logfiles={"config.log": "config.log"}, env=raspbianenv_gcc, lazylogfiles=True, haltOnFailure=True, name="configure [gcc]"))
 factoryRsyslogRaspbian_gcc.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [gcc]"))
 
 factoryRsyslogRaspbian_clang = BuildFactory() # raspbian = "original" Raspberry Pi
@@ -119,7 +119,7 @@ factoryRsyslogRaspbian_clang = BuildFactory() # raspbian = "original" Raspberry 
 # GCC compile commented out as we try it in a separate builder, to be run in parallel!
 factoryRsyslogRaspbian_clang.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogRaspbian_clang.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=raspbianenv_gcc, haltOnFailure=True))
-factoryRsyslogRaspbian_clang.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-impcap", "--enable-mmcapture", "--enable-imdocker=no", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench", "--enable-omrabbitmq", "--enable-mmdarwin", "--enable-compile-warnings=error"], logfiles={"config.log": "config.log"}, env={'CC':'clang', 'CFLAGS': '-g -O1', 'LC_ALL' : 'C', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib'}, lazylogfiles=True, haltOnFailure=True, name="configure [clang]"))
+factoryRsyslogRaspbian_clang.addStep(ShellCommand(command=["./configure", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-impcap", "--enable-mmcapture", "--enable-imdocker=no", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--enable-mmkubernetes", "--without-valgrind-testbench", "--enable-omrabbitmq", "--enable-mmdarwin", "--enable-compile-warnings=error"], logfiles={"config.log": "config.log"}, env={'CC':'clang', 'CFLAGS': '-g -O1', 'LC_ALL' : 'C', 'LIBRARY_PATH': '/usr/lib', 'LD_LIBRARY_PATH': '/usr/lib'}, lazylogfiles=True, haltOnFailure=True, name="configure [clang]"))
 factoryRsyslogRaspbian_clang.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="make [clang]"))
 
 
@@ -128,7 +128,7 @@ factoryRsyslogSuse = BuildFactory()
 factoryRsyslogSuse.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogSuse.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"]))
 factoryRsyslogSuse.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"]))
-factoryRsyslogSuse.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-debug", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--disable-libfaketime", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'gcc', 'CFLAGS': '-g -fsanitize=address', 'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True))
+factoryRsyslogSuse.addStep(ShellCommand(command=["./configure", "--prefix=/usr/local", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-debug", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-valgrind", "--disable-libfaketime", "--enable-mmkubernetes", "--without-valgrind-testbench"], env={'CC': 'gcc', 'CFLAGS': '-g -fsanitize=address', 'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True))
 factoryRsyslogSuse.addStep(ShellCommand(command=["make", "-j8"], haltOnFailure=True))
 factoryRsyslogSuse.addStep(ShellCommand(command=["make", "-j1", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', 'LD_LIBRARY_PATH': '/usr/local/lib', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=4000))
 factoryRsyslogSuse.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/gather_all_logs.sh ] ; then tests/CI/gather_all_logs.sh ; fi"], name="gather check logs"))
@@ -141,7 +141,7 @@ factoryRsyslogSuse.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI
 #factoryRsyslogFreebsd.addStep(ShellCommand(command=["autoreconf", "--force", "--verbose", "--install"], name="autoreconf"))
 # Note: current version of valgrind is full of false positives, so
 # we cannot use valgrind here. :-/
-#factoryRsyslogFreebsd.addStep(ShellCommand(command=["./configure", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--enable-snmp", "--enable-snmp-tests", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-pmnull", "--enable-valgrind", "--without-valgrind-testbench"], env={'PKG_CONFIG_PATH': '/usr/libdata/pkgconfig:/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure"))
+#factoryRsyslogFreebsd.addStep(ShellCommand(command=["./configure", "--disable-dependency-tracking", "--enable-silent-rules", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--enable-snmp", "--enable-snmp-tests", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-pmnull", "--enable-valgrind", "--without-valgrind-testbench"], env={'PKG_CONFIG_PATH': '/usr/libdata/pkgconfig:/usr/local/lib/pkgconfig'}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure"))
 #factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "-j2"], haltOnFailure=True, name="build"))
 ## add for testing:  mmexternal-SegFault-vg.sh mmexternal-SegFault.sh
 #factoryRsyslogFreebsd.addStep(ShellCommand(command=["make", "check", "V=0"], env={'USE_AUTO_DEBUG': 'off', "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=2500, name="check"))
@@ -167,11 +167,11 @@ factoryRsyslogUbuntu16.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetc
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["git", "log", "-4"], name="git branch information"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["bash", "-c", "if [ -f tests/CI/kill_all_instances.sh ] ; then tests/CI/kill_all_instances.sh ; tests/CI/kill_all_kubernetes_test_server.sh ; fi"], name="kill left-over instances"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["autoreconf", "-fvi"], name="autoreconf"))
-factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmnull", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--enable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests=no", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--enable-mmkubernetes", "--enable-debug", "--without-valgrind-testbench"], env={'CC': 'gcc-7', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc-7)"))
+factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmnull", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--enable-mmsnmptrapd", "--enable-gnutls", "--enable-openssl", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests=no", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--enable-mmkubernetes", "--enable-debug", "--without-valgrind-testbench"], env={'CC': 'gcc-7', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (gcc-7)"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "-j2", "check", "TESTS=", "V=0"], env={"RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, haltOnFailure=True, name="make (gcc-7)"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "clean"], name="cleanup for next tests"))
 # now compile plus dynamic testbench tests - do this last as it runs longest
-factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests=no", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--without-valgrind-testbench"], env={'CC': 'clang-4.0', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="build with clang-4.0"))
+factoryRsyslogUbuntu16.addStep(ShellCommand(command=["./configure", "--mandir=/usr/share/man", "--infodir=/usr/share/info", "--datadir=/usr/share", "--sysconfdir=/etc", "--localstatedir=/var/lib", "--disable-dependency-tracking", "--docdir=/usr/share/doc/rsyslog", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-imptcp", "--enable-mmanon", "--enable-mmaudit", "--enable-elasticsearch-tests=no", "--enable-elasticsearch", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--enable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools", "--enable-mysql", "--enable-imczmq", "--enable-omczmq", "--enable-valgrind", "--enable-imjournal","--enable-omjournal", "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests=no", "--enable-ommongodb", "--enable-omhiredis", "--enable-gssapi-krb5", "--enable-ksi-ls12", "--without-valgrind-testbench"], env={'CC': 'clang-4.0', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="build with clang-4.0"))
 factoryRsyslogUbuntu16.addStep(ShellCommand(command=["make", "-j2", "V=0"], haltOnFailure=True))
 # for the time being, we need to turn of ASAN leak checking as it finds quite to
 # many irrelevant non-cleanup leaks. In the longer term, we should remove them, but
@@ -199,7 +199,7 @@ factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["bash", "-c",
 #TESTING !!! factoryRsyslogSolaris10x64.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-librdkafka.sh"], env=solarisenv_sunstudio, name="building librdkafka dependency", descriptionDone="built librdkafka dependency"))
 # begin "real" work
 factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio, name="autoreconf for SunStudio Compiler"))
-factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
+factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
 #TESTING: , "--enable-imkafka", "--enable-omkafka", "--enable-kafka-tests=yes"
 #	factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["cat", "configure"], env=solarisenv_sunstudio))
 factoryRsyslogSolaris10x64_sunstudio.addStep(ShellCommand(command=["gmake", "-j6", "V=1"], env=solarisenv_sunstudio, name="build with SunStudio", haltOnFailure=True))
@@ -224,7 +224,7 @@ factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["bash", "-c", "test
 #factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_gcc, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
 # begin "real" work
 factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_gcc, name="autoreconf for gcc Compiler"))
-factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_gcc, logfiles={"config.log": "config.log"}, name="configure", haltOnFailure=True))
+factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_gcc, logfiles={"config.log": "config.log"}, name="configure", haltOnFailure=True))
 factoryRsyslogSolaris10x64_gcc.addStep(ShellCommand(command=["gmake", "-j", "V=1"], env=solarisenv_gcc, haltOnFailure=True))
 # ---
 
@@ -243,7 +243,7 @@ factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["bash", "-c", "tests/so
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_sunstudio, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
 # begin "real" work
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio, name="autoreconf for SunStudio Compiler"))
-factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
+factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}))
 factoryRsyslogSolaris11x64.addStep(ShellCommand(command=["gmake", "-j", "V=0"], env=solarisenv_sunstudio, name="build with SunStudio", haltOnFailure=True))
 # DISABLE if interactive testing is done on machine
 #, "TESTS=imfile-readmode2.sh"
@@ -267,7 +267,7 @@ factoryRsyslogSolaris10sparc.addStep(GitHub(repourl="http://github.com/rsyslog/r
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_sunstudio, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
 # begin "real" work
 factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio, name="autoreconf for SunStudio Compiler"))
-factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}, name="configure"))
+factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}, name="configure"))
 factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["gmake", "-j4", "V=0"], name="build with SunStudio", env=solarisenv_sunstudio))
 # make check does not work here due to too-slow machine
 #factoryRsyslogSolaris10sparc.addStep(ShellCommand(command=["bash", "-c", "tests/CI/interactive_exec_test_hook.sh", "tests/*.sh.log"], name="custom check scripts", env=solarisenv_sunstudio, maxTime=3000, timeout=1200))
@@ -291,10 +291,10 @@ factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["git", "config", "--g
 # begin work
 factoryRsyslogSolaris11sparc.addStep(GitHub(repourl="http://github.com/rsyslog/rsyslog.git/", mode='full', retryFetch=True))
 factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-librelp.sh"], env=solarisenv_sunstudio, name="building librelp dependency", descriptionDone="built librelp dependency"))
-#factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_sunstudio, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
+factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["bash", "-c", "tests/solaris/prep-libfastjson.sh"], env=solarisenv_sunstudio, name="building libfastjson dependency", descriptionDone="built libfastjson dependency"))
 # begin "real" work
 factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["autoreconf", "-fvi"], env=solarisenv_sunstudio, name="autoreconf for SunStudio Compiler"))
-factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}, name="configure"))
+factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["./configure", "V=0", "--disable-dependency-tracking", "--disable-generate-man-pages", "--enable-testbench", "--enable-improg", "--enable-imtuxedoulog", "--enable-pmdb2diag", "--enable-imbatchreport", "--enable-imdiag", "--enable-imfile", "--enable-impstats", "--disable-impstats-push", "--enable-mmanon", "--enable-mmaudit", "--enable-mmfields", "--enable-mmjsonparse", "--enable-mmpstrucdata", "--enable-mmsequence", "--enable-mmutf8fix", "--enable-mail", "--enable-omprog", "--enable-omruleset", "--enable-omstdout", "--enable-omuxsock", "--enable-pmaixforwardedfrom", "--enable-pmciscoios", "--enable-pmcisconames", "--enable-pmlastmsg", "--enable-pmsnare", "--enable-libgcrypt", "--disable-mmnormalize", "--disable-omudpspoof", "--enable-relp", "--disable-snmp", "--disable-mmsnmptrapd", "--enable-gnutls", "--enable-usertools=no", "--disable-valgrind"], env=solarisenv_sunstudio, logfiles={"config.log": "config.log"}, name="configure"))
 factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "-j4", "V=0"], name="build with SunStudio", env=solarisenv_sunstudio))
 # make check does not work here due to too-slow machine
 #factoryRsyslogSolaris11sparc.addStep(ShellCommand(command=["gmake", "check", "-j2", "V=0", "xTESTS=diskqueue rsf_getenv queue-persist rcvr_fail_restore"], env=solarisenv_sunstudio, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=3600, timeout=3600, description="custom make check (very limited)"))
@@ -661,7 +661,7 @@ factoryRsyslogGeneric_Kafka_distcheck.addStep(ShellCommand(command=["bash", "-c"
 		'CFLAGS':'-g',
 		# Note: we completely override the container configure options here!
 		'RSYSLOG_CONFIGURE_OPTIONS_OVERRIDE':  '--enable-testbench --enable-omstdout --enable-imdiag '
-			'--disable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp '
+			'--disable-impstats --disable-impstats-push --enable-imfile --disable-imfile-tests --disable-fmhttp '
 			'--enable-valgrind --enable-valgrind-testbench --disable-helgrind '
 			'--disable-default-tests --enable-kafka-tests --enable-omkafka --enable-gnutls '
 			'--disable-gnutls-tests --enable-imkafka',
@@ -914,7 +914,7 @@ factoryRsyslogElasticSearchPlain.addStep(ShellCommand(command=["make", "-j4", "c
 factoryRsyslogElasticSearch_codecov = BuildFactory()
 factoryRsyslogElasticSearch_codecov.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["autoreconf", "-fvi"], haltOnFailure=True, name="autoreconf"))
-factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --enable-impstats --enable-imfile --disable-imfile-tests --disable-fmhttp --enable-valgrind --enable-valgrind-testbench --disable-helgrind --disable-default-tests --enable-elasticsearch-tests --enable-elasticsearch"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig', 'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (coverage)"))
+factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", "./configure --enable-testbench --enable-omstdout --enable-imdiag --enable-impstats --disable-impstats-push --enable-imfile --disable-imfile-tests --disable-fmhttp --enable-valgrind --enable-valgrind-testbench --disable-helgrind --disable-default-tests --enable-elasticsearch-tests --enable-elasticsearch"], env={'PKG_CONFIG_PATH': '/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig', 'CC': 'gcc', "CFLAGS":"-g -O0 -coverage", "LDFLAGS":"-lgcov"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="configure (coverage)"))
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["make", "-j", "V=0"], maxTime=1800, haltOnFailure=True, name="make"))
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", "make -j2 check V=0 RS_TESTBENCH_VALGRIND_EXTRA_OPTS=\"--suppressions=$(pwd)/tests/CI/centos7.supp\""], env={'ABORT_ALL_ON_TEST_FAIL':'YES', 'USE_AUTO_DEBUG': 'off', "LSAN_OPTIONS":"detect_leaks=0", "UBSAN_OPTIONS":"print_stacktrace=1", "RSYSLOG_STATSURL": "http://build.rsyslog.com/testbench-failedtest.php", 'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, logfiles={"test-suite.log": "tests/test-suite.log"}, lazylogfiles=True, maxTime=5000, haltOnFailure=False, name="make check"))
 factoryRsyslogElasticSearch_codecov.addStep(ShellCommand(command=["bash", "-c", "curl -s https://codecov.io/bash >codecov.sh; chmod +x codecov.sh; ./codecov.sh -t" + g['secret_CODECOV_TOKEN'] + " -n\"rsyslog buildbot PR\"; rm codecov.sh || exit 0"], env={'CI_BUILD_URL': util.URLForBuild, 'VCS_SLUG':util.Property('buildername')}, name="CodeCov upload"))
@@ -1071,85 +1071,65 @@ factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "autoreconf -
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "./configure --disable-generate-man-pages"], workdir="build/", env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="dummy configure (gcc)"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "make dist"], haltOnFailure=True, workdir="build/", name="make dist (tar.gz)"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="build/", name="debug ls al ./"))
+
+# New way to build doc
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="build/doc/", name="doc | pip installed requirements"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="build/doc/", name="doc | remove 'read -r REPLY' from release_build.sh"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="build/doc/", name="doc | sphinx build doc"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_TAR_FILE=`ls *.tar.gz | head -1` && tar -rvf $RSYSLOG_TAR_FILE -C doc/"], haltOnFailure=True, workdir="build/", name="doc | Add doc to rsyslog tar.gz"))
+# Move dist tar.gz to rpmbuild/SOURCES/
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/"],haltOnFailure=True, workdir="build/", name="move packagefile *.tar.gz for RPM build"))
-# - GET rsyslog doc and BUILD
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
+
+# factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
+# factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_TAR_FILE=`ls -t /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/*.tar.gz | head -1` && tar -xvzf $RSYSLOG_TAR_FILE -C /home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc"], haltOnFailure=True, workdir="build/", name="extract rsyslog *.tar.gz for DOC build"))
+# factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
+# factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
+# factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
+
 # - SET version and release in SPECFile
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls -t rpmbuild/SOURCES/*.tar.gz | head -1 | sed 's/.*rsyslog-\\([0-9.]*\\)\\.tar\\.gz/\\1/'` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+# factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls -t rpmbuild/SOURCES/*.tar.gz | head -1 | sed 's/.*rsyslog-\\([0-9.]*\\)\\.tar\\.gz/\\1/'` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
 # factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
 factoryRsyslogRpmBuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-9-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-9", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-9-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-9-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-9-x86_64/result/state.log"}, name="build epel-9/x86_64 rpms"))
 
-lc['builders'].append(
-   BuilderConfig(name="rsyslog rpmbuild",
-     workernames=["docker-fedora36-pkgbuild"],
-      factory=factoryRsyslogRpmBuild,
-      tags=["rsyslog", "rpmbuild"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-
-
+## OLD DISABLED !
 #lc['builders'].append(
-   #BuilderConfig(name="rsyslog ubuntu rsyslog",
-     #workernames=["slave-ubuntu"],
-      #factory=factoryRsyslogUbuntu, 
-      #tags=["rsyslog"], 
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-lc['builders'].append(
-   BuilderConfig(name="rsyslog ubuntu16 rsyslog",
-     workernames=["slave-ubuntu24"],
-      factory=factoryRsyslogUbuntu16,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#   BuilderConfig(name="rsyslog ubuntu16 rsyslog",
+#     workernames=["slave-ubuntu24"],
+#     factory=factoryRsyslogUbuntu16,
+#      tags=["rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#   ))
+
+## SECURITY DISABLED !
 #lc['builders'].append(
-    #BuilderConfig(name="rsyslog debian rsyslog",
-      #workernames=["slave-debian"],
-      #factory=factoryRsyslogDebian,
-      #tags=["rsyslog"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      ##},
-    #))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog raspbian gcc compile",
-      workernames=["docker-armbian-compilecheck"], # "slave-raspbian"],
-      factory=factoryRsyslogRaspbian_gcc,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog raspbian clang compile",
-      workernames=["docker-armbian-compilecheck"], # "slave-raspbian"],
-      factory=factoryRsyslogRaspbian_clang,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#    BuilderConfig(name="rsyslog raspbian gcc compile",
+#      workernames=["docker-armbian-compilecheck"], # "slave-raspbian"],
+#      factory=factoryRsyslogRaspbian_gcc,
+#      tags=["rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
+#lc['builders'].append(
+#    BuilderConfig(name="rsyslog raspbian clang compile",
+#      workernames=["docker-armbian-compilecheck"], # "slave-raspbian"],
+#      factory=factoryRsyslogRaspbian_clang,
+#      tags=["rsyslog"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog centos6 rsyslog",
     workernames=["slave-centos6"],
@@ -1160,16 +1140,6 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-#lc['builders'].append(
-#    BuilderConfig(name="rsyslog centos7-5",
-#      workernames=["vm-centos7-5-w1", "vm-centos7-5-w2", "vm-centos7-5-w3"],
-#      factory=factoryRsyslogCentos7VM,
-#      tags=["rsyslog", "vm"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
 lc['builders'].append(
     BuilderConfig(name="rsyslog ElasticSearch codecov",
       workernames=["vm-centos7-5-w1"], # this one has more main memory, which we need here!
@@ -1180,76 +1150,6 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen ubuntu16",
-      #workernames=generic_workers,
-      #factory=factoryRsyslogGeneric_Ubuntu16,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen ubuntu18 codecov",
-      #workernames=generic_workers,
-      #factory=factoryRsyslogGeneric_Ubuntu18_codecov,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen ubuntu18 distcheck",
-      #workernames=generic_workers,
-      #factory=factoryRsyslogGeneric_Ubuntu18_distcheck,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen debian10",
-      #workernames=generic_workers,
-      #factory=factoryRsyslogGeneric_Debian10,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen centos6",
-      #workernames=generic_small_workers,
-      #factory=factoryRsyslogGeneric_Centos6,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen fedora30",
-      #workernames=generic_workers,
-      #factory=factoryRsyslogGeneric_Fedora30,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-    #BuilderConfig(name="rsyslog gen kafka codecov",
-      #workernames=generic_small_workers,
-      #factory=factoryRsyslogGeneric_Kafka_codecov,
-      #tags=["rsyslog", "generic"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
 lc['builders'].append(
     BuilderConfig(name="rsyslog gen kafka distcheck",
       workernames=generic_small_workers,
@@ -1271,55 +1171,15 @@ lc['builders'].append(
       },
     ))
 #lc['builders'].append(
-    #BuilderConfig(name="rsyslog Kafka codecov",
-      #workernames=['docker-s1-fedora30'],
-      #factory=factoryRsyslogKafka_codecov,
-      #tags=["rsyslog", "docker"],
+    #BuilderConfig(name="rsyslog suse rsyslog",
+      #workernames=["slave-suse"],
+      #factory=factoryRsyslogSuse,
+      #tags=["rsyslog"],
       #properties={
 	#"github_repo_owner": "rsyslog",
 	#"github_repo_name": "rsyslog",
       #},
     #))
-#lc['builders'].append(
-#    BuilderConfig(name="rsyslog docker-fedora31",
-#      workernames=[ "docker-fedora31-w1"],
-#      factory=factoryRsyslogDockerFedora,
-#      tags=["rsyslog"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-#    BuilderConfig(name="rsyslog docker-fedora30",
-#      workernames=["docker-s1-fedora30"],
-#      factory=factoryRsyslogDockerFedora,
-#      tags=["rsyslog"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-#    BuilderConfig(name="rsyslog freebsd12 rsyslog",
-#      workernames=["slave-freebsd12"],
-#      factory=factoryRsyslogFreebsd,
-#      tags=["rsyslog"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog suse rsyslog",
-      workernames=["slave-suse"],
-      factory=factoryRsyslogSuse,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
 #lc['builders'].append(
 #    BuilderConfig(name="rsyslog solaris10x64 rsyslog",
 #      workernames=["slave-solaris10x64"],
@@ -1360,142 +1220,32 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog docker-arm-ubuntu18",
-      workernames=["docker-armbian-w1"
-	#"docker-armbian-w2",
-	#"docker-armbian-w4"
-	],
-      factory=factoryRsyslogDockerArmUbuntu18,
-      tags=["rsyslog"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-ubuntu16 rsyslog",
-#     workernames=["docker-ubuntu16-w2", "docker-ubuntu16-w4", "docker-ubuntu16"],
-#      factory=factoryRsyslogDockerUbuntu16,
-#      tags=["rsyslog"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-   #BuilderConfig(name="rsyslog docker-ubuntu18 GnuTLS only",
-      #workernames=docker_workers,
-      #factory=factoryRsyslogDockerUbuntu_18_gtls_only,
-      #tags=["rsyslog", "docker"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-   #BuilderConfig(name="rsyslog docker-ubuntu18-tsan rsyslog",
-      #workernames=docker_workers,
-      #factory=factoryRsyslogDockerUbuntu_18_TSAN,
-      #tags=["rsyslog", "docker"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-   #BuilderConfig(name="rsyslog docker-ubuntu18-san rsyslog",
-      #workernames=docker_workers,
-      #factory=factoryRsyslogDockerUbuntu_18_SAN,
-      #tags=["rsyslog", "docker"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-debian10",
-#     workernames=["docker-debian10-w1"],
-#      factory=factoryRsyslogDockerDebian_8,
-#      tags=["rsyslog", "docker"],
-#      properties={
-#        "github_repo_owner": "rsyslog",
-#        "github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-   #BuilderConfig(name="rsyslog docker-ubuntu18-distcheck rsyslog",
-      #workernames=docker_workers,
-      #factory=factoryRsyslogDockerUbuntu18_distcheck,
-      #tags=["rsyslog", "docker"],
-      #properties={
-	#"github_repo_owner": "rsyslog",
-	#"github_repo_name": "rsyslog",
-      #},
-    #))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-ubuntu18-codecov",
-#      workernames=docker_workers,
-#      factory=factoryRsyslogDockerUbuntu18_codecov,
-#      tags=["rsyslog", "docker", "codecov"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-centos6",
-#      workernames=["docker-centos6-wg1", "docker-centos6-w5"],
-#      factory=factoryRsyslogDockerCentos6,
-#      tags=["rsyslog", "docker"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-centos7 rsyslog",
-#      workernames=["docker-centos7", "docker-centos7-w4"],
-#      factory=factoryRsyslogDockerCentos7,
-#      tags=["rsyslog", "docker"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-centos8 rsyslog",
-#      workernames=["docker-centos8-w4"],
-#      factory=factoryRsyslogDockerCentos8,
-#      tags=["rsyslog", "docker"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
-#lc['builders'].append(
-#   BuilderConfig(name="rsyslog docker-suse-tumbleweed",
-#      workernames=[#"docker-suse-tumbleweed-w5",
-#	"docker-suse-tumbleweed-wg1"],
-#      factory=factoryRsyslogDockerSuse,
-#      tags=["rsyslog", "docker"],
-#      properties={
-#	"github_repo_owner": "rsyslog",
-#	"github_repo_name": "rsyslog",
-#      },
-#    ))
+if False:
+	lc['builders'].append(
+		BuilderConfig(name="rsyslog docker-arm-ubuntu18",
+		workernames=["docker-armbian-w1"
+		#"docker-armbian-w2",
+		#"docker-armbian-w4"
+		],
+		factory=factoryRsyslogDockerArmUbuntu18,
+		tags=["rsyslog"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "rsyslog",
+		},
+		))
 
 
-lc['builders'].append(
-   BuilderConfig(name="nightly rsyslog docker-fedora30",
-     workernames=["docker-fedora30-nightly"],
-      factory=factoryRsyslogDockerFedora30_nightly,
-      tags=["rsyslog", "nightly", "docker"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+#   BuilderConfig(name="nightly rsyslog docker-fedora30",
+#     workernames=["docker-fedora30-nightly"],
+#      factory=factoryRsyslogDockerFedora30_nightly,
+#      tags=["rsyslog", "nightly", "docker"],
+#      properties={
+#	"github_repo_owner": "rsyslog",
+#	"github_repo_name": "rsyslog",
+#      },
+#    ))
 
 lc['builders'].append(
    BuilderConfig(name="background rsyslog centos7-5",
@@ -1511,48 +1261,20 @@ lc['builders'].append(
 lc['schedulers'].append(ForceScheduler(
 	name="pull_rsyslog_rsyslog",
 	label="1. Pull Requests-rsyslog-rsyslog",
-	builderNames=[  #"rsyslog clang static analyzer",
-			#,"rsyslog compile gcc9"
-			#,"rsyslog compile gcc8"
-			#,"rsyslog compile clang10"
-			#,"rsyslog compile clang9"
-			#,"rsyslog compile clang8"
-			"rsyslog rpmbuild"
-			#,"rsyslog gen ubuntu16"
-			#,"rsyslog gen ubuntu18 SAN"
-			#,"rsyslog gen ubuntu18 TSAN"
-			#,"rsyslog gen ubuntu18 distcheck"
-			#,"rsyslog gen ubuntu18 codecov"
-			#,"rsyslog codestyle check"
-			,"rsyslog ubuntu16 rsyslog"
-			#,"rsyslog debian rsyslog"
-			,"rsyslog raspbian gcc compile"
-			,"rsyslog raspbian clang compile"
-			,"rsyslog centos6 rsyslog"
-			#,"rsyslog centos7-5"
-			#,"rsyslog ElasticSearch"
+	builderNames=[
+#			"rsyslog rpmbuild"
+#			"rsyslog ubuntu16 rsyslog"
+#			,"rsyslog raspbian gcc compile"
+#			,"rsyslog raspbian clang compile"
+			"rsyslog centos6 rsyslog"
 			,"rsyslog ElasticSearch codecov"
-			#,"rsyslog Kafka codecov"
-			#,"rsyslog docker-fedora31"
-			#,"rsyslog docker-fedora30"
-			#,"rsyslog freebsd12 rsyslog"
-			,"rsyslog suse rsyslog"
+			#,"rsyslog suse rsyslog"
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
-			# far too slow at the moment, disable 2019-02-31 rgerhards: ,"rsyslog solaris10sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			,"rsyslog docker-arm-ubuntu18"
-			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			#,"rsyslog docker-ubuntu18-san rsyslog"
-			#,"rsyslog gen kafka codecov"
+#			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog gen kafka distcheck"
-			#,"rsyslog gen suse thumbleweed"
-			#,"rsyslog gen debian10"
-			#,"rsyslog gen centos6"
-			#,"rsyslog gen centos7"
-			#,"rsyslog gen centos8"
-			#,"rsyslog gen fedora30"
 		],
 	codebases=[
 		util.CodebaseParameter(
@@ -1570,49 +1292,21 @@ lc['schedulers'].append(ForceScheduler(
 lc['schedulers'].append(ForceScheduler(
 	name="forceall_rsyslog_rsyslog",
 	label="2. Force All-rsyslog-rsyslog",
-	builderNames=[	#"rsyslog clang static analyzer",
-			#,"rsyslog compile gcc9"
-			#,"rsyslog compile gcc8"
-			#,"rsyslog compile clang10"
-			#,"rsyslog compile clang9"
-			#,"rsyslog compile clang8"
-			"rsyslog rpmbuild"
-			#,"rsyslog gen ubuntu16"
-			#,"rsyslog gen ubuntu18 SAN"
-			#,"rsyslog gen ubuntu18 TSAN"
-			#,"rsyslog gen ubuntu18 distcheck"
-			#,"rsyslog gen ubuntu18 codecov"
-			#,"rsyslog codestyle check"
-			,"rsyslog ubuntu16 rsyslog"
-			#,"rsyslog debian rsyslog"
-			,"rsyslog raspbian gcc compile"
-			,"rsyslog raspbian clang compile"
-			,"rsyslog centos6 rsyslog"
-			#,"rsyslog centos7-5"
-			#,"rsyslog ElasticSearch"
+	builderNames=[
+#			"rsyslog rpmbuild"
+#			"rsyslog ubuntu16 rsyslog"
+#			,"rsyslog raspbian gcc compile"
+#			,"rsyslog raspbian clang compile"
+			"rsyslog centos6 rsyslog"
 			,"rsyslog ElasticSearch codecov"
-			#,"rsyslog Kafka codecov"
-			#,"rsyslog docker-fedora31"
-			#,"rsyslog docker-fedora30"
-			#,"rsyslog freebsd12 rsyslog"
-			,"rsyslog suse rsyslog"
+			#,"rsyslog suse rsyslog"
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			#,"rsyslog docker-ubuntu18-san rsyslog"
-			,"rsyslog docker-arm-ubuntu18"
-			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			#,"rsyslog gen kafka codecov"
+#			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog gen kafka distcheck"
-			#,"rsyslog gen kafka TSAN"
 			,"rsyslog gen kafka SAN"
-			#,"rsyslog gen suse thumbleweed"
-			#,"rsyslog gen debian10"
-			#,"rsyslog gen centos6"
-			#,"rsyslog gen centos7"
-			#,"rsyslog gen centos8"
-			#,"rsyslog gen fedora30"
 			],
 ))
 
@@ -1620,63 +1314,27 @@ lc['schedulers'].append(SingleBranchScheduler(
 	name="github_rsyslog_rsyslog",
 	change_filter=filter.ChangeFilter(	category="pull", 
 						project="rsyslog/rsyslog"),
-	builderNames=[  #"rsyslog clang static analyzer",
-			#"rsyslog PR structure validation"
-			#,"rsyslog compile gcc9"
-			#,"rsyslog compile gcc8"
-			#,"rsyslog compile clang10"
-			#,"rsyslog compile clang9"
-			#,"rsyslog compile clang8"
-			#,"rsyslog rpmbuild"
-			#,"rsyslog gen ubuntu16"
-			#,"rsyslog gen ubuntu18 SAN"
-			#,"rsyslog gen ubuntu18 TSAN"
-			## too slow, use docker instead,"rsyslog gen ubuntu18 distcheck"
-			#,"rsyslog docker-ubuntu18-distcheck rsyslog"
-			#,"rsyslog gen ubuntu18 codecov"
-			#,"rsyslog codestyle check"
-			#,"rsyslog debian rsyslog"
-			"rsyslog raspbian gcc compile"
-			,"rsyslog raspbian clang compile"
-			#,"rsyslog centos7-5"
-			#,"rsyslog ElasticSearch"
-			,"rsyslog ElasticSearch codecov"
-			#,"rsyslog Kafka codecov"
-			#,"rsyslog docker-fedora31"
-               #,"rsyslog freebsd12 rsyslog"
-			,"rsyslog suse rsyslog"
+	builderNames=[
+#			"rsyslog raspbian gcc compile"
+#			,"rsyslog raspbian clang compile"
+			"rsyslog ElasticSearch codecov"
+			#,"rsyslog suse rsyslog"
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
 			,"rsyslog solaris11x64 rsyslog"
-			,"rsyslog docker-arm-ubuntu18"
-			#,"rsyslog docker-ubuntu18-codecov"
-			#,"rsyslog docker-ubuntu18 GnuTLS only"
-			#,"rsyslog docker-ubuntu18-san rsyslog"
-			#,"rsyslog docker-ubuntu18-tsan rsyslog"
-			#,"rsyslog docker-centos6" # disable until stable!
-			#,"rsyslog docker-debian10"
-			#,"rsyslog gen kafka codecov"
+#			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog gen kafka distcheck"
-			#does not work,"rsyslog gen kafka TSAN"
-			#does not work,"rsyslog gen kafka SAN"
-			#,"rsyslog gen suse thumbleweed"
-			#,"rsyslog gen debian10"
-			#,"rsyslog gen centos6"
-			#,"rsyslog gen centos7"
-			#,"rsyslog gen centos8"
-			#,"rsyslog gen fedora30"
-			#,"rsyslog docker-centos7 rsyslog"
-			#,"rsyslog docker-centos8 rsyslog"
-			#,"rsyslog docker-suse-tumbleweed"
 		],
 ))
 
-lc['schedulers'].append(ForceScheduler(
-	name="forceallcron_rsyslog_rsyslog",
-	label="3. Force All Cron-rsyslog-rsyslog",
-	builderNames=["nightly rsyslog docker-fedora30"],
-))
+# !Security DISABLE
+if False:
+	lc['schedulers'].append(ForceScheduler(
+		name="forceallcron_rsyslog_rsyslog",
+		label="3. Force All Cron-rsyslog-rsyslog",
+		builderNames=["nightly rsyslog docker-fedora30"],
+	))
 
 # Start Nightly Scheduler once at night!
 # we do not need them any longer as we have the on-master-change schedulers
@@ -1705,24 +1363,56 @@ factoryRsyslogRpmBuild_nightly = BuildFactory()
 # Prepare enviromment
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./initenv.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'REPOUSERNAME': 'pkgbuild', "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR":"/home/pkg/rsyslog-pkg-rhel-centos"},  haltOnFailure=True, name="Init environment"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "rm rpmbuild/SOURCES/*.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="Init environment: rm existing tar.gz files"))
-
-# - GET rsyslog latest master branch from github, prepare and build dist file
+# Get rsyslog latest master branch from github, prepare and build dist file
 factoryRsyslogRpmBuild_nightly.addStep(GitHub(repourl=repoGitUrl, mode='full', retryFetch=True))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "autoreconf -fvi"], workdir="build/", name="autoreconf"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./configure --disable-generate-man-pages"], workdir="build/", env={'CC': 'gcc', "CFLAGS":"-g"}, logfiles={"config.log": "config.log"}, haltOnFailure=True, name="dummy configure (gcc)"))
+# Build doc first
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "cd doc/ && pip install -r requirements.txt"], workdir="build/", name="doc | pip installed requirements"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "cd doc/ && make html"], haltOnFailure=True, workdir="build/", name="doc | sphinx build doc"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al && cd doc/build && ls -al"], haltOnFailure=True, workdir="build/", name="doc | ls -al build"))
+# Build rsyslog dist targzfile
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "make dist"], haltOnFailure=True, workdir="build/", name="make dist (tar.gz)"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="build/", name="debug ls al ./"))
+# Add doc build to dist targzfile
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c",
+		"export RSYSLOG_BUILD_DIR=./ && "
+		"export RSYSLOG_TARGZ_FILE=`ls -t rsyslog-[0-9]*.tar.gz | head -1` && "
+		"export RSYSLOG_TARGZ_BASENAME=${RSYSLOG_TARGZ_FILE%.tar.gz} && "
+		"gunzip $RSYSLOG_TARGZ_FILE && "
+		"export RSYSLOG_TAR_FILE=`ls -t rsyslog-[0-9]*.tar | head -1` && "
+		"echo RSYSLOG_BUILD_DIR: $RSYSLOG_BUILD_DIR && "
+		"echo RSYSLOG_TARGZ_FILE: $RSYSLOG_TARGZ_FILE && "
+		"echo RSYSLOG_TARGZ_BASENAME: $RSYSLOG_TARGZ_BASENAME && "
+		"echo RSYSLOG_TAR_FILE: $RSYSLOG_TAR_FILE && "
+		"ls -al $RSYSLOG_BUILD_DIR/doc/build && "
+		"tmpdir=$(mktemp -d) && "
+		"tar -xf \"$RSYSLOG_TAR_FILE\" -C \"$tmpdir\" || true && "
+		"rm -rf \"$tmpdir/$RSYSLOG_TARGZ_BASENAME/doc/*\" && "
+		"rsync -a \"$RSYSLOG_BUILD_DIR/doc/build/html/\" \"$tmpdir/$RSYSLOG_TARGZ_BASENAME/doc/\" && "
+		"tar --format=posix -C \"$tmpdir\" -cf \"$RSYSLOG_TAR_FILE.new\" . && "
+		"mv \"$RSYSLOG_TAR_FILE.new\" \"$RSYSLOG_TAR_FILE\" && "
+		"gzip -f \"$RSYSLOG_TAR_FILE\""
+	], 
+	haltOnFailure=True,	workdir="build/", name="doc | Add doc to rsyslog tar.gz"))
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_TAR_FILE=`ls -t rsyslog-[0-9]*.tar.gz | head -1` && tar -tzf $RSYSLOG_TAR_FILE"], haltOnFailure=True, workdir="build/", name="doc | tar -tzf file.tar.gz"))
+
+# Copy dist targzfile over into SOURCES
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/"], haltOnFailure=True, workdir="build/", name="move packagefile *.tar.gz for RPM build"))
-# - GET rsyslog doc and BUILD
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+
+# - Set version and release in SPECFile
+factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", 
+		"export RSYSLOG_VERSION=$(ls -t rpmbuild/SOURCES/rsyslog-[0-9]*.tar.gz | head -1 | sed s/[^0-9.]//g | rev | cut -c 4- | rev) && "
+		"echo RSYSLOG_VERSION:$RSYSLOG_VERSION && "
+		"sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"],
+	haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"},
+	name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
+
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+	# factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
+
 # - BUILD RPMS
 # EPEL7 SUPPORT DROPPED     # factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-7-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-7", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-7-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-7-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-7-x86_64/result/state.log"}, name="build epel-7/x86_64 rpms"))
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo ok;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-daily"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
@@ -1736,29 +1426,31 @@ factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "if .
 factoryRsyslogRpmBuild_nightly.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-daily", "REPOUSERNAME": "pkgbuild", "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-daily repo"))
 
 # --- Builders for nightly RPM build
-lc['builders'].append(
-   BuilderConfig(name="nightly rsyslog rpmbuild",
-     workernames=["docker-fedora36-pkgbuild"],
-      factory=factoryRsyslogRpmBuild_nightly,
-      tags=["rsyslog", "nightly", "rpmbuild"],
-      properties={
-        "github_repo_owner": "rsyslog",
-        "github_repo_name": "rsyslog",
-      },
-    ))
+if False:
+	lc['builders'].append(
+	BuilderConfig(name="nightly rsyslog rpmbuild",
+		workernames=["docker-fedora36-pkgbuild"],
+		factory=factoryRsyslogRpmBuild_nightly,
+		tags=["rsyslog", "nightly", "rpmbuild"],
+		properties={
+			"github_repo_owner": "rsyslog",
+			"github_repo_name": "rsyslog",
+		},
+		))
 
 # --- Schedulers for nightly RPM build
-lc['schedulers'].append(ForceScheduler(
-        name="forceallcron_rsyslog_rpmbuild",
-        label="Force All Cron-rsyslog-rpmbuild",
-        builderNames=["nightly rsyslog rpmbuild"],
-))
-lc['schedulers'].append(schedulers.Nightly(
-	name='nightly rsyslog rpmbuild',
-	branch='master',
-	builderNames=["nightly rsyslog rpmbuild"], 
-		hour=1, 
-		minute=0))
+if False:
+	lc['schedulers'].append(ForceScheduler(
+			name="forceallcron_rsyslog_rpmbuild",
+			label="Force All Cron-rsyslog-rpmbuild",
+			builderNames=["nightly rsyslog rpmbuild"],
+	))
+	lc['schedulers'].append(schedulers.Nightly(
+		name='nightly rsyslog rpmbuild',
+		branch='master',
+		builderNames=["nightly rsyslog rpmbuild"], 
+			hour=1, 
+			minute=0))
 # ---
 
 # --- Factory for Custombuild RPM build 
@@ -1774,15 +1466,15 @@ factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="build/", name="debug ls al ./"))
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/"], haltOnFailure=True, workdir="build/", name="move packagefile *.tar.gz for RPM build"))
 # - GET rsyslog doc and BUILD
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
+# factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "git clone https://github.com/rsyslog/rsyslog-doc.git"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="git clone rsyslog-doc"))
+# factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "pip install -r requirements.txt"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="pip installed requirements"))
+# factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "sed -E -i \"s/read -r REPLY//g\" tools/release_build.sh"], workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc", name="remove 'read -r REPLY' from release_build.sh"))
+# factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "chmod +x tools/release_build.sh && ./tools/release_build.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rsyslog-doc/", name="sphinx build doc"))
 # - SET version and release in SPECFile
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
+factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls -t rpmbuild/SOURCES/*.tar.gz | head -1 | sed 's/.*rsyslog-\\([0-9.]*\\)\\.tar\\.gz/\\1/'` && echo $RSYSLOG_VERSION && sed -E -i \"s/Version: (.*)/Version: $RSYSLOG_VERSION.daily/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace rsyslog version in v8-stable-el7"))
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_DATE=`date +\"%s\"` && echo $RSYSLOG_DATE && sed -E -i \"s/Release: (.*)/Release: $RSYSLOG_DATE/g\" rpmbuild/SPECS/v8-stable-el7.spec"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", logfiles={"v8-stable-el7.spec": "/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SPECS/v8-stable-el7.spec"}, name="replace release number with date in v8-stable-el7"))
 # - MOVE rsyslog-doc AFTER SPEC MODIFICATION!
-factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls rpmbuild/SOURCES/*.tar.gz | sed s/[^0-9.]//g | rev | cut -c 4- | rev` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
+# factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "export RSYSLOG_VERSION=`ls -t rpmbuild/SOURCES/*.tar.gz | head -1 | sed 's/.*rsyslog-\\([0-9.]*\\)\\.tar\\.gz/\\1/'` && echo $RSYSLOG_VERSION && cd rsyslog-doc && mv -f `ls *.tar.gz` /home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/rsyslog-doc-$RSYSLOG_VERSION.daily.tar.gz"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", name="move doc packagefile *.tar.gz for RPM build"))
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "ls -al"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/rpmbuild/SOURCES/", name="debug ls rpmbuild/SOURCES/"))
 # - BUILD RPMS
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "if ./rpmmaker.sh; then echo OK BUILD.LOG;cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 0; else echo ERROR ROOT.LOG; cat /var/lib/mock/epel-8-x86_64/result/root.log; echo ERROR BUILD.LOG; cat /var/lib/mock/epel-8-x86_64/result/build.log; exit 1; fi"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={'RPM_SPEC': 'v8-stable-el7', "RPM_PLATFORM":"epel-8", "RPM_ARCH":"x86_64", "RPM_REPO":"v8-stable-custombuild"}, logfiles={"root.log": "/var/lib/mock/epel-8-x86_64/result/root.log", "build.log": "/var/lib/mock/epel-8-x86_64/result/build.log", "state.log": "/var/lib/mock/epel-8-x86_64/result/state.log"}, name="build epel-8/x86_64 rpms"))
@@ -1793,39 +1485,53 @@ factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "
 # - UPLOAD RPMs to v8-stable-custombuild repo
 factoryRsyslogRpmBuild_custombuild.addStep(ShellCommand(command=["bash", "-c", "./do_upload.sh"], haltOnFailure=True, workdir="/home/pkg/rsyslog-pkg-rhel-centos/", env={"RPM_REPO":"v8-stable-custombuild", "REPOUSERNAME": "pkgbuild", "REPOURL": "172.19.0.20:/home/makerpm/yumrepo", "REPOSSHPORT": "13022", "PKGBASEDIR": "/home/pkg/rsyslog-pkg-rhel-centos"}, name="upload to v8-stable-custombuild repo"))
 
-# --- Builders for custombuild RPM build
-lc['builders'].append(
-   BuilderConfig(name="custombuild rsyslog rpmbuild",
-     workernames=["docker-fedora36-pkgbuild"],
-      factory=factoryRsyslogRpmBuild_custombuild,
-      tags=["rsyslog", "custombuild", "rpmbuild"],
-      properties={
-       "github_repo_owner": "rsyslog",
-       "github_repo_name": "rsyslog",
-      },
-    ))
+if False:
+	# --- Builders for RPM build
+	lc['builders'].append(
+	BuilderConfig(name="rsyslog rpmbuild",
+		workernames=["docker-fedora36-pkgbuild"],
+		factory=factoryRsyslogRpmBuild,
+		tags=["rsyslog", "rpmbuild"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "rsyslog",
+		},
+		))
 
-# --- Schedulers for custombuild RPM build
-lc['schedulers'].append(ForceScheduler(
-	name="master_custombuild_rsyslog_rpmbuild",
-	label="1. Build Master custombuild-rsyslog-rpmbuild",
-	builderNames=["custombuild rsyslog rpmbuild"],
-))
-lc['schedulers'].append(ForceScheduler(
-	name="pull_custombuild_rsyslog_rpmbuild",
-	label="2. Build PR custombuild-rsyslog-rpmbuild",
-	builderNames=["custombuild rsyslog rpmbuild"],
-	codebases=[
-		util.CodebaseParameter(
-			"", 
-			branch=util.StringParameter(
-				name="branch", 
-				label="Pull Request Number:<br>", 
-				required=True, 
-				default="refs/pull/<NUMBER>/head", 
-				size=80),
-			),
-	],
-))
-# ---
+	# --- Builders for custombuild RPM build
+	lc['builders'].append(
+	BuilderConfig(name="custombuild rsyslog rpmbuild",
+		workernames=["docker-fedora36-pkgbuild"],
+		factory=factoryRsyslogRpmBuild_custombuild,
+		tags=["rsyslog", "custombuild", "rpmbuild"],
+		properties={
+		"github_repo_owner": "rsyslog",
+		"github_repo_name": "rsyslog",
+		},
+		))
+
+if False:
+	# --- Schedulers for custombuild RPM build
+	lc['schedulers'].append(ForceScheduler(
+		name="master_custombuild_rsyslog_rpmbuild",
+		label="1. Build Master custombuild-rsyslog-rpmbuild",
+		builderNames=["custombuild rsyslog rpmbuild"],
+	))
+	lc['schedulers'].append(ForceScheduler(
+		name="pull_custombuild_rsyslog_rpmbuild",
+		label="2. Build PR custombuild-rsyslog-rpmbuild",
+		builderNames=["custombuild rsyslog rpmbuild"],
+		codebases=[
+			util.CodebaseParameter(
+				"", 
+				branch=util.StringParameter(
+					name="branch", 
+					label="Pull Request Number:<br>", 
+					required=True, 
+					default="refs/pull/<NUMBER>/head", 
+					size=80),
+				),
+		],
+	))
+	# ---
 
