@@ -674,6 +674,7 @@ SOLARIS_PR_IGNORE_PATTERNS = [
 	'plugins/omkafka/*',
 	'plugins/imkafka/*',
 	'plugins/omotel/*',
+	'plugins/mmjsontransform/*',
 ]
 
 
