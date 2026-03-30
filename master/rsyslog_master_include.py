@@ -1142,16 +1142,16 @@ lc['builders'].append(
 	"github_repo_name": "rsyslog",
       },
     ))
-lc['builders'].append(
-    BuilderConfig(name="rsyslog ElasticSearch codecov",
-      workernames=["vm-centos7-5-w1"], # this one has more main memory, which we need here!
-      factory=factoryRsyslogElasticSearch_codecov,
-      tags=["rsyslog", "vm"],
-      properties={
-	"github_repo_owner": "rsyslog",
-	"github_repo_name": "rsyslog",
-      },
-    ))
+#lc['builders'].append(
+    #BuilderConfig(name="rsyslog ElasticSearch codecov",
+      #workernames=["vm-centos7-5-w1"], # this one has more main memory, which we need here!
+      #factory=factoryRsyslogElasticSearch_codecov,
+      #tags=["rsyslog", "vm"],
+      #properties={
+	#"github_repo_owner": "rsyslog",
+	#"github_repo_name": "rsyslog",
+      #},
+    #))
 lc['builders'].append(
     BuilderConfig(name="rsyslog gen kafka distcheck",
       workernames=generic_small_workers,
@@ -1269,7 +1269,7 @@ lc['schedulers'].append(ForceScheduler(
 #			,"rsyslog raspbian gcc compile"
 #			,"rsyslog raspbian clang compile"
 			"rsyslog centos6 rsyslog"
-			,"rsyslog ElasticSearch codecov"
+			#,"rsyslog ElasticSearch codecov"
 			#,"rsyslog suse rsyslog"
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
@@ -1300,7 +1300,7 @@ lc['schedulers'].append(ForceScheduler(
 #			,"rsyslog raspbian gcc compile"
 #			,"rsyslog raspbian clang compile"
 			"rsyslog centos6 rsyslog"
-			,"rsyslog ElasticSearch codecov"
+			#,"rsyslog ElasticSearch codecov"
 			#,"rsyslog suse rsyslog"
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
@@ -1319,10 +1319,10 @@ lc['schedulers'].append(SingleBranchScheduler(
 	builderNames=[
 #			"rsyslog raspbian gcc compile"
 #			,"rsyslog raspbian clang compile"
-			"rsyslog ElasticSearch codecov"
+			#"rsyslog ElasticSearch codecov"
 			#,"rsyslog suse rsyslog"
 #			,"rsyslog docker-arm-ubuntu18"
-			,"rsyslog gen kafka distcheck"
+			"rsyslog gen kafka distcheck"
 		],
 ))
 
