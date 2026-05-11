@@ -1,3 +1,37 @@
 nogit*
 post_build_request.py
 github_buildbot.py
+
+# --- Python / tooling (do not commit) ---
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Accidental home/editor files in worktree ---
+.bash_history
+.gitconfig
+.lesshst
+.selected_editor
+.viminfo
+.vscode/settings.json
+
+# --- Local / offline artifacts ---
+_sources/
+diff.log
+
+# --- Legacy tree (not versioned) ---
+_legacy/
+
+# --- Buildbot master runtime (logs, DB, bytecode; config may stay tracked) ---
+master/master.cfg.sample
+master/workers/
+master/state.sqlite
+master/state.sqlite-journal
+master/http.log
+master/http.log.*
+master/twistd.log
+master/twistd.log.*
+master/diff.log
+master/__pycache__/
+master/save-pyc/
