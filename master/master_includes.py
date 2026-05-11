@@ -675,6 +675,23 @@ SOLARIS_PR_IGNORE_PATTERNS = [
 	'plugins/imkafka/*',
 	'plugins/omotel/*',
 	'plugins/mmjsontransform/*',
+	'plugins/imbeats/*',
+	# Below: plugins not enabled on Solaris factories (see factoryRsyslogSolaris11*
+	# ./configure); include dirs that gained new files since ~2023 on main.
+	'plugins/im3195/*',
+	'plugins/imdtls/*',
+	'plugins/imgssapi/*',
+	'plugins/fmpcre/*',
+	'plugins/mmaiitag/*',
+	'plugins/mmleefparse/*',
+	'plugins/mmsnareparse/*',
+	'plugins/omazuredce/*',
+	'plugins/omazureeventhubs/*',
+	'plugins/omelasticsearch/*',
+	'plugins/omdtls/*',
+	'plugins/ommysql/*',
+	'plugins/omgssapi/*',
+	'plugins/omsendertrack/*',
 	'runtime/translate.c/*',
 ]
 
