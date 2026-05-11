@@ -1,0 +1,19 @@
+[Unit]
+Description=Buildbot Service
+After=network.target
+
+[Service]
+User=buildbot
+Group=buildbot
+WorkingDirectory=/var/lib/buildbot
+ExecStart=/bin/bash -c 'source /var/lib/buildbot/venv/bin/activate && buildbot start master'
+ExecStop=/bin/bash -c 'source /var/lib/buildbot/venv/bin/activate && buildbot stop master'
+ExecReload=/bin/bash -c 'source /var/lib/buildbot/venv/bin/activate && buildbot restart master'
+ExecReconfig=/bin/bash -c 'source /var/lib/buildbot/venv/bin/activate && buildbot reconfig master'
+ExecCheckConfig=/bin/bash -c 'source /var/lib/buildbot/venv/bin/activate && buildbot checkconfig master'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+
