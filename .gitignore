@@ -1,3 +1,4 @@
+# Local-only / secrets — also enforced by scripts/verify-no-nogit-in-git.sh + githooks/pre-commit
 nogit*
 post_build_request.py
 github_buildbot.py

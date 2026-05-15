@@ -1274,7 +1274,7 @@ lc['schedulers'].append(ForceScheduler(
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
-			,"rsyslog solaris11x64 rsyslog"
+#			,"rsyslog solaris11x64 rsyslog"
 #			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog gen kafka distcheck"
 		],
@@ -1305,7 +1305,7 @@ lc['schedulers'].append(ForceScheduler(
 #			,"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
 			,"rsyslog solaris11sparc rsyslog"
-			,"rsyslog solaris11x64 rsyslog"
+#			,"rsyslog solaris11x64 rsyslog"
 #			,"rsyslog docker-arm-ubuntu18"
 			,"rsyslog gen kafka distcheck"
 			,"rsyslog gen kafka SAN"
@@ -1337,8 +1337,19 @@ lc['schedulers'].append(SingleBranchScheduler(
 #			"rsyslog solaris10x64 rsyslog"
 #			,"rsyslog solaris10x64 sunstudio"
 			"rsyslog solaris11sparc rsyslog",
-			"rsyslog solaris11x64 rsyslog",
 		],
+))
+
+# Daily full testbench on Solaris 11x64 (main only); see Solaris 11x64 CI plan
+lc['schedulers'].append(schedulers.Nightly(
+	name="nightly-rsyslog-solaris11x64-main",
+	builderNames=["rsyslog solaris11x64 rsyslog"],
+	branch="main",
+	change_filter=util.ChangeFilter(project="rsyslog/rsyslog", branch="main"),
+	onlyIfChanged=False,
+	hour=3,
+	minute=15,
+	reason="Nightly Solaris 11x64 rsyslog testbench on main",
 ))
 
 # !Security DISABLE
@@ -1362,7 +1373,7 @@ if False:
 
 # build master commits so that CodeCov has references for all commits
 lc['schedulers'].append(schedulers.SingleBranchScheduler(name='rsyslog-master-sched',
-	change_filter=util.ChangeFilter(project='rsyslog/rsyslog', branch='master'),
+	change_filter=util.ChangeFilter(project='rsyslog/rsyslog', branch='main'),
 	treeStableTimer=30, # otherwise a PR merge with n commits my start n builders
 	builderNames=[  # "rsyslog gen ubuntu18 codecov"
 			"background rsyslog centos7-5"
